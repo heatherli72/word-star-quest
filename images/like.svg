@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-labelledby="title">
+  <title id="title">A heart around a rocket</title>
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#193f7a"/><stop offset="1" stop-color="#68245f"/></linearGradient></defs>
+  <rect width="600" height="450" rx="34" fill="url(#sky)"/>
+  <path d="M298 379C161 289 101 222 111 139c7-61 83-84 126-28 43-56 119-33 126 28 10 83-50 150-65 212Z" fill="#ff668e" stroke="#ffb1c8" stroke-width="11" opacity=".92"/>
+  <g transform="translate(210 70)">
+    <path d="M90 13c52 51 52 151 0 198C38 164 38 64 90 13Z" fill="#e7fcff" stroke="#78e6ff" stroke-width="9"/>
+    <circle cx="90" cy="94" r="34" fill="#4bc2e8" stroke="#136fc0" stroke-width="8"/><circle cx="77" cy="81" r="10" fill="#f1ffff"/>
+    <path d="m52 162-55 42 58 4M128 162l55 42-58 4" fill="#ff9555" stroke="#d75545" stroke-width="8" stroke-linejoin="round"/>
+    <path d="m90 220-26 70 26-22 26 22Z" fill="#ffe36c"/>
+  </g>
+  <g fill="#ffe878"><path d="m115 87 10 27 29 1-23 18 8 29-24-16-24 16 8-29-23-18 29-1Z"/><path d="m477 296 9 24 26 1-21 16 7 26-21-14-22 14 8-26-22-16 27-1Z"/></g>
+</svg>

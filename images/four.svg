@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-labelledby="title">
+  <title id="title">Four planets spinning</title>
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b255b"/><stop offset="1" stop-color="#582a78"/></linearGradient></defs>
+  <rect width="600" height="450" rx="34" fill="url(#sky)"/>
+  <g fill="#d6f8ff"><circle cx="88" cy="81" r="4"/><circle cx="514" cy="73" r="4"/><circle cx="478" cy="355" r="5"/><circle cx="131" cy="358" r="3"/></g>
+  <g stroke="#ffefaf" stroke-width="6"><circle cx="162" cy="148" r="58" fill="#ff9a4a"/><circle cx="424" cy="133" r="58" fill="#5ee5d9"/><circle cx="189" cy="314" r="58" fill="#a58cff"/><circle cx="407" cy="307" r="58" fill="#6fa7ff"/></g>
+  <g fill="#c65d47" opacity=".7"><circle cx="142" cy="129" r="11"/><circle cx="187" cy="171" r="8"/></g>
+  <g fill="#24778a" opacity=".65"><circle cx="407" cy="114" r="10"/><circle cx="442" cy="151" r="9"/></g>
+  <g fill="#6554aa" opacity=".65"><circle cx="171" cy="291" r="11"/><circle cx="213" cy="334" r="9"/></g>
+  <g fill="#336dbb" opacity=".65"><circle cx="388" cy="285" r="9"/><circle cx="428" cy="331" r="11"/></g>
+  <path d="M76 220q70-45 148 0M376 214q72-45 148 0" fill="none" stroke="#bdf5ff" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+</svg>

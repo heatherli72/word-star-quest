@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-labelledby="title">
+  <title id="title">Two blue rockets</title>
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061d4a"/><stop offset="1" stop-color="#245ca1"/></linearGradient></defs>
+  <rect width="600" height="450" rx="34" fill="url(#sky)"/>
+  <g fill="#d8f8ff"><circle cx="96" cy="92" r="4"/><circle cx="492" cy="101" r="5"/><circle cx="433" cy="338" r="3"/><circle cx="142" cy="323" r="4"/></g>
+  <g transform="translate(126 86) rotate(-20 105 145)">
+    <path d="M106 20c55 52 55 154 0 198-55-44-55-146 0-198Z" fill="#dffaff" stroke="#70eaff" stroke-width="8"/>
+    <circle cx="106" cy="96" r="33" fill="#4ac7ee" stroke="#1271bd" stroke-width="8"/><circle cx="94" cy="83" r="10" fill="#edffff"/>
+    <path d="m68 160-55 39 57 4M144 160l55 39-57 4" fill="#f77d4d" stroke="#d44e42" stroke-width="8" stroke-linejoin="round"/>
+    <path d="m106 218-28 75 28-25 28 25Z" fill="#ffd65b"/>
+  </g>
+  <g transform="translate(318 140) rotate(21 105 145)">
+    <path d="M106 20c55 52 55 154 0 198-55-44-55-146 0-198Z" fill="#dffaff" stroke="#70eaff" stroke-width="8"/>
+    <circle cx="106" cy="96" r="33" fill="#4ac7ee" stroke="#1271bd" stroke-width="8"/><circle cx="94" cy="83" r="10" fill="#edffff"/>
+    <path d="m68 160-55 39 57 4M144 160l55 39-57 4" fill="#f77d4d" stroke="#d44e42" stroke-width="8" stroke-linejoin="round"/>
+    <path d="m106 218-28 75 28-25 28 25Z" fill="#ffd65b"/>
+  </g>
+</svg>

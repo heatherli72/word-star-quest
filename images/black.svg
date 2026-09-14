@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-labelledby="title">
+  <title id="title">A black cat by the moon</title>
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#081d4a"/><stop offset="1" stop-color="#301b63"/></linearGradient></defs>
+  <rect width="600" height="450" rx="34" fill="url(#sky)"/>
+  <circle cx="440" cy="142" r="103" fill="#fff3bd"/><circle cx="480" cy="104" r="102" fill="#193a75"/>
+  <g fill="#c8f6ff"><circle cx="94" cy="80" r="4"/><circle cx="187" cy="125" r="3"/><circle cx="112" cy="290" r="5"/><circle cx="497" cy="321" r="3"/></g>
+  <path d="M111 355q83-35 187-1" fill="none" stroke="#596f9e" stroke-width="12" stroke-linecap="round"/>
+  <g transform="translate(166 177)">
+    <path d="m45 50 22-42 24 38q32-12 58 0l25-38 20 43c20 22 20 84-3 103-30 23-123 18-142-6-18-25-15-75 6-98Z" fill="#13182b" stroke="#6d86b3" stroke-width="7" stroke-linejoin="round"/>
+    <ellipse cx="80" cy="86" rx="10" ry="15" fill="#ffea6b"/><ellipse cx="138" cy="86" rx="10" ry="15" fill="#ffea6b"/><circle cx="81" cy="89" r="4" fill="#152046"/><circle cx="137" cy="89" r="4" fill="#152046"/>
+    <path d="M102 112q8 7 16 0M109 114v10" fill="none" stroke="#e7b2bd" stroke-width="4" stroke-linecap="round"/>
+    <path d="M181 139q69 1 54-62" fill="none" stroke="#13182b" stroke-width="20" stroke-linecap="round"/>
+  </g>
+</svg>

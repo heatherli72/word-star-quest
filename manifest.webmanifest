@@ -1,0 +1,25 @@
+{
+  "name": "单词宇宙训练营",
+  "short_name": "单词训练营",
+  "description": "带有英语 Edge-TTS 发音的儿童单词闯关游戏。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#06132d",
+  "theme_color": "#081b3d",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

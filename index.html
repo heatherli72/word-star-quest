@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#081b3d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="单词训练营">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>单词宇宙训练营</title>
+</head>
+<body>
+  <div class="space-background" aria-hidden="true">
+    <div class="nebula nebula-one"></div>
+    <div class="nebula nebula-two"></div>
+    <div class="planet planet-blue"></div>
+    <div class="planet planet-orange"></div>
+    <span class="floating-star one">✦</span>
+    <span class="floating-star two">✧</span>
+    <span class="floating-star three">✦</span>
+    <span class="meteor">☄</span>
+  </div>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <button class="brand brand-home" id="homeButton" type="button" aria-label="回到训练营首页"><span class="brand-mark">🚀</span><span>单词宇宙训练营</span><small>首页</small></button>
+      <div class="header-actions">
+        <span class="bank-pill" data-star-balance>⚡ 20 能量星</span>
+        <button class="top-action profile-action" id="openProfileButton" type="button"><span id="profileAvatar">🧑‍🚀</span><span class="action-label" id="profileName">选择驾驶员</span></button>
+        <button class="top-action" id="speedButton" type="button" title="切换发音速度"><span>🔊</span><span class="action-label">慢速</span></button>
+        <button class="top-action" id="fullscreenButton" type="button" title="进入全屏"><span>⛶</span><span class="action-label">全屏</span></button>
+        <button class="top-action" id="saveButton" type="button"><span>💾</span><span class="action-label">存档</span></button>
+      </div>
+    </header>
+
+    <section class="home-screen" id="landingScreen">
+      <aside class="home-sidebar">
+        <div class="pilot-identity">
+          <span class="pilot-avatar" data-profile-avatar>🧑‍🚀</span>
+          <div>
+            <span>当前驾驶员</span>
+            <h1 id="homePilotName">等待选择</h1>
+          </div>
+        </div>
+        <div class="home-stat-row">
+          <div><span>训练进度</span><strong id="homeTrainingCount">0 / 60</strong></div>
+          <div><span>能量星</span><strong data-star-balance>⚡ 20 能量星</strong></div>
+        </div>
+        <div class="home-rocket-panel">
+          <div class="assembled-rocket compact" id="heroRocket" aria-label="正在组装的专属火箭"></div>
+          <div class="rocket-summary">
+            <span>专属火箭</span>
+            <strong id="heroPartsCount">0 / 20</strong>
+            <small>部件已装配</small>
+          </div>
+        </div>
+        <button class="primary-button resume-button" id="resumeButton" type="button" hidden>继续上次任务 ▶</button>
+        <p class="save-note" id="saveNote">自动存档已开启。</p>
+        <p class="save-note" id="iosInstallTip" hidden>📱 横屏添加到主屏幕后，可全屏使用。</p>
+      </aside>
+
+      <section class="home-workspace" aria-labelledby="homeWorkspaceTitle">
+        <div class="home-workspace-heading">
+          <div>
+            <p class="eyebrow">TRAINING CAMP</p>
+            <h2 id="homeWorkspaceTitle">选择训练项目</h2>
+          </div>
+        </div>
+
+        <section class="stage-program" aria-labelledby="stageProgramTitle">
+          <div class="program-heading">
+            <h3 id="stageProgramTitle">闯关训练</h3>
+            <span>4 个关卡</span>
+          </div>
+          <div class="stage-project-grid" id="stageProjectGrid"></div>
+        </section>
+
+        <section class="camp-facilities" aria-label="训练营设施">
+          <div class="facility-project-grid" id="facilityProjectGrid"></div>
+        </section>
+      </section>
+    </section>
+
+    <section class="app-route" id="gameScreen" hidden>
+      <article class="screen-card game-card">
+        <div class="stage-heading">
+          <div class="stage-icon" id="stageIcon">📡</div>
+          <h2 id="stageTitle">雷达听音站</h2>
+          <p id="stageDescription">听单词和句子，再锁定正确的单词信号。</p>
+        </div>
+
+        <div class="round-line">
+          <span id="roundText">第 1 / 10 题</span>
+          <div class="round-meter" aria-hidden="true"><div class="round-fill" id="roundFill"></div></div>
+        </div>
+
+        <div class="question-area" id="questionArea"></div>
+        <div class="feedback" id="feedback" aria-live="polite">准备好后，点击播放按钮开始任务。</div>
+      </article>
+    </section>
+
+    <section class="app-route project-route" id="gardenScreen" hidden>
+      <article class="screen-card project-page">
+        <div class="project-page-heading">
+          <div>
+            <h2>🛰️ 单词星图实验室</h2>
+          </div>
+        </div>
+        <div class="garden-layout">
+          <div class="garden-grid" id="gardenGrid"></div>
+          <section class="phonics-lab" id="gardenDetail" aria-live="polite"></section>
+        </div>
+      </article>
+    </section>
+
+    <section class="app-route project-route" id="workshopScreen" hidden>
+      <article class="screen-card project-page">
+        <div class="project-page-heading">
+          <div>
+            <h2>🧰 火箭工坊</h2>
+          </div>
+        </div>
+        <div class="shop-layout">
+          <section class="blueprint-panel">
+            <h3>🚀 专属火箭蓝图</h3>
+            <p>每兑换一个部件，火箭就会亮起来。</p>
+            <div class="assembled-rocket" id="shopRocket" aria-label="专属火箭部件预览"></div>
+            <div class="assembly-count"><span id="ownedPartsCount">0</span> / <span id="totalPartsCount">20</span> 已装配</div>
+            <div class="assembly-grid" id="assemblyGrid"></div>
+          </section>
+          <section class="shop-catalog">
+            <div class="store-balance" id="shopBalance">⚡ 20 能量星</div>
+            <p class="shop-notice" id="shopNotice">集齐 20 个不同部件，就能拼出专属火箭。</p>
+            <div class="shop-grid" id="shopGrid"></div>
+            <div class="shop-pager">
+              <button class="mini-button" id="shopPreviousButton" type="button" aria-label="上一页配件">‹</button>
+              <span id="shopPageLabel">1 / 4</span>
+              <button class="mini-button" id="shopNextButton" type="button" aria-label="下一页配件">›</button>
+            </div>
+          </section>
+        </div>
+      </article>
+    </section>
+
+    <section class="app-route" id="finishScreen" hidden>
+      <article class="finish-card">
+        <div class="finish-badge">🏆</div>
+        <h2>你是星际单词指挥官！</h2>
+        <p>这座训练星球完成啦。把音素、情境图和单词发音一起记在脑海里，周五默写时一定能派上用场！</p>
+        <div class="final-score" id="finalScore">星际账户有 20 颗能量星 ⚡</div>
+        <div class="hero-actions" style="justify-content:center">
+          <button class="primary-button" id="playAgainButton" type="button">再练一轮 🚀</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div class="overlay" id="stageCompleteOverlay" hidden>
+    <section class="modal-box small" role="dialog" aria-modal="true" aria-labelledby="completionTitle">
+      <div class="completion-medal">🌟</div>
+      <h2 id="completionTitle">训练完成！</h2>
+      <p class="completion-copy" id="completionCopy"></p>
+      <div class="hero-actions" style="justify-content:center">
+        <button class="primary-button" id="nextStageButton" type="button">前往下一关</button>
+        <button class="secondary-button" id="homeFromCompletionButton" type="button">⌂ 返回首页</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="overlay profile-overlay" id="profileGateOverlay" hidden>
+    <section class="modal-box profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+      <button class="modal-close" id="closeProfileButton" type="button" aria-label="关闭驾驶员选择">×</button>
+      <div class="modal-heading">
+        <h2 id="profileTitle">🧑‍🚀 选择你的驾驶员</h2>
+        <p>每位驾驶员都有自己的名字、头像、星星、火箭和训练存档。</p>
+      </div>
+      <div class="profile-layout">
+        <section class="saved-profiles">
+          <h3>已有驾驶员</h3>
+          <div class="profile-grid" id="profileGrid"></div>
+        </section>
+        <section class="profile-form">
+          <h3 id="profileFormTitle">创建新驾驶员</h3>
+          <label for="profileNameInput">你的名字</label>
+          <input id="profileNameInput" type="text" maxlength="12" autocomplete="name" placeholder="例如：小宇航员">
+          <p class="avatar-label">选择头像</p>
+          <div class="avatar-grid" id="avatarGrid"></div>
+          <p class="profile-form-message" id="profileFormMessage" aria-live="polite"></p>
+          <div class="profile-form-actions">
+            <button class="primary-button" id="saveProfileButton" type="button">创建驾驶员</button>
+            <button class="secondary-button" id="cancelProfileEditButton" type="button" hidden>取消修改</button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <div class="overlay" id="deleteProfileOverlay" hidden>
+    <section class="modal-box small delete-profile-modal" role="dialog" aria-modal="true" aria-labelledby="deleteProfileTitle">
+      <div class="completion-medal">⚠️</div>
+      <h2 id="deleteProfileTitle">删除驾驶员？</h2>
+      <p class="completion-copy">将删除 <strong id="deleteProfileName"></strong> 的星星、火箭和训练存档，此操作无法恢复。</p>
+      <div class="hero-actions" style="justify-content:center">
+        <button class="secondary-button" id="cancelDeleteProfileButton" type="button">保留</button>
+        <button class="primary-button" id="confirmDeleteProfileButton" type="button">删除</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="rotate-hint" aria-live="polite">
+    <div>↻</div>
+    <strong>请把 iPad 横过来</strong>
+    <span>横屏全屏体验会更像一艘真正的单词训练飞船。</span>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>

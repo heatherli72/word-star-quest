@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-labelledby="title">
+  <title id="title">One bright star</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#133b79"/><stop offset="1" stop-color="#27155f"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="10" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="600" height="450" rx="34" fill="url(#sky)"/>
+  <g fill="#d4f8ff"><circle cx="100" cy="96" r="5"/><circle cx="478" cy="88" r="4"/><circle cx="505" cy="325" r="5"/><circle cx="132" cy="340" r="3"/><circle cx="405" cy="176" r="3"/></g>
+  <circle cx="300" cy="222" r="138" fill="#ffdd68" opacity=".17" filter="url(#glow)"/>
+  <path d="M300 74 337 176 446 179 358 243 390 349 300 286 210 349 242 243 154 179 263 176Z" fill="#ffe36f" stroke="#fff5b0" stroke-width="9" stroke-linejoin="round" filter="url(#glow)"/>
+  <circle cx="272" cy="213" r="8" fill="#a56b2f"/><circle cx="327" cy="213" r="8" fill="#a56b2f"/><path d="M268 246q32 34 65 0" fill="none" stroke="#a56b2f" stroke-width="9" stroke-linecap="round"/>
+</svg>

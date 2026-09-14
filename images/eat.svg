@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-labelledby="title">
+  <title id="title">Astronaut eating an apple</title>
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#153f7d"/><stop offset="1" stop-color="#10245b"/></linearGradient></defs>
+  <rect width="600" height="450" rx="34" fill="url(#sky)"/>
+  <circle cx="198" cy="221" r="124" fill="#eefbff" stroke="#75def4" stroke-width="11"/>
+  <rect x="115" y="142" width="167" height="119" rx="55" fill="#1b70b9"/><path d="M136 160q66-48 133 0v82q-67 36-133 0Z" fill="#65d9f2"/>
+  <circle cx="173" cy="201" r="10" fill="#19375d"/><circle cx="231" cy="201" r="10" fill="#19375d"/><path d="M175 229q27 22 54 0" fill="none" stroke="#19375d" stroke-width="8" stroke-linecap="round"/>
+  <path d="M120 301q81-59 162 0v83H120Z" fill="#e9fbff" stroke="#75def4" stroke-width="9"/><rect x="177" y="314" width="51" height="42" rx="7" fill="#2f7ed0"/>
+  <g transform="translate(372 201)"><path d="M52 6q34-37 58-2" fill="none" stroke="#6bb55c" stroke-width="12" stroke-linecap="round"/><path d="M61 11c46-21 82 19 58 78-22 53-95 51-113 4C-17 37 19-7 61 11Z" fill="#f45150" stroke="#ffabab" stroke-width="7"/><path d="m87 43 13 21-18 5 13 18-26 8" fill="none" stroke="#fff1d2" stroke-width="7" stroke-linecap="round"/></g>
+  <path d="M278 306q53-45 108-31" fill="none" stroke="#e9fbff" stroke-width="27" stroke-linecap="round"/><circle cx="385" cy="271" r="19" fill="#e9fbff"/>
+</svg>

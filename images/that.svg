@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-labelledby="title">
+  <title id="title">Pointing at a blue rocket</title>
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102c67"/><stop offset="1" stop-color="#3e277d"/></linearGradient></defs>
+  <rect width="600" height="450" rx="34" fill="url(#sky)"/>
+  <g transform="translate(321 72) rotate(20 92 150)">
+    <path d="M92 13c55 54 55 158 0 207C37 171 37 67 92 13Z" fill="#dffbff" stroke="#7be9ff" stroke-width="9"/>
+    <circle cx="92" cy="98" r="37" fill="#3aaee4" stroke="#126bb8" stroke-width="9"/><circle cx="79" cy="84" r="11" fill="#f3ffff"/>
+    <path d="m52 173-61 45 64 4M132 173l61 45-64 4" fill="#ff7f4c" stroke="#d04c43" stroke-width="9" stroke-linejoin="round"/>
+    <path d="m92 231-28 72 28-23 28 23Z" fill="#ffe16b"/>
+  </g>
+  <path d="M65 304c20-18 47-12 55 2l54-84c9-14 30-2 23 13l-32 54 56-47c15-12 30 9 16 22l-50 47 46-26c17-9 27 14 11 24l-50 33c-30 20-64 29-105 15l-44-17c-21-8-15-29 0-36Z" fill="#ffd3af" stroke="#d97e68" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M177 332q39 15 83-10" fill="none" stroke="#ffad91" stroke-width="8" stroke-linecap="round"/>
+  <path d="M240 148 277 129l-7 39 38 17-40 6-17 37-7-39-39-16 39-7Z" fill="#ffe274"/>
+</svg>
