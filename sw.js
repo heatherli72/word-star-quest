@@ -1,4 +1,4 @@
-const CACHE_NAME = "word-space-quest-v16";
+const CACHE_NAME = "word-space-quest-v18";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -40,27 +40,16 @@ const APP_SHELL = [
   "./audio/sentences/like.mp3",
   "./audio/sentences/black.mp3",
   "./audio/sentences/white.mp3",
-  "./audio/phonics/one-o.mp3",
-  "./audio/phonics/n.mp3",
-  "./audio/phonics/silent-e.mp3",
-  "./audio/phonics/t.mp3",
-  "./audio/phonics/silent-w.mp3",
-  "./audio/phonics/long-oo.mp3",
-  "./audio/phonics/th-unvoiced.mp3",
-  "./audio/phonics/r.mp3",
-  "./audio/phonics/long-ee.mp3",
-  "./audio/phonics/f.mp3",
-  "./audio/phonics/our.mp3",
-  "./audio/phonics/ea.mp3",
-  "./audio/phonics/th-voiced.mp3",
-  "./audio/phonics/short-a.mp3",
-  "./audio/phonics/long-a.mp3",
-  "./audio/phonics/l.mp3",
-  "./audio/phonics/long-i.mp3",
-  "./audio/phonics/k.mp3",
-  "./audio/phonics/b.mp3",
-  "./audio/phonics/ck.mp3",
-  "./audio/phonics/wh.mp3"
+  "./audio/sfx/tap.wav",
+  "./audio/sfx/type.wav",
+  "./audio/sfx/delete.wav",
+  "./audio/sfx/wrong.wav",
+  "./audio/sfx/correct.wav",
+  "./audio/sfx/purchase.wav",
+  "./audio/sfx/enter.wav",
+  "./audio/bgm/home.wav",
+  "./audio/bgm/garden.wav",
+  "./audio/bgm/workshop.wav"
 ];
 
 self.addEventListener("install", (event) => {
@@ -96,17 +85,12 @@ self.addEventListener("fetch", (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cachedCopy));
           return response;
         })
-        .catch(() => caches.match(event.request).then((cachedResponse) => {
-          return cachedResponse || caches.match("./index.html");
-        }))
+        .catch(() => caches.match(event.request).then((cachedResponse) => cachedResponse || caches.match("./index.html")))
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-      return fetch(event.request);
-    })
+    caches.match(event.request).then((cachedResponse) => cachedResponse || fetch(event.request))
   );
 });

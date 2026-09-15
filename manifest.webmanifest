@@ -1,7 +1,7 @@
 {
   "name": "单词宇宙训练营",
   "short_name": "单词训练营",
-  "description": "带有英语 Edge-TTS 发音的儿童单词闯关游戏。",
+  "description": "带有英语 Edge-TTS 发音的儿童单词训练游戏。",
   "lang": "zh-CN",
   "start_url": "./",
   "display": "standalone",
