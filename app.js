@@ -165,20 +165,26 @@ const ROCKET_PARTS = [
 ];
 
 const COLLECTION_SETS = [
-  { id: "moon-base", icon: "🌕", name: "月球基地", parts: ["月岩地基", "观察圆顶", "氧气门", "太阳能板", "月球旗", "通讯塔", "补给箱", "观测镜", "停机坪", "基地徽章"] },
-  { id: "alien-craft", icon: "🛸", name: "外星飞船", parts: ["飞碟底盘", "光束舱", "星际窗", "磁力翼", "能源球", "导航环", "雷达盘", "传送门", "彩虹尾焰", "飞船徽记"] },
-  { id: "space-suit", icon: "🧑‍🚀", name: "银河战衣", parts: ["头盔外壳", "护目镜", "氧气背包", "星纹上衣", "防护手套", "月球靴", "通讯耳机", "能量腰带", "护盾贴片", "战衣徽章"] },
-  { id: "robot-buddy", icon: "🤖", name: "机器人伙伴", parts: ["机器人头", "闪亮眼睛", "信号耳朵", "金属身体", "机械手臂", "弹簧腿", "能量核心", "工具箱", "表情面板", "伙伴贴纸"] },
-  { id: "mars-rover", icon: "🛞", name: "火星星车", parts: ["红土底盘", "探测轮", "车顶雷达", "前灯", "样本盒", "太阳能翼", "机械臂", "导航屏", "避震器", "火星旗"] },
-  { id: "space-garden", icon: "🪴", name: "星球花园", parts: ["陨石花盆", "月光种子", "星星花", "蓝光叶", "浇水球", "玻璃温室", "小树苗", "彩虹蘑菇", "蜜蜂机器人", "花园门牌"] },
-  { id: "satellite-station", icon: "🛰️", name: "卫星基地", parts: ["轨道底座", "太阳能翼", "大天线", "信号灯", "观察舱", "星图屏", "推进器", "数据盒", "银河环", "卫星旗"] },
-  { id: "nebula-ship", icon: "🚀", name: "星云飞船", parts: ["彗星鼻锥", "紫光座舱", "云朵机翼", "星云引擎", "超光速翼", "光环护盾", "水晶尾焰", "星尘涂装", "导航核心", "船长座椅"] },
-  { id: "alien-pet", icon: "👾", name: "外星宠物", parts: ["圆圆脑袋", "闪闪眼睛", "小触角", "彩色身体", "弹跳脚", "爱心尾巴", "能量背包", "零食罐", "名字牌", "宠物王冠"] },
-  { id: "cosmic-trophy", icon: "🏆", name: "银河奖杯", parts: ["奖杯底座", "金色双耳", "星星杯身", "冠军丝带", "月球宝石", "银河刻字", "彩带云", "火箭顶饰", "闪光灯", "最终徽章"] }
+  { id: "rocket", icon: "🚀", name: "专属火箭", image: "images/two.svg", parts: ROCKET_PARTS.map((part) => part.name) },
+  { id: "moon-base", icon: "🌕", name: "月球基地", image: "images/white.svg", parts: ["月岩地基", "观察圆顶", "氧气门", "太阳能板", "月球旗", "通讯塔", "补给箱", "观测镜", "停机坪", "基地徽章", "月尘扫帚", "睡眠舱", "能量厨房", "月光灯", "星图桌", "实验台", "机器人门卫", "月球车库", "补给火箭", "基地王冠"] },
+  { id: "alien-craft", icon: "🛸", name: "外星飞船", image: "images/three.svg", parts: ["飞碟底盘", "光束舱", "星际窗", "磁力翼", "能源球", "导航环", "雷达盘", "传送门", "彩虹尾焰", "飞船徽记", "反重力芯", "隐形披风", "云朵天线", "月光引擎", "星尘喷口", "激光灯", "宇宙方向盘", "时空座椅", "银河护盾", "船长旗"] },
+  { id: "space-suit", icon: "🧑‍🚀", name: "银河战衣", image: "images/eat.svg", parts: ["头盔外壳", "护目镜", "氧气背包", "星纹上衣", "防护手套", "月球靴", "通讯耳机", "能量腰带", "护盾贴片", "战衣徽章", "彗星披风", "太阳护肩", "反射护膝", "星光手环", "导航袖标", "补氧管", "火箭拉链", "银河口袋", "勇气胸章", "冠军头盔"] },
+  { id: "robot-buddy", icon: "🤖", name: "机器人伙伴", image: "images/three.svg", parts: ["机器人头", "闪亮眼睛", "信号耳朵", "金属身体", "机械手臂", "弹簧腿", "能量核心", "工具箱", "表情面板", "伙伴贴纸", "火箭轮", "星图芯片", "雷达天线", "音乐喇叭", "磁力手掌", "夜光脚灯", "小帽子", "微笑按钮", "零食抽屉", "机器人徽章"] },
+  { id: "mars-rover", icon: "🛞", name: "火星星车", image: "images/four.svg", parts: ["红土底盘", "探测轮", "车顶雷达", "前灯", "样本盒", "太阳能翼", "机械臂", "导航屏", "避震器", "火星旗", "沙暴护罩", "陨石保险杠", "岩石钻头", "水晶车窗", "能量轮胎", "星图座椅", "补给背箱", "行星喇叭", "极速引擎", "火星勋章"] },
+  { id: "space-garden", icon: "🪴", name: "星球花园", image: "images/like.svg", parts: ["陨石花盆", "月光种子", "星星花", "蓝光叶", "浇水球", "玻璃温室", "小树苗", "彩虹蘑菇", "蜜蜂机器人", "花园门牌", "彗星藤蔓", "太阳花瓣", "星尘肥料", "月球喷泉", "银河秋千", "外星南瓜", "夜光石", "花园小路", "太空风铃", "花园奖章"] },
+  { id: "satellite-station", icon: "🛰️", name: "卫星基地", image: "images/that.svg", parts: ["轨道底座", "太阳能翼", "大天线", "信号灯", "观察舱", "星图屏", "推进器", "数据盒", "银河环", "卫星旗", "云层雷达", "星星镜头", "补给吊舱", "太空网线", "闪光中继器", "远航电池", "轨道座椅", "月球接收器", "卫星护盾", "基地奖杯"] },
+  { id: "alien-pet", icon: "👾", name: "外星宠物", image: "images/three.svg", parts: ["圆圆脑袋", "闪闪眼睛", "小触角", "彩色身体", "弹跳脚", "爱心尾巴", "能量背包", "零食罐", "名字牌", "宠物王冠", "月光项圈", "星尘毛刷", "火箭玩具", "银河水碗", "彩虹耳朵", "睡眠小屋", "宠物披风", "超能爪子", "笑脸贴纸", "宠物奖牌"] },
+  { id: "cosmic-trophy", icon: "🏆", name: "银河奖杯", image: "images/one.svg", parts: ["奖杯底座", "金色双耳", "星星杯身", "冠军丝带", "月球宝石", "银河刻字", "彩带云", "火箭顶饰", "闪光灯", "最终徽章", "流星底盘", "太阳之冠", "星尘钻石", "火星红宝石", "外星绿宝石", "月光银环", "宇宙金边", "胜利按钮", "冠军旗帜", "超级奖章"] }
 ];
 
-const COLLECTION_PART_ICONS = ["🧱", "🔭", "🚪", "☀️", "🚩", "📡", "📦", "🔍", "🛬", "✨"];
+const COLLECTION_PART_ICONS = ["🧱", "🔭", "🚪", "☀️", "🚩", "📡", "📦", "🔍", "🛬", "✨", "⚙️", "🧲", "💎", "🛡️", "🔋", "🪑", "🎛️", "🪐", "🌠", "🏅"];
 const COLLECTION_PARTS = COLLECTION_SETS.flatMap((collection, collectionIndex) => {
+  if (collection.id === "rocket") {
+    return ROCKET_PARTS.map((part) => ({
+      ...part,
+      collectionId: collection.id
+    }));
+  }
   return collection.parts.map((name, partIndex) => ({
     id: `${collection.id}-${partIndex + 1}`,
     collectionId: collection.id,
@@ -188,13 +194,7 @@ const COLLECTION_PARTS = COLLECTION_SETS.flatMap((collection, collectionIndex) =
   }));
 });
 
-const BONUS_CHALLENGES = [
-  { id: "astronaut", word: "astronaut", clue: "穿着太空服，飞向宇宙的人" },
-  { id: "satellite", word: "satellite", clue: "绕着地球或行星飞行的太空设备" },
-  { id: "spaceship", word: "spaceship", clue: "可以飞往太空的飞船" },
-  { id: "adventure", word: "adventure", clue: "一次勇敢、有趣的探险" },
-  { id: "galaxy", word: "galaxy", clue: "由许多恒星组成的巨大星系" }
-];
+const BONUS_CHALLENGE = { word: "space", clue: "太空", scramble: ["A", "E", "P", "S", "C"] };
 
 const LEGACY_GEAR_MAP = {
   "rocket-scout": "nose-cone",
@@ -281,7 +281,6 @@ let activeVoiceButton = null;
 let activeBackgroundMusic = null;
 let activeDrag = null;
 let gardenWordId = "one";
-let workshopMode = "rocket";
 let selectedCollectionId = COLLECTION_SETS[0].id;
 let shopPage = 0;
 let toastTimer = 0;
@@ -291,6 +290,7 @@ let activeBonusChallenge = null;
 const audioMaps = {
   word: new Map(),
   sentence: new Map(),
+  bonus: new Map(),
   sfx: new Map(),
   bgm: new Map()
 };
@@ -313,7 +313,6 @@ function createDefaultProfile(name = "新驾驶员", avatarId = "astronaut", id 
     stars: 20,
     ownedRocketParts: [],
     ownedCollectionParts: [],
-    completedBonusChallenges: [],
     progress: { listening: [], soundFill: [], spell: [], dictation: [] },
     mission: null,
     updatedAt: null
@@ -342,9 +341,6 @@ function normalizeProfile(candidate, fallbackName = "新驾驶员") {
     .filter((itemId) => ROCKET_PART_IDS.has(itemId)))];
   profile.ownedCollectionParts = Array.isArray(candidate.ownedCollectionParts)
     ? [...new Set(candidate.ownedCollectionParts.filter((itemId) => COLLECTION_PART_IDS.has(itemId)))]
-    : [];
-  profile.completedBonusChallenges = Array.isArray(candidate.completedBonusChallenges)
-    ? [...new Set(candidate.completedBonusChallenges.filter((challengeId) => BONUS_CHALLENGES.some((challenge) => challenge.id === challengeId)))]
     : [];
   profile.updatedAt = typeof candidate.updatedAt === "string" ? candidate.updatedAt : null;
 
@@ -483,11 +479,10 @@ function completedCollectionSets() {
   return COLLECTION_SETS.filter((collection) => collectionProgress(collection).completed === collection.parts.length).length;
 }
 
-function rocketComplete() {
-  return player.ownedRocketParts.length === ROCKET_PARTS.length;
-}
-
 function collectionProgress(collection) {
+  if (collection.id === "rocket") {
+    return { completed: player.ownedRocketParts.length, total: ROCKET_PARTS.length };
+  }
   const completed = player.ownedCollectionParts.filter((partId) => partId.startsWith(`${collection.id}-`)).length;
   return { completed, total: collection.parts.length };
 }
@@ -521,9 +516,8 @@ function updateHome() {
   $("#heroCollectionCount").textContent = `${ready ? completedCollectionSets() : 0} / ${COLLECTION_SETS.length}`;
   $("#resumeButton").hidden = !ready || !player.mission;
   const bonusButton = $("#bonusChallengeButton");
-  const remainingBonus = ready ? getAvailableBonusChallenges().length : 0;
-  bonusButton.disabled = !ready || remainingBonus === 0;
-  bonusButton.textContent = remainingBonus ? `✨ +100 (${remainingBonus})` : "✨ 完成";
+  bonusButton.disabled = !ready;
+  bonusButton.textContent = "✨ +100";
   $("#saveNote").textContent = ready && player.mission
     ? `上次：${STAGES[player.mission.stageIndex].title} · ${player.mission.roundIndex + 1} / ${player.mission.roundIds.length}`
     : "自动存档已开启";
@@ -538,27 +532,17 @@ function showToast(message) {
   toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2200);
 }
 
-function getAvailableBonusChallenges() {
-  const completed = new Set(player.completedBonusChallenges || []);
-  return BONUS_CHALLENGES.filter((challenge) => !completed.has(challenge.id));
-}
-
 function openBonusChallenge() {
   if (!hasActiveProfile()) {
     openProfileChooser();
     return;
   }
-  const available = getAvailableBonusChallenges();
-  if (!available.length) {
-    showToast("五个奖励挑战都完成了！");
-    return;
-  }
-  activeBonusChallenge = available[Math.floor(Math.random() * available.length)];
+  activeBonusChallenge = BONUS_CHALLENGE;
   $("#bonusClue").textContent = `提示：${activeBonusChallenge.clue}`;
   $("#bonusFeedback").textContent = "";
   const scramble = $("#bonusScramble");
   scramble.replaceChildren();
-  shuffle(activeBonusChallenge.word.toUpperCase().split("")).forEach((letter) => {
+  activeBonusChallenge.scramble.forEach((letter) => {
     const tile = document.createElement("span");
     tile.textContent = letter;
     scramble.append(tile);
@@ -567,6 +551,8 @@ function openBonusChallenge() {
   answerInput.value = "";
   answerInput.classList.remove("wrong", "correct");
   $("#bonusChallengeOverlay").hidden = false;
+  const listenButton = $("#bonusListenButton");
+  playVoice(audioMaps.bonus.get(activeBonusChallenge.word), listenButton);
   window.setTimeout(() => answerInput.focus(), 0);
 }
 
@@ -587,10 +573,7 @@ function checkBonusChallenge() {
     playEffect("wrong");
     return;
   }
-  if (!player.completedBonusChallenges.includes(activeBonusChallenge.id)) {
-    player.completedBonusChallenges.push(activeBonusChallenge.id);
-    player.stars += 100;
-  }
+  player.stars += 100;
   answerInput.classList.remove("wrong");
   answerInput.classList.add("correct");
   $("#bonusFeedback").textContent = `太厉害了！+100 ⚡`;
@@ -834,6 +817,7 @@ function preloadAudio() {
       audioMaps.sentence.set(`${entry.id}-${index}`, createAudio(`audio/sentences/${entry.id}-${index + 1}.mp3`));
     });
   });
+  audioMaps.bonus.set("space", createAudio("audio/bonus/space.mp3"));
   Object.entries(SFX_TRACKS).forEach(([name, source]) => {
     const sound = createAudio(source);
     sound.volume = name === "correct" || name === "purchase" ? 0.52 : 0.38;
@@ -1409,7 +1393,6 @@ function openGardenProject() {
 
 function openWorkshopProject() {
   if (!openProject("workshopScreen")) return;
-  workshopMode = "rocket";
   shopPage = 0;
   renderWorkshop();
 }
@@ -1531,37 +1514,37 @@ function renderCollectionGallery() {
       shopPage = 0;
       renderWorkshop();
     });
-    card.innerHTML = `<span>${collection.icon}</span><strong>${collection.name}</strong><small>${progress.completed} / ${progress.total}</small>`;
+    card.innerHTML = `
+      <img src="${collection.image}" alt="">
+      <span>${collection.icon}</span>
+      <strong>${collection.name}</strong>
+      <small>${progress.completed} / ${progress.total}</small>
+    `;
     gallery.append(card);
   });
 }
 
 function currentWorkshopItems() {
-  if (workshopMode === "rocket") return ROCKET_PARTS;
   return COLLECTION_PARTS.filter((item) => item.collectionId === selectedCollectionId);
 }
 
 function ownedWorkshopItems() {
-  return workshopMode === "rocket" ? player.ownedRocketParts : player.ownedCollectionParts;
+  return selectedCollection().id === "rocket" ? player.ownedRocketParts : player.ownedCollectionParts;
 }
 
 function renderWorkshop() {
-  const rocketMode = workshopMode === "rocket";
   const collection = selectedCollection();
-  const canCollect = rocketComplete();
-  $("#rocketTabButton").classList.toggle("active", rocketMode);
-  $("#collectionTabButton").classList.toggle("active", !rocketMode);
-  $("#collectionTabButton").classList.toggle("locked", !canCollect);
-  $("#rocketTabCount").textContent = `${player.ownedRocketParts.length} / ${ROCKET_PARTS.length}`;
-  $("#collectionTabCount").textContent = `${completedCollectionSets()} / ${COLLECTION_SETS.length}`;
-  $("#workshopShowcaseTitle").textContent = rocketMode ? "专属火箭" : collection.name;
-  $("#workshopShowcaseCount").textContent = rocketMode
-    ? `${player.ownedRocketParts.length} / ${ROCKET_PARTS.length}`
-    : `${collectionProgress(collection).completed} / ${collection.parts.length}`;
-  $("#workshopRocket").hidden = !rocketMode;
-  $("#collectionGallery").hidden = rocketMode;
-  if (rocketMode) renderRocket($("#workshopRocket"));
-  else renderCollectionGallery();
+  const progress = collectionProgress(collection);
+  $("#workshopShowcaseTitle").textContent = collection.name;
+  $("#workshopShowcaseCount").textContent = `${progress.completed} / ${progress.total}`;
+  $("#workshopRocket").hidden = collection.id !== "rocket";
+  $("#collectionHero").hidden = collection.id === "rocket";
+  if (collection.id === "rocket") {
+    renderRocket($("#workshopRocket"));
+  } else {
+    renderCollectionHero(collection, progress);
+  }
+  renderCollectionGallery();
 
   const items = currentWorkshopItems();
   const pageCount = Math.ceil(items.length / SHOP_PAGE_SIZE);
@@ -1570,25 +1553,34 @@ function renderWorkshop() {
   $("#shopPreviousButton").disabled = shopPage === 0;
   $("#shopNextButton").disabled = shopPage === pageCount - 1;
   $("#shopBalance").textContent = `⚡ ${player.stars}`;
-  $("#shopNotice").textContent = rocketMode
-    ? canCollect ? "火箭完成！开始收集 10 套星际收藏。" : "集齐 20 个火箭组件，解锁 10 套星际收藏。"
-    : `${collection.name} · ${collectionProgress(collection).completed} / ${collection.parts.length}`;
+  $("#shopNotice").textContent = `${collection.name} · ${progress.completed} / ${progress.total}`;
   const shopGrid = $("#shopGrid");
   shopGrid.replaceChildren();
   items.slice(shopPage * SHOP_PAGE_SIZE, (shopPage + 1) * SHOP_PAGE_SIZE).forEach((item) => {
     const owned = ownedWorkshopItems().includes(item.id);
     const card = createButton(`shop-item${owned ? " owned" : ""}`, "", () => buyWorkshopItem(item));
     card.disabled = owned;
-    card.innerHTML = `<span class="shop-icon">${item.icon}</span><span><small>${rocketMode ? "火箭组件" : collection.name}</small><strong>${item.name}</strong><em>${owned ? "已收藏" : `⚡ ${item.price}`}</em></span>`;
+    card.innerHTML = `<span class="shop-icon">${item.icon}</span><span><small>${collection.name}</small><strong>${item.name}</strong><em>${owned ? "已收藏" : `⚡ ${item.price}`}</em></span>`;
     shopGrid.append(card);
   });
 }
 
+function renderCollectionHero(collection, progress) {
+  const hero = $("#collectionHero");
+  hero.replaceChildren();
+  hero.style.setProperty("--collection-art", `url("${collection.image}")`);
+  const image = document.createElement("img");
+  image.src = collection.image;
+  image.alt = collection.name;
+  const icon = document.createElement("span");
+  icon.className = "collection-hero-icon";
+  icon.textContent = collection.icon;
+  const label = document.createElement("strong");
+  label.textContent = `${progress.completed} / ${progress.total} 部件`;
+  hero.append(image, icon, label);
+}
+
 function buyWorkshopItem(item) {
-  if (workshopMode === "collection" && !rocketComplete()) {
-    showToast("集齐火箭后解锁收藏。");
-    return;
-  }
   const owned = ownedWorkshopItems();
   if (owned.includes(item.id)) return;
   if (player.stars < item.price) {
@@ -1632,6 +1624,9 @@ function wireInterface() {
   $("#bonusChallengeButton").addEventListener("click", openBonusChallenge);
   $("#closeBonusChallengeButton").addEventListener("click", closeBonusChallenge);
   $("#checkBonusButton").addEventListener("click", checkBonusChallenge);
+  $("#bonusListenButton").addEventListener("click", () => {
+    playVoice(audioMaps.bonus.get("space"), $("#bonusListenButton"));
+  });
   $("#bonusAnswerInput").addEventListener("input", () => playEffect("type"));
   $("#bonusAnswerInput").addEventListener("keydown", (event) => {
     if (event.key === "Enter") checkBonusChallenge();
@@ -1645,21 +1640,6 @@ function wireInterface() {
   $("#fullscreenButton").addEventListener("click", toggleFullscreen);
   $("#homeFromCompletionButton").addEventListener("click", returnHome);
   $("#playAgainButton").addEventListener("click", startNewMission);
-  $("#rocketTabButton").addEventListener("click", () => {
-    workshopMode = "rocket";
-    shopPage = 0;
-    renderWorkshop();
-  });
-  $("#collectionTabButton").addEventListener("click", () => {
-    if (!rocketComplete()) {
-      playEffect("wrong");
-      showToast("集齐火箭后解锁 10 套收藏。");
-      return;
-    }
-    workshopMode = "collection";
-    shopPage = 0;
-    renderWorkshop();
-  });
   $("#shopPreviousButton").addEventListener("click", () => {
     shopPage -= 1;
     renderWorkshop();

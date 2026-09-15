@@ -2814,6 +2814,201 @@ button:disabled {
   background: linear-gradient(120deg, rgba(123, 63, 116, 0.92), rgba(55, 71, 145, 0.88));
 }
 
+.home-sidebar {
+  background:
+    linear-gradient(145deg, rgba(7, 28, 67, 0.49), rgba(12, 54, 106, 0.6)),
+    url("images/backgrounds/mars-rover.jpg") center / cover;
+}
+
+.home-workspace {
+  background:
+    linear-gradient(145deg, rgba(7, 26, 67, 0.49), rgba(47, 25, 98, 0.58)),
+    url("images/backgrounds/andromeda-galaxy.jpg") center / cover;
+}
+
+#gameScreen .game-card {
+  background:
+    linear-gradient(145deg, rgba(6, 27, 68, 0.62), rgba(22, 55, 112, 0.55)),
+    url("images/backgrounds/orion-nebula.jpg") center / cover;
+}
+
+#gardenScreen .project-page {
+  background:
+    linear-gradient(145deg, rgba(8, 27, 68, 0.52), rgba(42, 22, 90, 0.55)),
+    url("images/backgrounds/andromeda-galaxy.jpg") center / cover;
+}
+
+#workshopScreen .project-page {
+  background:
+    linear-gradient(145deg, rgba(8, 29, 68, 0.53), rgba(96, 42, 45, 0.44)),
+    url("images/backgrounds/mars-rover.jpg") center / cover;
+}
+
+.stage-project-card {
+  background:
+    linear-gradient(130deg, rgba(14, 56, 106, 0.9), rgba(33, 42, 105, 0.72)),
+    url("images/backgrounds/orion-nebula.jpg") center / cover;
+}
+
+.stage-project-art {
+  width: 78px;
+  height: 68px;
+  border-color: rgba(192, 249, 255, 0.68);
+  box-shadow: 0 5px 14px rgba(1, 17, 56, 0.45);
+}
+
+.stage-project-art img {
+  transform: scale(1.08);
+}
+
+.collection-showcase {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  background:
+    linear-gradient(145deg, rgba(9, 31, 70, 0.6), rgba(32, 38, 91, 0.56)),
+    url("images/backgrounds/orion-nebula.jpg") center / cover;
+}
+
+.collection-gallery {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.collection-card {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 6px;
+  overflow: hidden;
+  border: 2px solid rgba(101, 193, 237, 0.62);
+  border-radius: 12px;
+  color: #effbff;
+  background: rgba(8, 44, 91, 0.83);
+  text-align: left;
+}
+
+.collection-card img {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.25;
+}
+
+.collection-card > span,
+.collection-card strong,
+.collection-card small {
+  position: relative;
+  z-index: 1;
+}
+
+.collection-card > span {
+  display: grid;
+  width: 33px;
+  height: 33px;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(7, 27, 68, 0.72);
+  font-size: 21px;
+}
+
+.collection-card strong {
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-card small {
+  color: #ffe57c;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.collection-card:hover,
+.collection-card.selected {
+  border-color: #ffe77e;
+  background: rgba(71, 48, 129, 0.92);
+  transform: translateY(-1px);
+}
+
+.collection-card.selected img {
+  opacity: 0.42;
+}
+
+.collection-card.completed {
+  border-color: #8ef0c5;
+  background: rgba(19, 112, 107, 0.92);
+}
+
+.collection-hero {
+  position: relative;
+  display: grid;
+  min-height: 164px;
+  place-items: center;
+  margin-top: 3px;
+  overflow: hidden;
+  border: 2px solid rgba(146, 232, 255, 0.5);
+  border-radius: 18px;
+  background: rgba(8, 34, 78, 0.57);
+}
+
+.collection-hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+}
+
+.collection-hero::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(145deg, rgba(4, 22, 57, 0.13), rgba(21, 55, 119, 0.64));
+}
+
+.collection-hero-icon,
+.collection-hero strong {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 4px 8px rgba(0, 4, 29, 0.6);
+}
+
+.collection-hero-icon {
+  font-size: 76px;
+}
+
+.collection-hero strong {
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #fff0a2;
+  background: rgba(4, 22, 57, 0.74);
+  font-size: 16px;
+}
+
+.workshop-rocket {
+  min-height: 175px;
+  flex: 0 0 175px;
+}
+
+.bonus-listen-button {
+  min-width: 170px;
+  margin: 0 auto 9px;
+}
+
 @media (orientation: landscape) and (min-width: 900px) {
   .home-ship-panel .assembled-rocket {
     position: absolute;
@@ -2837,6 +3032,54 @@ button:disabled {
 
   #workshopScreen .trophy-gallery {
     min-height: 0;
+  }
+
+  #workshopScreen .collection-showcase {
+    padding: 11px;
+  }
+
+  #workshopScreen .collection-heading {
+    margin-bottom: 4px;
+  }
+
+  #workshopScreen .workshop-rocket {
+    height: 173px;
+    min-height: 173px;
+    margin: -7px auto -4px;
+    transform: scale(0.59);
+    transform-origin: top center;
+  }
+
+  #workshopScreen .collection-gallery {
+    gap: 5px;
+    margin-top: 1px;
+  }
+
+  #workshopScreen .collection-card {
+    grid-template-columns: 33px minmax(0, 1fr) auto;
+    gap: 3px;
+    padding: 4px;
+    border-radius: 10px;
+  }
+
+  #workshopScreen .collection-card > span {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: 17px;
+  }
+
+  #workshopScreen .collection-card strong {
+    font-size: 10px;
+  }
+
+  #workshopScreen .collection-card small {
+    font-size: 9px;
+  }
+
+  #workshopScreen .collection-hero {
+    min-height: 164px;
+    margin: 0 0 3px;
   }
 
   #gardenScreen .word-lab {

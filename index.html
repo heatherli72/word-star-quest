@@ -92,16 +92,13 @@
 
     <section class="app-route project-route" id="workshopScreen" hidden>
       <article class="screen-card project-page">
-        <div class="project-page-heading"><h2>🧰 火箭工坊</h2><p>组装火箭，继续收集星际收藏。</p></div>
-        <div class="workshop-tabs">
-          <button class="workshop-tab active" id="rocketTabButton" type="button">🚀 火箭 <span id="rocketTabCount">0 / 20</span></button>
-          <button class="workshop-tab" id="collectionTabButton" type="button">🌌 收藏 <span id="collectionTabCount">0 / 10</span></button>
-        </div>
+        <div class="project-page-heading"><h2>🧰 星际收藏工坊</h2><p>自由选择一套收藏，慢慢集齐 20 个部件。</p></div>
         <div class="workshop-layout">
           <section class="collection-showcase">
             <div class="collection-heading"><h3 id="workshopShowcaseTitle">专属火箭</h3><strong id="workshopShowcaseCount">0 / 20</strong></div>
             <div class="assembled-rocket workshop-rocket" id="workshopRocket" aria-label="火箭组件预览"></div>
-            <div class="trophy-gallery" id="collectionGallery" hidden></div>
+            <div class="collection-hero" id="collectionHero" hidden></div>
+            <div class="collection-gallery" id="collectionGallery"></div>
           </section>
           <section class="shop-catalog">
             <div class="store-balance" id="shopBalance">⚡ 20</div>
@@ -169,10 +166,11 @@
     <section class="modal-box small bonus-modal" role="dialog" aria-modal="true" aria-labelledby="bonusChallengeTitle">
       <button class="modal-close" id="closeBonusChallengeButton" type="button" aria-label="关闭奖励挑战">×</button>
       <div class="bonus-orbit">✨</div>
-      <p class="bonus-kicker">秘密补给挑战</p>
-      <h2 id="bonusChallengeTitle">拼对高难单词，获得 +100 ⚡</h2>
+      <p class="bonus-kicker">秘密补给</p>
+      <h2 id="bonusChallengeTitle">拼出 SPACE，获得 +100 ⚡</h2>
       <p class="bonus-clue" id="bonusClue"></p>
       <div class="bonus-scramble" id="bonusScramble" aria-label="打乱的字母"></div>
+      <button class="listen-button bonus-listen-button" id="bonusListenButton" type="button">▶ 听 SPACE</button>
       <input class="bonus-answer" id="bonusAnswerInput" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="拼出单词">
       <p class="bonus-feedback" id="bonusFeedback" aria-live="polite"></p>
       <button class="primary-button" id="checkBonusButton" type="button">提交挑战</button>

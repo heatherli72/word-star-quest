@@ -1,4 +1,4 @@
-const CACHE_NAME = "word-space-quest-v21";
+const CACHE_NAME = "word-space-quest-v23";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -33,6 +33,7 @@ const APP_SHELL = [
   "./audio/like.mp3",
   "./audio/black.mp3",
   "./audio/white.mp3",
+  "./audio/bonus/space.mp3",
   "./audio/sentences/one-1.mp3",
   "./audio/sentences/one-2.mp3",
   "./audio/sentences/one-3.mp3",
