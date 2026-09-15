@@ -188,6 +188,14 @@ const COLLECTION_PARTS = COLLECTION_SETS.flatMap((collection, collectionIndex) =
   }));
 });
 
+const BONUS_CHALLENGES = [
+  { id: "astronaut", word: "astronaut", clue: "穿着太空服，飞向宇宙的人" },
+  { id: "satellite", word: "satellite", clue: "绕着地球或行星飞行的太空设备" },
+  { id: "spaceship", word: "spaceship", clue: "可以飞往太空的飞船" },
+  { id: "adventure", word: "adventure", clue: "一次勇敢、有趣的探险" },
+  { id: "galaxy", word: "galaxy", clue: "由许多恒星组成的巨大星系" }
+];
+
 const LEGACY_GEAR_MAP = {
   "rocket-scout": "nose-cone",
   "rocket-turbo": "cockpit-glass",
@@ -238,6 +246,9 @@ const BACKGROUND_TRACKS = {
   workshopScreen: "audio/bgm/workshop.wav"
 };
 
+const BGM_VOLUME = 0.3;
+const BGM_DUCKED_VOLUME = 0.09;
+
 const WORD_BY_ID = new Map(WORDS.map((entry) => [entry.id, entry]));
 const AVATAR_BY_ID = new Map(AVATARS.map((avatar) => [avatar.id, avatar]));
 const ROCKET_PART_IDS = new Set(ROCKET_PARTS.map((item) => item.id));
@@ -275,6 +286,7 @@ let selectedCollectionId = COLLECTION_SETS[0].id;
 let shopPage = 0;
 let toastTimer = 0;
 let audioPrimed = false;
+let activeBonusChallenge = null;
 
 const audioMaps = {
   word: new Map(),
@@ -301,6 +313,7 @@ function createDefaultProfile(name = "新驾驶员", avatarId = "astronaut", id 
     stars: 20,
     ownedRocketParts: [],
     ownedCollectionParts: [],
+    completedBonusChallenges: [],
     progress: { listening: [], soundFill: [], spell: [], dictation: [] },
     mission: null,
     updatedAt: null
@@ -329,6 +342,9 @@ function normalizeProfile(candidate, fallbackName = "新驾驶员") {
     .filter((itemId) => ROCKET_PART_IDS.has(itemId)))];
   profile.ownedCollectionParts = Array.isArray(candidate.ownedCollectionParts)
     ? [...new Set(candidate.ownedCollectionParts.filter((itemId) => COLLECTION_PART_IDS.has(itemId)))]
+    : [];
+  profile.completedBonusChallenges = Array.isArray(candidate.completedBonusChallenges)
+    ? [...new Set(candidate.completedBonusChallenges.filter((challengeId) => BONUS_CHALLENGES.some((challenge) => challenge.id === challengeId)))]
     : [];
   profile.updatedAt = typeof candidate.updatedAt === "string" ? candidate.updatedAt : null;
 
@@ -504,6 +520,10 @@ function updateHome() {
   $("#heroRocketCount").textContent = `${ready ? player.ownedRocketParts.length : 0} / ${ROCKET_PARTS.length}`;
   $("#heroCollectionCount").textContent = `${ready ? completedCollectionSets() : 0} / ${COLLECTION_SETS.length}`;
   $("#resumeButton").hidden = !ready || !player.mission;
+  const bonusButton = $("#bonusChallengeButton");
+  const remainingBonus = ready ? getAvailableBonusChallenges().length : 0;
+  bonusButton.disabled = !ready || remainingBonus === 0;
+  bonusButton.textContent = remainingBonus ? `✨ +100 (${remainingBonus})` : "✨ 完成";
   $("#saveNote").textContent = ready && player.mission
     ? `上次：${STAGES[player.mission.stageIndex].title} · ${player.mission.roundIndex + 1} / ${player.mission.roundIds.length}`
     : "自动存档已开启";
@@ -516,6 +536,70 @@ function showToast(message) {
   toast.classList.add("visible");
   window.clearTimeout(toastTimer);
   toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2200);
+}
+
+function getAvailableBonusChallenges() {
+  const completed = new Set(player.completedBonusChallenges || []);
+  return BONUS_CHALLENGES.filter((challenge) => !completed.has(challenge.id));
+}
+
+function openBonusChallenge() {
+  if (!hasActiveProfile()) {
+    openProfileChooser();
+    return;
+  }
+  const available = getAvailableBonusChallenges();
+  if (!available.length) {
+    showToast("五个奖励挑战都完成了！");
+    return;
+  }
+  activeBonusChallenge = available[Math.floor(Math.random() * available.length)];
+  $("#bonusClue").textContent = `提示：${activeBonusChallenge.clue}`;
+  $("#bonusFeedback").textContent = "";
+  const scramble = $("#bonusScramble");
+  scramble.replaceChildren();
+  shuffle(activeBonusChallenge.word.toUpperCase().split("")).forEach((letter) => {
+    const tile = document.createElement("span");
+    tile.textContent = letter;
+    scramble.append(tile);
+  });
+  const answerInput = $("#bonusAnswerInput");
+  answerInput.value = "";
+  answerInput.classList.remove("wrong", "correct");
+  $("#bonusChallengeOverlay").hidden = false;
+  window.setTimeout(() => answerInput.focus(), 0);
+}
+
+function closeBonusChallenge() {
+  activeBonusChallenge = null;
+  $("#bonusChallengeOverlay").hidden = true;
+}
+
+function checkBonusChallenge() {
+  if (!activeBonusChallenge) return;
+  const answerInput = $("#bonusAnswerInput");
+  const answer = answerInput.value.trim().toLowerCase();
+  if (answer !== activeBonusChallenge.word) {
+    answerInput.classList.remove("wrong");
+    void answerInput.offsetWidth;
+    answerInput.classList.add("wrong");
+    $("#bonusFeedback").textContent = "还差一点，再看一眼打乱的字母！";
+    playEffect("wrong");
+    return;
+  }
+  if (!player.completedBonusChallenges.includes(activeBonusChallenge.id)) {
+    player.completedBonusChallenges.push(activeBonusChallenge.id);
+    player.stars += 100;
+  }
+  answerInput.classList.remove("wrong");
+  answerInput.classList.add("correct");
+  $("#bonusFeedback").textContent = `太厉害了！+100 ⚡`;
+  playEffect("correct");
+  createConfetti();
+  savePlayerProfile(false);
+  renderTrainingProjects();
+  renderWorkshop();
+  window.setTimeout(closeBonusChallenge, 900);
 }
 
 function createButton(className, text, onClick) {
@@ -737,6 +821,7 @@ function createAudio(source) {
       activeVoice = null;
       if (activeVoiceButton) activeVoiceButton.classList.remove("is-playing");
       activeVoiceButton = null;
+      restoreBackgroundMusicVolume();
     }
   });
   return audio;
@@ -757,13 +842,18 @@ function preloadAudio() {
   Object.entries(BACKGROUND_TRACKS).forEach(([screenId, source]) => {
     const music = createAudio(source);
     music.loop = true;
-    music.volume = 0.22;
+    music.volume = BGM_VOLUME;
     audioMaps.bgm.set(screenId, music);
   });
 }
 
 function primeAudio() {
+  if (audioPrimed) {
+    resumeBackgroundMusic();
+    return;
+  }
   audioPrimed = true;
+  resumeBackgroundMusic();
 }
 
 function stopActiveVoice() {
@@ -774,6 +864,7 @@ function stopActiveVoice() {
   if (activeVoiceButton) activeVoiceButton.classList.remove("is-playing");
   activeVoice = null;
   activeVoiceButton = null;
+  restoreBackgroundMusicVolume();
 }
 
 function playVoice(audio, button) {
@@ -783,6 +874,7 @@ function playVoice(audio, button) {
   activeVoice = audio;
   activeVoiceButton = button || null;
   if (activeVoiceButton) activeVoiceButton.classList.add("is-playing");
+  lowerBackgroundMusicVolume();
   audio.currentTime = 0;
   audio.playbackRate = 0.82;
   audio.play().catch((error) => {
@@ -791,6 +883,7 @@ function playVoice(audio, button) {
       activeVoice = null;
       if (activeVoiceButton) activeVoiceButton.classList.remove("is-playing");
       activeVoiceButton = null;
+      restoreBackgroundMusicVolume();
     }
   });
 }
@@ -806,15 +899,29 @@ function playEffect(name) {
 
 function updateBackgroundMusic(screenId) {
   const nextMusic = audioMaps.bgm.get(screenId) || null;
-  if (activeBackgroundMusic === nextMusic) return;
+  if (activeBackgroundMusic === nextMusic) {
+    resumeBackgroundMusic();
+    return;
+  }
   if (activeBackgroundMusic) {
     activeBackgroundMusic.pause();
     activeBackgroundMusic.currentTime = 0;
   }
   activeBackgroundMusic = nextMusic;
-  if (!nextMusic || !audioPrimed) return;
-  nextMusic.currentTime = 0;
-  nextMusic.play().catch((error) => console.warn("Unable to play background music:", error));
+  resumeBackgroundMusic();
+}
+
+function resumeBackgroundMusic() {
+  if (!audioPrimed || !activeBackgroundMusic || !activeBackgroundMusic.paused) return;
+  activeBackgroundMusic.play().catch((error) => console.warn("Unable to play background music:", error));
+}
+
+function lowerBackgroundMusicVolume() {
+  if (activeBackgroundMusic) activeBackgroundMusic.volume = BGM_DUCKED_VOLUME;
+}
+
+function restoreBackgroundMusicVolume() {
+  if (activeBackgroundMusic) activeBackgroundMusic.volume = BGM_VOLUME;
 }
 
 function createSceneCard(entry) {
@@ -1522,6 +1629,13 @@ function wireInterface() {
   $("#homeButton").addEventListener("click", returnHome);
   $("#resumeButton").addEventListener("click", resumeMission);
   $("#openProfileButton").addEventListener("click", openProfileChooser);
+  $("#bonusChallengeButton").addEventListener("click", openBonusChallenge);
+  $("#closeBonusChallengeButton").addEventListener("click", closeBonusChallenge);
+  $("#checkBonusButton").addEventListener("click", checkBonusChallenge);
+  $("#bonusAnswerInput").addEventListener("input", () => playEffect("type"));
+  $("#bonusAnswerInput").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") checkBonusChallenge();
+  });
   $("#closeProfileButton").addEventListener("click", closeProfileChooser);
   $("#saveProfileButton").addEventListener("click", createProfileFromForm);
   $("#cancelProfileEditButton").addEventListener("click", cancelProfileEdit);
@@ -1561,6 +1675,9 @@ function wireInterface() {
   });
   $("#deleteProfileOverlay").addEventListener("click", (event) => {
     if (event.target === $("#deleteProfileOverlay")) cancelProfileDeletion();
+  });
+  $("#bonusChallengeOverlay").addEventListener("click", (event) => {
+    if (event.target === $("#bonusChallengeOverlay")) closeBonusChallenge();
   });
   document.addEventListener("pointerdown", (event) => {
     primeAudio();

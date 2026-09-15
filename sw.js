@@ -1,4 +1,4 @@
-const CACHE_NAME = "word-space-quest-v20";
+const CACHE_NAME = "word-space-quest-v21";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -11,6 +11,8 @@ const APP_SHELL = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./images/backgrounds/orion-nebula.jpg",
+  "./images/backgrounds/andromeda-galaxy.jpg",
+  "./images/backgrounds/mars-rover.jpg",
   "./images/one.svg",
   "./images/two.svg",
   "./images/three.svg",

@@ -2135,6 +2135,25 @@ button:disabled {
   opacity: 0.38;
 }
 
+.home-sidebar::before {
+  background:
+    linear-gradient(135deg, rgba(6, 27, 66, 0.74), rgba(25, 54, 105, 0.35)),
+    url("images/backgrounds/mars-rover.jpg") center / cover;
+}
+
+.home-workspace::before,
+#gardenScreen .project-page::before {
+  background:
+    linear-gradient(135deg, rgba(7, 25, 64, 0.69), rgba(52, 25, 103, 0.33)),
+    url("images/backgrounds/andromeda-galaxy.jpg") center / cover;
+}
+
+#workshopScreen .project-page::before {
+  background:
+    linear-gradient(135deg, rgba(8, 31, 65, 0.7), rgba(112, 49, 47, 0.28)),
+    url("images/backgrounds/mars-rover.jpg") center / cover;
+}
+
 .home-sidebar,
 .home-workspace,
 .game-card,
@@ -2610,6 +2629,191 @@ button:disabled {
   }
 }
 
+.bonus-button {
+  border-color: rgba(255, 221, 112, 0.7);
+  color: #fff0a7;
+  background: linear-gradient(135deg, #7452b4, #b54b89);
+  box-shadow: 0 3px 0 #3d2769;
+}
+
+.bonus-button:disabled {
+  color: #bdafcf;
+  background: #40375d;
+}
+
+.bonus-modal {
+  position: relative;
+  overflow: hidden;
+  border-color: #d9a7ff;
+  background:
+    linear-gradient(145deg, rgba(71, 42, 125, 0.97), rgba(14, 31, 76, 0.98)),
+    url("images/backgrounds/andromeda-galaxy.jpg") center / cover;
+}
+
+.bonus-modal::before {
+  position: absolute;
+  top: -92px;
+  right: -76px;
+  width: 220px;
+  height: 220px;
+  content: "";
+  border-radius: 50%;
+  background: rgba(254, 199, 96, 0.16);
+  filter: blur(4px);
+}
+
+.bonus-modal > * {
+  position: relative;
+  z-index: 1;
+}
+
+.bonus-orbit {
+  display: grid;
+  width: 77px;
+  height: 77px;
+  place-items: center;
+  margin: 0 auto 8px;
+  border: 3px solid #fff4a6;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffce73, #e96b9b);
+  box-shadow: 0 0 24px rgba(255, 207, 102, 0.5);
+  font-size: 37px;
+}
+
+.bonus-kicker {
+  margin: 0 0 4px;
+  color: #f8d6ff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.bonus-modal h2 {
+  max-width: 400px;
+  margin: 0 auto 9px;
+  font-size: 29px;
+  line-height: 1.12;
+}
+
+.bonus-clue {
+  max-width: 360px;
+  margin: 0 auto 15px;
+  color: #d5d5fa;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.bonus-scramble {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 390px;
+  margin: 0 auto 14px;
+}
+
+.bonus-scramble span {
+  display: grid;
+  width: 35px;
+  height: 41px;
+  place-items: center;
+  border: 2px solid rgba(255, 245, 175, 0.6);
+  border-radius: 11px;
+  color: #50325c;
+  background: #ffe57d;
+  box-shadow: 0 4px 0 #bd7e51;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.bonus-answer {
+  display: block;
+  width: min(100%, 380px);
+  padding: 11px 14px;
+  margin: 0 auto 8px;
+  border: 3px solid #b78ded;
+  border-radius: 15px;
+  color: #faf5ff;
+  background: rgba(5, 17, 57, 0.78);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 26px;
+  font-weight: 800;
+  text-align: center;
+  text-transform: lowercase;
+}
+
+.bonus-answer::placeholder {
+  color: #9b93bd;
+  font-family: "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+}
+
+.bonus-answer.correct {
+  border-color: #8df4c2;
+}
+
+.bonus-answer.wrong {
+  border-color: #ff8ba4;
+  animation: shake 420ms ease;
+}
+
+.bonus-feedback {
+  min-height: 20px;
+  margin: 0 0 10px;
+  color: #ffd9ed;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sentence-list {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: 1fr;
+  gap: 9px;
+}
+
+.sentence-sample {
+  display: flex;
+  min-height: 82px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 14px 17px;
+  border: 2px solid rgba(137, 229, 255, 0.52);
+  border-radius: 16px;
+  color: #f5fcff;
+  background: linear-gradient(120deg, rgba(26, 91, 149, 0.94), rgba(48, 52, 126, 0.88));
+  box-shadow: 0 5px 0 rgba(4, 28, 71, 0.6);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 700;
+  line-height: 1.24;
+  text-align: left;
+}
+
+.sentence-sample::before {
+  content: "▶";
+  display: inline-grid;
+  width: 29px;
+  height: 29px;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-right: 12px;
+  border-radius: 50%;
+  color: #143763;
+  background: #8cecf7;
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+}
+
+.sentence-sample:nth-child(2) {
+  background: linear-gradient(120deg, rgba(74, 61, 145, 0.93), rgba(37, 70, 142, 0.9));
+}
+
+.sentence-sample:nth-child(3) {
+  background: linear-gradient(120deg, rgba(123, 63, 116, 0.92), rgba(55, 71, 145, 0.88));
+}
+
 @media (orientation: landscape) and (min-width: 900px) {
   .home-ship-panel .assembled-rocket {
     position: absolute;
@@ -2633,6 +2837,44 @@ button:disabled {
 
   #workshopScreen .trophy-gallery {
     min-height: 0;
+  }
+
+  #gardenScreen .word-lab {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 12px;
+    padding: 22px;
+  }
+
+  #gardenScreen .lab-heading {
+    grid-template-columns: 124px minmax(0, 1fr);
+  }
+
+  #gardenScreen .lab-heading img {
+    width: 124px;
+    height: 104px;
+  }
+
+  #gardenScreen .lab-heading h3 {
+    font-size: 49px;
+  }
+
+  #gardenScreen .word-lab > .listen-button {
+    justify-self: start;
+    min-width: 214px;
+    padding: 13px 18px 15px;
+    font-size: 18px;
+  }
+
+  #gardenScreen .sentence-list {
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 11px;
+  }
+
+  #gardenScreen .sentence-sample {
+    min-height: 0;
+    padding: 15px 18px;
+    font-size: 26px;
   }
 
   #gameScreen .drag-card {

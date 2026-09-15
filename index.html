@@ -31,6 +31,7 @@
       <div class="header-actions">
         <span class="bank-pill" data-star-balance>⚡ 20</span>
         <button class="top-action profile-action" id="openProfileButton" type="button"><span id="profileAvatar">🧑‍🚀</span><span id="profileName">驾驶员</span></button>
+        <button class="top-action bonus-button" id="bonusChallengeButton" type="button">✨ +100</button>
         <button class="top-action icon-only" id="fullscreenButton" type="button" title="进入全屏" aria-label="进入全屏">⛶</button>
       </div>
     </header>
@@ -161,6 +162,20 @@
       <h2 id="deleteProfileTitle">删除驾驶员？</h2>
       <p class="completion-copy">将删除 <strong id="deleteProfileName"></strong> 的全部存档。</p>
       <div class="modal-actions"><button class="secondary-button" id="cancelDeleteProfileButton" type="button">保留</button><button class="primary-button danger-button" id="confirmDeleteProfileButton" type="button">删除</button></div>
+    </section>
+  </div>
+
+  <div class="overlay" id="bonusChallengeOverlay" hidden>
+    <section class="modal-box small bonus-modal" role="dialog" aria-modal="true" aria-labelledby="bonusChallengeTitle">
+      <button class="modal-close" id="closeBonusChallengeButton" type="button" aria-label="关闭奖励挑战">×</button>
+      <div class="bonus-orbit">✨</div>
+      <p class="bonus-kicker">秘密补给挑战</p>
+      <h2 id="bonusChallengeTitle">拼对高难单词，获得 +100 ⚡</h2>
+      <p class="bonus-clue" id="bonusClue"></p>
+      <div class="bonus-scramble" id="bonusScramble" aria-label="打乱的字母"></div>
+      <input class="bonus-answer" id="bonusAnswerInput" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="拼出单词">
+      <p class="bonus-feedback" id="bonusFeedback" aria-live="polite"></p>
+      <button class="primary-button" id="checkBonusButton" type="button">提交挑战</button>
     </section>
   </div>
 
