@@ -1,14 +1,124 @@
 const WORDS = [
-  { id: "one", word: "one", meaning: "一", visual: "一颗闪亮的星星", image: "images/one.svg", sentence: "I have one star.", sentenceBlank: "I have ___ star." },
-  { id: "two", word: "two", meaning: "二", visual: "两枚蓝色小火箭", image: "images/two.svg", sentence: "Two rockets fly.", sentenceBlank: "___ rockets fly." },
-  { id: "three", word: "three", meaning: "三", visual: "三个挥手的小外星人", image: "images/three.svg", sentence: "Three aliens wave.", sentenceBlank: "___ aliens wave." },
-  { id: "four", word: "four", meaning: "四", visual: "四颗绕圈的小行星", image: "images/four.svg", sentence: "Four planets spin.", sentenceBlank: "___ planets spin." },
-  { id: "eat", word: "eat", meaning: "吃", visual: "小宇航员在吃红苹果", image: "images/eat.svg", sentence: "I eat an apple.", sentenceBlank: "I ___ an apple." },
-  { id: "that", word: "that", meaning: "那个 / 那", visual: "手指指向一枚蓝色火箭", image: "images/that.svg", sentence: "That is a blue rocket.", sentenceBlank: "___ is a blue rocket." },
-  { id: "they", word: "they", meaning: "他们 / 她们 / 它们", visual: "两个宇航员一起挥手", image: "images/they.svg", sentence: "They play in space.", sentenceBlank: "___ play in space." },
-  { id: "like", word: "like", meaning: "喜欢", visual: "宇航员喜欢他的火箭", image: "images/like.svg", sentence: "I like my rocket.", sentenceBlank: "I ___ my rocket." },
-  { id: "black", word: "black", meaning: "黑色", visual: "黑猫坐在月亮旁边", image: "images/black.svg", sentence: "The black cat jumps.", sentenceBlank: "The ___ cat jumps." },
-  { id: "white", word: "white", meaning: "白色", visual: "白色月亮和白云", image: "images/white.svg", sentence: "A white moon shines.", sentenceBlank: "A ___ moon shines." }
+  {
+    id: "one",
+    word: "one",
+    meaning: "一",
+    visual: "一颗闪亮的星星",
+    image: "images/one.svg",
+    sentences: [
+      { text: "I have one star.", blank: "I have ___ star." },
+      { text: "One rocket is blue.", blank: "___ rocket is blue." },
+      { text: "I see one moon.", blank: "I see ___ moon." }
+    ]
+  },
+  {
+    id: "two",
+    word: "two",
+    meaning: "二",
+    visual: "两枚蓝色小火箭",
+    image: "images/two.svg",
+    sentences: [
+      { text: "Two rockets fly.", blank: "___ rockets fly." },
+      { text: "I have two red balls.", blank: "I have ___ red balls." },
+      { text: "Two cats jump.", blank: "___ cats jump." }
+    ]
+  },
+  {
+    id: "three",
+    word: "three",
+    meaning: "三",
+    visual: "三个挥手的小外星人",
+    image: "images/three.svg",
+    sentences: [
+      { text: "Three aliens wave.", blank: "___ aliens wave." },
+      { text: "I see three stars.", blank: "I see ___ stars." },
+      { text: "Three birds fly.", blank: "___ birds fly." }
+    ]
+  },
+  {
+    id: "four",
+    word: "four",
+    meaning: "四",
+    visual: "四颗绕圈的小行星",
+    image: "images/four.svg",
+    sentences: [
+      { text: "Four planets spin.", blank: "___ planets spin." },
+      { text: "I have four books.", blank: "I have ___ books." },
+      { text: "Four fish swim.", blank: "___ fish swim." }
+    ]
+  },
+  {
+    id: "eat",
+    word: "eat",
+    meaning: "吃",
+    visual: "小宇航员在吃红苹果",
+    image: "images/eat.svg",
+    sentences: [
+      { text: "I eat an apple.", blank: "I ___ an apple." },
+      { text: "We eat cake.", blank: "We ___ cake." },
+      { text: "They eat rice.", blank: "They ___ rice." }
+    ]
+  },
+  {
+    id: "that",
+    word: "that",
+    meaning: "那个 / 那",
+    visual: "手指指向一枚蓝色火箭",
+    image: "images/that.svg",
+    sentences: [
+      { text: "That is a blue rocket.", blank: "___ is a blue rocket." },
+      { text: "Look at that star.", blank: "Look at ___ star." },
+      { text: "I like that cat.", blank: "I like ___ cat." }
+    ]
+  },
+  {
+    id: "they",
+    word: "they",
+    meaning: "他们 / 她们 / 它们",
+    visual: "两个宇航员一起挥手",
+    image: "images/they.svg",
+    sentences: [
+      { text: "They play in space.", blank: "___ play in space." },
+      { text: "They see the moon.", blank: "___ see the moon." },
+      { text: "They like red cars.", blank: "___ like red cars." }
+    ]
+  },
+  {
+    id: "like",
+    word: "like",
+    meaning: "喜欢",
+    visual: "宇航员喜欢他的火箭",
+    image: "images/like.svg",
+    sentences: [
+      { text: "I like my rocket.", blank: "I ___ my rocket." },
+      { text: "We like blue stars.", blank: "We ___ blue stars." },
+      { text: "They like to play.", blank: "They ___ to play." }
+    ]
+  },
+  {
+    id: "black",
+    word: "black",
+    meaning: "黑色",
+    visual: "黑猫坐在月亮旁边",
+    image: "images/black.svg",
+    sentences: [
+      { text: "The black cat jumps.", blank: "The ___ cat jumps." },
+      { text: "I see a black hat.", blank: "I see a ___ hat." },
+      { text: "That is a black car.", blank: "That is a ___ car." }
+    ]
+  },
+  {
+    id: "white",
+    word: "white",
+    meaning: "白色",
+    visual: "白色月亮和白云",
+    image: "images/white.svg",
+    sentences: [
+      { text: "A white moon shines.", blank: "A ___ moon shines." },
+      { text: "I see a white dog.", blank: "I see a ___ dog." },
+      { text: "The white star is bright.", blank: "The ___ star is bright." }
+    ]
+  }
 ];
 
 const FILL_QUESTIONS = [
@@ -25,11 +135,81 @@ const FILL_QUESTIONS = [
 ];
 
 const STAGES = [
-  { id: "listening", icon: "📡", title: "雷达听音站", description: "听句子，选单词。", mapDescription: "听句子选单词", mode: "listening", reward: 2, bonus: 8 },
-  { id: "soundFill", icon: "🔊", title: "声波填空站", description: "听单词，补字母。", mapDescription: "听读音填空", mode: "soundFill", reward: 2, bonus: 8 },
-  { id: "spell", icon: "🧩", title: "字母拼装舱", description: "拖动字母，拼单词。", mapDescription: "拖拽字母拼词", mode: "spell", reward: 3, bonus: 10 },
-  { id: "dictation", icon: "⌨️", title: "星际默写台", description: "听单词，写答案。", mapDescription: "听音默写", mode: "dictation", reward: 4, bonus: 12 }
+  { id: "listening", icon: "📡", art: "images/three.svg", title: "雷达听音站", description: "听句子，选单词。", mapDescription: "听句子选单词", mode: "listening", reward: 2, bonus: 8 },
+  { id: "soundFill", icon: "🔊", art: "images/eat.svg", title: "声波填空站", description: "听单词，补字母。", mapDescription: "听读音填空", mode: "soundFill", reward: 2, bonus: 8 },
+  { id: "spell", icon: "🧩", art: "images/two.svg", title: "字母拼装舱", description: "拖动字母，拼单词。", mapDescription: "拖拽字母拼词", mode: "spell", reward: 3, bonus: 10 },
+  { id: "dictation", icon: "⌨️", art: "images/black.svg", title: "星际默写台", description: "听单词，写答案。", mapDescription: "听音默写", mode: "dictation", reward: 4, bonus: 12 }
 ];
+
+const ROCKET_PARTS = [
+  { id: "nose-cone", icon: "🔺", name: "星盾鼻锥", price: 6 },
+  { id: "cockpit-glass", icon: "🔵", name: "水晶座舱", price: 9 },
+  { id: "antenna", icon: "📡", name: "信号天线", price: 7 },
+  { id: "navigation-light", icon: "💡", name: "导航灯", price: 5 },
+  { id: "hull-core", icon: "🛡️", name: "蓝虎机身", price: 14 },
+  { id: "left-wing", icon: "◀️", name: "左翼", price: 12 },
+  { id: "right-wing", icon: "▶️", name: "右翼", price: 12 },
+  { id: "left-fin", icon: "🔻", name: "左尾翼", price: 10 },
+  { id: "right-fin", icon: "🔺", name: "右尾翼", price: 10 },
+  { id: "fuel-tank", icon: "🧪", name: "能量燃料罐", price: 13 },
+  { id: "engine-core", icon: "⚙️", name: "引擎核心", price: 18 },
+  { id: "left-thruster", icon: "🔷", name: "左推进器", price: 15 },
+  { id: "right-thruster", icon: "🔷", name: "右推进器", price: 15 },
+  { id: "plasma-flame", icon: "🔥", name: "等离子尾焰", price: 9 },
+  { id: "shield-ring", icon: "🫧", name: "行星护盾", price: 22 },
+  { id: "star-decals", icon: "✨", name: "星星涂装", price: 6 },
+  { id: "radar-dish", icon: "🛰️", name: "远程雷达", price: 12 },
+  { id: "turbo-booster", icon: "⚡", name: "涡轮加速器", price: 24 },
+  { id: "moon-flag", icon: "🚩", name: "月球小旗", price: 8 },
+  { id: "captain-seat", icon: "🧑‍🚀", name: "指挥官座椅", price: 16 }
+];
+
+const COLLECTION_SETS = [
+  { id: "moon-base", icon: "🌕", name: "月球基地", parts: ["月岩地基", "观察圆顶", "氧气门", "太阳能板", "月球旗", "通讯塔", "补给箱", "观测镜", "停机坪", "基地徽章"] },
+  { id: "alien-craft", icon: "🛸", name: "外星飞船", parts: ["飞碟底盘", "光束舱", "星际窗", "磁力翼", "能源球", "导航环", "雷达盘", "传送门", "彩虹尾焰", "飞船徽记"] },
+  { id: "space-suit", icon: "🧑‍🚀", name: "银河战衣", parts: ["头盔外壳", "护目镜", "氧气背包", "星纹上衣", "防护手套", "月球靴", "通讯耳机", "能量腰带", "护盾贴片", "战衣徽章"] },
+  { id: "robot-buddy", icon: "🤖", name: "机器人伙伴", parts: ["机器人头", "闪亮眼睛", "信号耳朵", "金属身体", "机械手臂", "弹簧腿", "能量核心", "工具箱", "表情面板", "伙伴贴纸"] },
+  { id: "mars-rover", icon: "🛞", name: "火星星车", parts: ["红土底盘", "探测轮", "车顶雷达", "前灯", "样本盒", "太阳能翼", "机械臂", "导航屏", "避震器", "火星旗"] },
+  { id: "space-garden", icon: "🪴", name: "星球花园", parts: ["陨石花盆", "月光种子", "星星花", "蓝光叶", "浇水球", "玻璃温室", "小树苗", "彩虹蘑菇", "蜜蜂机器人", "花园门牌"] },
+  { id: "satellite-station", icon: "🛰️", name: "卫星基地", parts: ["轨道底座", "太阳能翼", "大天线", "信号灯", "观察舱", "星图屏", "推进器", "数据盒", "银河环", "卫星旗"] },
+  { id: "nebula-ship", icon: "🚀", name: "星云飞船", parts: ["彗星鼻锥", "紫光座舱", "云朵机翼", "星云引擎", "超光速翼", "光环护盾", "水晶尾焰", "星尘涂装", "导航核心", "船长座椅"] },
+  { id: "alien-pet", icon: "👾", name: "外星宠物", parts: ["圆圆脑袋", "闪闪眼睛", "小触角", "彩色身体", "弹跳脚", "爱心尾巴", "能量背包", "零食罐", "名字牌", "宠物王冠"] },
+  { id: "cosmic-trophy", icon: "🏆", name: "银河奖杯", parts: ["奖杯底座", "金色双耳", "星星杯身", "冠军丝带", "月球宝石", "银河刻字", "彩带云", "火箭顶饰", "闪光灯", "最终徽章"] }
+];
+
+const COLLECTION_PART_ICONS = ["🧱", "🔭", "🚪", "☀️", "🚩", "📡", "📦", "🔍", "🛬", "✨"];
+const COLLECTION_PARTS = COLLECTION_SETS.flatMap((collection, collectionIndex) => {
+  return collection.parts.map((name, partIndex) => ({
+    id: `${collection.id}-${partIndex + 1}`,
+    collectionId: collection.id,
+    icon: COLLECTION_PART_ICONS[partIndex],
+    name,
+    price: 8 + ((collectionIndex * 3 + partIndex * 2) % 16)
+  }));
+});
+
+const LEGACY_GEAR_MAP = {
+  "rocket-scout": "nose-cone",
+  "rocket-turbo": "cockpit-glass",
+  "ship-orbit": "antenna",
+  "ship-nebula": "navigation-light",
+  "suit-green": "hull-core",
+  "suit-purple": "left-wing",
+  "helmet-crystal": "right-wing",
+  "helmet-comet": "left-fin",
+  "jetpack-blue": "right-fin",
+  "jetpack-flame": "fuel-tank",
+  "rover-moon": "engine-core",
+  "rover-mars": "left-thruster",
+  "robot-pip": "right-thruster",
+  "robot-orbit": "plasma-flame",
+  "flag-moon": "shield-ring",
+  "flag-star": "star-decals",
+  "glider-asteroid": "radar-dish",
+  "glider-comet": "turbo-booster",
+  "badge-sun": "moon-flag",
+  "badge-galaxy": "captain-seat"
+};
 
 const AVATARS = [
   { id: "astronaut", emoji: "🧑‍🚀", label: "小宇航员" },
@@ -41,65 +221,6 @@ const AVATARS = [
   { id: "dino", emoji: "🦖", label: "火箭恐龙" },
   { id: "cat", emoji: "🐈‍⬛", label: "月球黑猫" }
 ];
-
-const GEAR_TYPES = [
-  { id: "rocket", name: "火箭", emoji: "🚀" },
-  { id: "ship", name: "飞船", emoji: "🛸" },
-  { id: "suit", name: "外星服", emoji: "👽" },
-  { id: "helmet", name: "太空头盔", emoji: "🪖" },
-  { id: "jetpack", name: "喷气背包", emoji: "🎒" },
-  { id: "rover", name: "星球车", emoji: "🛞" },
-  { id: "robot", name: "机器人", emoji: "🤖" },
-  { id: "flag", name: "星际旗帜", emoji: "🚩" },
-  { id: "glider", name: "飞行滑板", emoji: "🛹" },
-  { id: "badge", name: "探险徽章", emoji: "🏅" }
-];
-
-const GEAR_ITEMS = [
-  { id: "rocket-scout", type: "rocket", emoji: "🚀", name: "流星火箭", price: 6 },
-  { id: "rocket-turbo", type: "rocket", emoji: "🚀", name: "涡轮火箭", price: 16 },
-  { id: "ship-orbit", type: "ship", emoji: "🛸", name: "轨道飞船", price: 9 },
-  { id: "ship-nebula", type: "ship", emoji: "🛸", name: "星云飞船", price: 18 },
-  { id: "suit-green", type: "suit", emoji: "👽", name: "绿光外星服", price: 8 },
-  { id: "suit-purple", type: "suit", emoji: "👾", name: "紫电外星服", price: 18 },
-  { id: "helmet-crystal", type: "helmet", emoji: "🪖", name: "水晶头盔", price: 7 },
-  { id: "helmet-comet", type: "helmet", emoji: "⛑️", name: "彗星头盔", price: 14 },
-  { id: "jetpack-blue", type: "jetpack", emoji: "🎒", name: "蓝焰背包", price: 11 },
-  { id: "jetpack-flame", type: "jetpack", emoji: "🔥", name: "烈焰背包", price: 19 },
-  { id: "rover-moon", type: "rover", emoji: "🛞", name: "月球星车", price: 10 },
-  { id: "rover-mars", type: "rover", emoji: "🔴", name: "火星星车", price: 17 },
-  { id: "robot-pip", type: "robot", emoji: "🤖", name: "小派机器人", price: 12 },
-  { id: "robot-orbit", type: "robot", emoji: "🦾", name: "轨道机甲", price: 22 },
-  { id: "flag-moon", type: "flag", emoji: "🚩", name: "月球旗帜", price: 5 },
-  { id: "flag-star", type: "flag", emoji: "🏳️", name: "星星旗帜", price: 13 },
-  { id: "glider-asteroid", type: "glider", emoji: "🛹", name: "陨石滑板", price: 15 },
-  { id: "glider-comet", type: "glider", emoji: "☄️", name: "彗星滑板", price: 24 },
-  { id: "badge-sun", type: "badge", emoji: "🏅", name: "太阳徽章", price: 7 },
-  { id: "badge-galaxy", type: "badge", emoji: "🌌", name: "银河徽章", price: 20 }
-];
-
-const LEGACY_GEAR_MAP = {
-  "nose-cone": "rocket-scout",
-  "cockpit-glass": "rocket-turbo",
-  antenna: "ship-orbit",
-  "navigation-light": "ship-nebula",
-  "hull-core": "suit-green",
-  "left-wing": "suit-purple",
-  "right-wing": "helmet-crystal",
-  "left-fin": "helmet-comet",
-  "right-fin": "jetpack-blue",
-  "fuel-tank": "jetpack-flame",
-  "engine-core": "rover-moon",
-  "left-thruster": "rover-mars",
-  "right-thruster": "robot-pip",
-  "plasma-flame": "robot-orbit",
-  "shield-ring": "flag-moon",
-  "star-decals": "flag-star",
-  "radar-dish": "glider-asteroid",
-  "turbo-booster": "glider-comet",
-  "moon-flag": "badge-sun",
-  "captain-seat": "badge-galaxy"
-};
 
 const SFX_TRACKS = {
   tap: "audio/sfx/tap.wav",
@@ -119,9 +240,10 @@ const BACKGROUND_TRACKS = {
 
 const WORD_BY_ID = new Map(WORDS.map((entry) => [entry.id, entry]));
 const AVATAR_BY_ID = new Map(AVATARS.map((avatar) => [avatar.id, avatar]));
-const GEAR_IDS = new Set(GEAR_ITEMS.map((item) => item.id));
-const PROFILE_STORE_KEY = "word-space-quest-profiles-v6";
-const LEGACY_PROFILE_KEYS = ["word-space-quest-profiles-v5", "word-space-quest-profile-v4"];
+const ROCKET_PART_IDS = new Set(ROCKET_PARTS.map((item) => item.id));
+const COLLECTION_PART_IDS = new Set(COLLECTION_PARTS.map((item) => item.id));
+const PROFILE_STORE_KEY = "word-space-quest-profiles-v7";
+const LEGACY_PROFILE_KEYS = ["word-space-quest-profiles-v6", "word-space-quest-profiles-v5", "word-space-quest-profile-v4"];
 const SHOP_PAGE_SIZE = 6;
 const $ = (selector) => document.querySelector(selector);
 
@@ -130,6 +252,7 @@ const game = {
   stageIndex: 0,
   roundIndex: 0,
   rounds: [],
+  sentence: null,
   locked: false,
   letterBank: [],
   placedLetters: [],
@@ -147,6 +270,8 @@ let activeVoiceButton = null;
 let activeBackgroundMusic = null;
 let activeDrag = null;
 let gardenWordId = "one";
+let workshopMode = "rocket";
+let selectedCollectionId = COLLECTION_SETS[0].id;
 let shopPage = 0;
 let toastTimer = 0;
 let audioPrimed = false;
@@ -172,17 +297,12 @@ function createDefaultProfile(name = "新驾驶员", avatarId = "astronaut", id 
     id,
     name: cleanPlayerName(name) || "新驾驶员",
     avatarId: AVATAR_BY_ID.has(avatarId) ? avatarId : "astronaut",
-    version: 6,
+    version: 7,
     stars: 20,
-    ownedGear: [],
-    progress: {
-      listening: [],
-      soundFill: [],
-      spell: [],
-      dictation: []
-    },
+    ownedRocketParts: [],
+    ownedCollectionParts: [],
+    progress: { listening: [], soundFill: [], spell: [], dictation: [] },
     mission: null,
-    speed: "slow",
     updatedAt: null
   };
 }
@@ -199,24 +319,25 @@ function normalizeProfile(candidate, fallbackName = "新驾驶员") {
   );
   if (!candidate || typeof candidate !== "object") return profile;
 
-  profile.stars = Number.isFinite(Number(candidate.stars))
-    ? Math.max(0, Math.floor(Number(candidate.stars)))
-    : profile.stars;
-  const ownedSource = Array.isArray(candidate.ownedGear)
-    ? candidate.ownedGear
-    : Array.isArray(candidate.ownedParts) ? candidate.ownedParts : [];
-  profile.ownedGear = [...new Set(ownedSource
+  profile.stars = Number.isFinite(Number(candidate.stars)) ? Math.max(0, Math.floor(Number(candidate.stars))) : profile.stars;
+  const rocketSource = Array.isArray(candidate.ownedRocketParts)
+    ? candidate.ownedRocketParts
+    : Array.isArray(candidate.ownedParts) ? candidate.ownedParts
+      : Array.isArray(candidate.ownedGear) ? candidate.ownedGear : [];
+  profile.ownedRocketParts = [...new Set(rocketSource
     .map((itemId) => LEGACY_GEAR_MAP[itemId] || itemId)
-    .filter((itemId) => GEAR_IDS.has(itemId)))];
-  profile.speed = candidate.speed === "verySlow" ? "verySlow" : "slow";
+    .filter((itemId) => ROCKET_PART_IDS.has(itemId)))];
+  profile.ownedCollectionParts = Array.isArray(candidate.ownedCollectionParts)
+    ? [...new Set(candidate.ownedCollectionParts.filter((itemId) => COLLECTION_PART_IDS.has(itemId)))]
+    : [];
   profile.updatedAt = typeof candidate.updatedAt === "string" ? candidate.updatedAt : null;
 
   if (candidate.progress && typeof candidate.progress === "object") {
-    STAGES.forEach((stage, stageIndex) => {
-      const validIds = new Set(getStageSource(stageIndex).map((item) => item.id));
-      const savedIds = candidate.progress[stage.id];
-      profile.progress[stage.id] = Array.isArray(savedIds)
-        ? [...new Set(savedIds.filter((itemId) => validIds.has(itemId)))]
+    STAGES.forEach((stage, index) => {
+      const validIds = new Set(getStageSource(index).map((item) => item.id));
+      const saved = candidate.progress[stage.id];
+      profile.progress[stage.id] = Array.isArray(saved)
+        ? [...new Set(saved.filter((itemId) => validIds.has(itemId)))]
         : [];
     });
   }
@@ -224,19 +345,18 @@ function normalizeProfile(candidate, fallbackName = "新驾驶员") {
   if (candidate.mission && typeof candidate.mission === "object") {
     const stageIndex = Number(candidate.mission.stageIndex);
     const roundIndex = Number(candidate.mission.roundIndex);
-    const roundIds = candidate.mission.roundIds;
     if (
       Number.isInteger(stageIndex)
       && stageIndex >= 0
       && stageIndex < STAGES.length
       && Number.isInteger(roundIndex)
       && roundIndex >= 0
-      && Array.isArray(roundIds)
+      && Array.isArray(candidate.mission.roundIds)
     ) {
       profile.mission = {
         stageIndex,
         roundIndex,
-        roundIds: roundIds.filter((itemId) => typeof itemId === "string"),
+        roundIds: candidate.mission.roundIds.filter((itemId) => typeof itemId === "string"),
         savedAt: typeof candidate.mission.savedAt === "string" ? candidate.mission.savedAt : null
       };
     }
@@ -245,48 +365,46 @@ function normalizeProfile(candidate, fallbackName = "新驾驶员") {
 }
 
 function createDefaultSaveBook() {
-  return { version: 6, activeProfileId: null, profiles: [] };
+  return { version: 7, activeProfileId: null, profiles: [] };
 }
 
 function normalizeSaveBook(candidate) {
   const book = createDefaultSaveBook();
   if (!candidate || typeof candidate !== "object" || !Array.isArray(candidate.profiles)) return book;
-  const ids = new Set();
-  candidate.profiles.slice(0, 8).forEach((savedProfile) => {
-    const profile = normalizeProfile(savedProfile);
-    if (!ids.has(profile.id)) {
-      ids.add(profile.id);
+  const profileIds = new Set();
+  candidate.profiles.slice(0, 8).forEach((candidateProfile) => {
+    const profile = normalizeProfile(candidateProfile);
+    if (!profileIds.has(profile.id)) {
+      profileIds.add(profile.id);
       book.profiles.push(profile);
     }
   });
-  if (typeof candidate.activeProfileId === "string" && ids.has(candidate.activeProfileId)) {
+  if (typeof candidate.activeProfileId === "string" && profileIds.has(candidate.activeProfileId)) {
     book.activeProfileId = candidate.activeProfileId;
   }
   return book;
 }
 
 function loadSaveBook() {
-  const fallback = createDefaultSaveBook();
   try {
-    const raw = localStorage.getItem(PROFILE_STORE_KEY);
-    if (raw) return normalizeSaveBook(JSON.parse(raw));
+    const current = localStorage.getItem(PROFILE_STORE_KEY);
+    if (current) return normalizeSaveBook(JSON.parse(current));
     for (const key of LEGACY_PROFILE_KEYS) {
-      const legacyRaw = localStorage.getItem(key);
-      if (!legacyRaw) continue;
-      const legacyBook = key.endsWith("v5")
-        ? normalizeSaveBook(JSON.parse(legacyRaw))
-        : { version: 6, activeProfileId: null, profiles: [normalizeProfile(JSON.parse(legacyRaw), "小宇航员")] };
-      if (legacyBook.profiles.length && !legacyBook.activeProfileId) {
-        legacyBook.activeProfileId = legacyBook.profiles[0].id;
+      const legacy = localStorage.getItem(key);
+      if (!legacy) continue;
+      if (key.includes("profiles")) {
+        const book = normalizeSaveBook(JSON.parse(legacy));
+        if (book.profiles.length && !book.activeProfileId) book.activeProfileId = book.profiles[0].id;
+        return book;
       }
-      return legacyBook;
+      const profile = normalizeProfile(JSON.parse(legacy), "小宇航员");
+      return { version: 7, activeProfileId: profile.id, profiles: [profile] };
     }
-    return fallback;
   } catch (error) {
     storageWarning = "旧存档无法读取，已创建新的训练档案。";
     console.warn("Unable to load saves:", error);
-    return fallback;
   }
+  return createDefaultSaveBook();
 }
 
 function getActiveProfile() {
@@ -306,42 +424,56 @@ function persistSaveBook() {
     localStorage.setItem(PROFILE_STORE_KEY, JSON.stringify(saveBook));
     return true;
   } catch (error) {
-    console.warn("Unable to write saves:", error);
+    console.warn("Unable to save profile data:", error);
     return false;
   }
 }
 
-function savePlayerProfile(showConfirmation = false) {
+function savePlayerProfile(showMessage = false) {
   if (!hasActiveProfile()) {
-    if (showConfirmation) openProfileChooser();
+    if (showMessage) openProfileChooser();
     return false;
   }
   player.updatedAt = new Date().toISOString();
   if (!persistSaveBook()) {
-    if (showConfirmation) showToast("存档失败，请检查浏览器存储权限。");
+    if (showMessage) showToast("存档失败。");
     return false;
   }
   updateHome();
-  if (showConfirmation) showToast(`💾 ${player.name} 的进度已保存。`);
+  if (showMessage) showToast("已自动保存。");
   return true;
 }
 
 function shuffle(items) {
   const result = [...items];
   for (let index = result.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+    const other = Math.floor(Math.random() * (index + 1));
+    [result[index], result[other]] = [result[other], result[index]];
   }
   return result;
 }
 
-function stageProgress(stage, stageIndex) {
-  const known = new Set(player.progress[stage.id] || []);
-  return { completed: known.size, total: getStageSource(stageIndex).length };
+function randomSentence(entry) {
+  const index = Math.floor(Math.random() * entry.sentences.length);
+  return { ...entry.sentences[index], index };
 }
 
-function totalTrainingProgress() {
-  return STAGES.reduce((sum, stage, index) => sum + stageProgress(stage, index).completed, 0);
+function stageProgress(stage, stageIndex) {
+  const complete = new Set(player.progress[stage.id] || []);
+  return { completed: complete.size, total: getStageSource(stageIndex).length };
+}
+
+function completedCollectionSets() {
+  return COLLECTION_SETS.filter((collection) => collectionProgress(collection).completed === collection.parts.length).length;
+}
+
+function rocketComplete() {
+  return player.ownedRocketParts.length === ROCKET_PARTS.length;
+}
+
+function collectionProgress(collection) {
+  const completed = player.ownedCollectionParts.filter((partId) => partId.startsWith(`${collection.id}-`)).length;
+  return { completed, total: collection.parts.length };
 }
 
 function updateProfileDisplay() {
@@ -360,17 +492,22 @@ function updateStarDisplays() {
   });
 }
 
+function totalTrainingProgress() {
+  return STAGES.reduce((sum, stage, index) => sum + stageProgress(stage, index).completed, 0);
+}
+
 function updateHome() {
-  updateProfileDisplay();
   const ready = hasActiveProfile();
-  $("#resumeButton").hidden = !ready || !player.mission;
-  $("#heroGearCount").textContent = `${ready ? player.ownedGear.length : 0} / ${GEAR_ITEMS.length}`;
-  $("#homeTrainingCount").textContent = `${ready ? totalTrainingProgress() : 0} / 40`;
-  $("#saveNote").textContent = ready && player.mission
-    ? `上次：${STAGES[player.mission.stageIndex].title} · 第 ${player.mission.roundIndex + 1} 题`
-    : "自动存档已开启";
+  updateProfileDisplay();
   updateStarDisplays();
-  renderHeroShip();
+  $("#homeTrainingCount").textContent = `${ready ? totalTrainingProgress() : 0} / 40`;
+  $("#heroRocketCount").textContent = `${ready ? player.ownedRocketParts.length : 0} / ${ROCKET_PARTS.length}`;
+  $("#heroCollectionCount").textContent = `${ready ? completedCollectionSets() : 0} / ${COLLECTION_SETS.length}`;
+  $("#resumeButton").hidden = !ready || !player.mission;
+  $("#saveNote").textContent = ready && player.mission
+    ? `上次：${STAGES[player.mission.stageIndex].title} · ${player.mission.roundIndex + 1} / ${player.mission.roundIds.length}`
+    : "自动存档已开启";
+  renderRocket($("#heroRocket"));
 }
 
 function showToast(message) {
@@ -381,42 +518,49 @@ function showToast(message) {
   toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2200);
 }
 
+function createButton(className, text, onClick) {
+  const button = document.createElement("button");
+  button.className = className;
+  button.type = "button";
+  button.textContent = text;
+  if (onClick) button.addEventListener("click", onClick);
+  return button;
+}
+
 function renderAvatarChoices() {
-  const grid = $("#avatarGrid");
-  grid.replaceChildren();
+  const avatarGrid = $("#avatarGrid");
+  avatarGrid.replaceChildren();
   AVATARS.forEach((avatar) => {
-    const button = createButton(`avatar-choice${avatar.id === selectedAvatarId ? " selected" : ""}`, "", () => {
+    const option = createButton(`avatar-choice${avatar.id === selectedAvatarId ? " selected" : ""}`, "", () => {
       selectedAvatarId = avatar.id;
       renderAvatarChoices();
     });
-    button.innerHTML = `<span>${avatar.emoji}</span><small>${avatar.label}</small>`;
-    button.setAttribute("aria-label", `选择${avatar.label}`);
-    grid.append(button);
+    option.innerHTML = `<span>${avatar.emoji}</span><small>${avatar.label}</small>`;
+    avatarGrid.append(option);
   });
 }
 
 function renderProfileChooser() {
-  const grid = $("#profileGrid");
-  grid.replaceChildren();
+  const profileGrid = $("#profileGrid");
+  profileGrid.replaceChildren();
   if (!saveBook.profiles.length) {
     const empty = document.createElement("p");
     empty.className = "empty-profile-note";
     empty.textContent = "输入名字，选择头像，开始训练。";
-    grid.append(empty);
+    profileGrid.append(empty);
   }
   saveBook.profiles.forEach((profile) => {
-    const avatar = getAvatar(profile);
     const card = document.createElement("article");
     card.className = `profile-card${profile.id === saveBook.activeProfileId ? " active" : ""}`;
-    const avatarElement = document.createElement("span");
-    avatarElement.className = "avatar";
-    avatarElement.textContent = avatar.emoji;
+    const avatar = document.createElement("span");
+    avatar.className = "avatar";
+    avatar.textContent = getAvatar(profile).emoji;
     const details = document.createElement("span");
     const name = document.createElement("strong");
     name.textContent = profile.name;
-    const gear = document.createElement("small");
-    gear.textContent = `${profile.ownedGear.length} / ${GEAR_ITEMS.length} 装备`;
-    details.append(name, gear);
+    const progress = document.createElement("small");
+    progress.textContent = `${profile.ownedRocketParts.length} / ${ROCKET_PARTS.length} 火箭`;
+    details.append(name, progress);
     const stars = document.createElement("em");
     stars.textContent = `⚡ ${profile.stars}`;
     const actions = document.createElement("div");
@@ -426,8 +570,8 @@ function renderProfileChooser() {
       createButton("profile-action-button", "修改", () => beginProfileEdit(profile.id)),
       createButton("profile-action-button profile-delete-button", "删除", () => requestProfileDeletion(profile.id))
     );
-    card.append(avatarElement, details, stars, actions);
-    grid.append(card);
+    card.append(avatar, details, stars, actions);
+    profileGrid.append(card);
   });
   renderAvatarChoices();
   $("#closeProfileButton").hidden = !hasActiveProfile();
@@ -472,7 +616,7 @@ function activateProfile(profileId) {
   savePlayerProfile(false);
   renderTrainingProjects();
   renderGarden();
-  renderShop();
+  renderWorkshop();
   showToast(`欢迎回来，${player.name}！`);
 }
 
@@ -487,14 +631,16 @@ function beginProfileEdit(profileId) {
   $("#saveProfileButton").textContent = "保存修改";
   $("#cancelProfileEditButton").hidden = false;
   renderAvatarChoices();
-  $("#profileNameInput").focus();
+}
+
+function cancelProfileEdit() {
+  resetProfileForm();
 }
 
 function createProfileFromForm() {
   const name = cleanPlayerName($("#profileNameInput").value);
   if (!name) {
     $("#profileFormMessage").textContent = "请输入名字。";
-    $("#profileNameInput").focus();
     return;
   }
   const duplicate = saveBook.profiles.find((profile) => {
@@ -510,14 +656,13 @@ function createProfileFromForm() {
       resetProfileForm();
       return;
     }
-    const oldName = profile.name;
-    const oldAvatar = profile.avatarId;
+    const previous = { name: profile.name, avatarId: profile.avatarId };
     profile.name = name;
     profile.avatarId = selectedAvatarId;
     profile.updatedAt = new Date().toISOString();
     if (!persistSaveBook()) {
-      profile.name = oldName;
-      profile.avatarId = oldAvatar;
+      profile.name = previous.name;
+      profile.avatarId = previous.avatarId;
       $("#profileFormMessage").textContent = "修改未保存。";
       return;
     }
@@ -531,10 +676,6 @@ function createProfileFromForm() {
   const profile = createDefaultProfile(name, selectedAvatarId);
   saveBook.profiles.push(profile);
   activateProfile(profile.id);
-}
-
-function cancelProfileEdit() {
-  resetProfileForm();
 }
 
 function requestProfileDeletion(profileId) {
@@ -557,14 +698,14 @@ function deleteProfile() {
     return;
   }
   const previousProfiles = saveBook.profiles;
-  const previousActiveProfileId = saveBook.activeProfileId;
+  const previousActiveId = saveBook.activeProfileId;
   const previousPlayer = player;
   const activeWasDeleted = profile.id === saveBook.activeProfileId;
   saveBook.profiles = saveBook.profiles.filter((item) => item.id !== profile.id);
   if (activeWasDeleted) saveBook.activeProfileId = null;
   if (!persistSaveBook()) {
     saveBook.profiles = previousProfiles;
-    saveBook.activeProfileId = previousActiveProfileId;
+    saveBook.activeProfileId = previousActiveId;
     player = previousPlayer;
     $("#profileFormMessage").textContent = "删除未保存。";
     cancelProfileDeletion();
@@ -575,7 +716,6 @@ function deleteProfile() {
     player = createDefaultProfile("等待选择", "astronaut", "preview-profile");
     selectedAvatarId = player.avatarId;
     game.active = false;
-    game.rounds = [];
     stopActiveVoice();
     clearActiveDrag();
     showOnlyScreen("landingScreen");
@@ -583,29 +723,9 @@ function deleteProfile() {
   renderProfileChooser();
   renderTrainingProjects();
   renderGarden();
-  renderShop();
+  renderWorkshop();
   updateHome();
   showToast(`已删除 ${profile.name} 的档案。`);
-}
-
-function preloadAudio() {
-  WORDS.forEach((entry) => {
-    const wordAudio = createAudio(`audio/${entry.id}.mp3`);
-    const sentenceAudio = createAudio(`audio/sentences/${entry.id}.mp3`);
-    audioMaps.word.set(entry.id, wordAudio);
-    audioMaps.sentence.set(entry.id, sentenceAudio);
-  });
-  Object.entries(SFX_TRACKS).forEach(([name, source]) => {
-    const sound = createAudio(source);
-    sound.volume = name === "correct" || name === "purchase" ? 0.42 : 0.3;
-    audioMaps.sfx.set(name, sound);
-  });
-  Object.entries(BACKGROUND_TRACKS).forEach(([screenId, source]) => {
-    const music = createAudio(source);
-    music.loop = true;
-    music.volume = 0.13;
-    audioMaps.bgm.set(screenId, music);
-  });
 }
 
 function createAudio(source) {
@@ -619,15 +739,27 @@ function createAudio(source) {
       activeVoiceButton = null;
     }
   });
-  audio.addEventListener("error", () => {
-    if (audio === activeVoice) {
-      activeVoice = null;
-      if (activeVoiceButton) activeVoiceButton.classList.remove("is-playing");
-      activeVoiceButton = null;
-      if (game.active) setFeedback("音频加载失败，请稍后再试。", "try-again");
-    }
-  });
   return audio;
+}
+
+function preloadAudio() {
+  WORDS.forEach((entry) => {
+    audioMaps.word.set(entry.id, createAudio(`audio/${entry.id}.mp3`));
+    entry.sentences.forEach((sentence, index) => {
+      audioMaps.sentence.set(`${entry.id}-${index}`, createAudio(`audio/sentences/${entry.id}-${index + 1}.mp3`));
+    });
+  });
+  Object.entries(SFX_TRACKS).forEach(([name, source]) => {
+    const sound = createAudio(source);
+    sound.volume = name === "correct" || name === "purchase" ? 0.52 : 0.38;
+    audioMaps.sfx.set(name, sound);
+  });
+  Object.entries(BACKGROUND_TRACKS).forEach(([screenId, source]) => {
+    const music = createAudio(source);
+    music.loop = true;
+    music.volume = 0.22;
+    audioMaps.bgm.set(screenId, music);
+  });
 }
 
 function primeAudio() {
@@ -644,12 +776,7 @@ function stopActiveVoice() {
   activeVoiceButton = null;
 }
 
-function voiceRate(slowReplay = false) {
-  if (slowReplay) return 0.56;
-  return player.speed === "verySlow" ? 0.66 : 0.82;
-}
-
-function playVoice(audio, button, slowReplay = false) {
+function playVoice(audio, button) {
   primeAudio();
   stopActiveVoice();
   if (!audio) return;
@@ -657,7 +784,7 @@ function playVoice(audio, button, slowReplay = false) {
   activeVoiceButton = button || null;
   if (activeVoiceButton) activeVoiceButton.classList.add("is-playing");
   audio.currentTime = 0;
-  audio.playbackRate = voiceRate(slowReplay);
+  audio.playbackRate = 0.82;
   audio.play().catch((error) => {
     console.warn("Unable to play voice:", error);
     if (audio === activeVoice) {
@@ -690,28 +817,6 @@ function updateBackgroundMusic(screenId) {
   nextMusic.play().catch((error) => console.warn("Unable to play background music:", error));
 }
 
-function updateSpeedButton() {
-  const button = $("#speedButton");
-  const verySlow = player.speed === "verySlow";
-  button.textContent = verySlow ? "🐢 超慢" : "🔊 慢速";
-  button.title = verySlow ? "当前超慢速，点击切回慢速。" : "当前慢速，点击切换超慢速。";
-}
-
-function createButton(className, text, onClick) {
-  const button = document.createElement("button");
-  button.className = className;
-  button.type = "button";
-  button.textContent = text;
-  if (onClick) button.addEventListener("click", onClick);
-  return button;
-}
-
-function setFeedback(message, kind = "") {
-  const feedback = $("#feedback");
-  feedback.className = `feedback ${kind}`.trim();
-  feedback.textContent = message;
-}
-
 function createSceneCard(entry) {
   const figure = document.createElement("figure");
   figure.className = "scene-card";
@@ -724,17 +829,20 @@ function createSceneCard(entry) {
   return figure;
 }
 
-function createVoiceControls(entry, kind, label) {
-  const controls = document.createElement("div");
-  controls.className = "audio-controls";
-  const main = createButton("listen-button", label, () => {
-    playVoice(audioMaps[kind].get(entry.id), main);
+function createVoiceButton(entry, sentence, label) {
+  const button = createButton("listen-button", label, () => {
+    const audio = sentence
+      ? audioMaps.sentence.get(`${entry.id}-${sentence.index}`)
+      : audioMaps.word.get(entry.id);
+    playVoice(audio, button);
   });
-  const slow = createButton("mini-button slow-button", "🐢 超慢", () => {
-    playVoice(audioMaps[kind].get(entry.id), slow, true);
-  });
-  controls.append(main, slow);
-  return controls;
+  return button;
+}
+
+function setFeedback(message, kind = "") {
+  const feedback = $("#feedback");
+  feedback.className = `feedback ${kind}`.trim();
+  feedback.textContent = message;
 }
 
 function updateStageHeader() {
@@ -746,9 +854,9 @@ function updateStageHeader() {
   $("#roundFill").style.width = `${(game.roundIndex / game.rounds.length) * 100}%`;
 }
 
-function addChoiceGrid(parent, choices, onChoice) {
+function addChoiceGrid(parent, choices, onChoice, extraClass = "") {
   const grid = document.createElement("div");
-  grid.className = "choice-grid";
+  grid.className = `choice-grid ${extraClass}`.trim();
   choices.forEach((choice) => {
     const button = createButton("choice-button", choice.label || choice, () => onChoice(choice, button));
     grid.append(button);
@@ -756,7 +864,7 @@ function addChoiceGrid(parent, choices, onChoice) {
   parent.append(grid);
 }
 
-function renderListeningQuestion(entry) {
+function renderListeningQuestion(entry, sentence) {
   const area = $("#questionArea");
   area.replaceChildren();
   const panel = document.createElement("div");
@@ -764,37 +872,37 @@ function renderListeningQuestion(entry) {
   const layout = document.createElement("div");
   layout.className = "question-layout";
   layout.append(createSceneCard(entry));
-  const context = document.createElement("section");
-  context.className = "mission-card";
-  context.innerHTML = `<span>任务句子</span><strong class="sentence-line" id="sentenceLine">${entry.sentenceBlank}</strong>`;
-  context.append(createVoiceControls(entry, "sentence", "▶ 听句子"));
-  layout.append(context);
+  const mission = document.createElement("section");
+  mission.className = "mission-card";
+  mission.innerHTML = `<span>任务句子</span><strong class="sentence-line" id="sentenceLine">${sentence.blank}</strong>`;
+  mission.append(createVoiceButton(entry, sentence, "▶ 听句子"));
+  layout.append(mission);
   panel.append(layout);
-  addChoiceGrid(
-    panel,
-    shuffle([{ label: entry.word, entry }, ...shuffle(WORDS.filter((word) => word.id !== entry.id)).slice(0, 3).map((word) => ({ label: word.word, entry: word }))]),
-    (option, button) => checkListeningAnswer(entry, option.entry, button)
-  );
+  const choices = shuffle([
+    { label: entry.word, entry },
+    ...shuffle(WORDS.filter((word) => word.id !== entry.id)).slice(0, 3).map((word) => ({ label: word.word, entry: word }))
+  ]);
+  addChoiceGrid(panel, choices, (choice, button) => checkListeningAnswer(entry, sentence, choice.entry, button));
   area.append(panel);
 }
 
-function checkListeningAnswer(target, selected, button) {
+function checkListeningAnswer(target, sentence, selected, button) {
   if (game.locked) return;
   if (target.id !== selected.id) {
-    playEffect("wrong");
     button.classList.add("wrong");
+    playEffect("wrong");
     setFeedback("再听一次。", "try-again");
-    window.setTimeout(() => button.classList.remove("wrong"), 430);
+    window.setTimeout(() => button.classList.remove("wrong"), 420);
     return;
   }
   game.locked = true;
   button.classList.add("correct");
-  $("#sentenceLine").textContent = target.sentence;
+  $("#sentenceLine").textContent = sentence.text;
   $("#sentenceLine").classList.add("revealed");
   markCorrect(target, `答对了！${target.meaning}`);
 }
 
-function renderSoundFillQuestion(question) {
+function renderSoundFillQuestion(question, sentence) {
   const entry = WORD_BY_ID.get(question.wordId);
   const area = $("#questionArea");
   area.replaceChildren();
@@ -805,24 +913,21 @@ function renderSoundFillQuestion(question) {
   layout.append(createSceneCard(entry));
   const card = document.createElement("section");
   card.className = "fill-card";
-  card.innerHTML = `
-    <span>听单词，补上字母</span>
-    <div class="fill-word"><b>${question.prefix}</b><b class="fill-slot" id="fillSlot">${"_".repeat(question.answer.length)}</b><b>${question.suffix}</b></div>
-  `;
-  card.append(createVoiceControls(entry, "word", "▶ 听单词"));
+  card.innerHTML = `<span>${sentence.blank}</span><div class="fill-word"><b>${question.prefix}</b><b class="fill-slot" id="fillSlot">${"_".repeat(question.answer.length)}</b><b>${question.suffix}</b></div>`;
+  card.append(createVoiceButton(entry, null, "▶ 听单词"));
   layout.append(card);
   panel.append(layout);
-  addChoiceGrid(panel, shuffle(question.choices), (choice, button) => checkFillAnswer(question, choice, button));
+  addChoiceGrid(panel, shuffle(question.choices), (choice, button) => checkFillAnswer(question, choice, button), "fill-choices");
   area.append(panel);
 }
 
 function checkFillAnswer(question, choice, button) {
   if (game.locked) return;
   if (choice !== question.answer) {
-    playEffect("wrong");
     button.classList.add("wrong");
+    playEffect("wrong");
     setFeedback("再听一次。", "try-again");
-    window.setTimeout(() => button.classList.remove("wrong"), 430);
+    window.setTimeout(() => button.classList.remove("wrong"), 420);
     return;
   }
   game.locked = true;
@@ -834,28 +939,40 @@ function checkFillAnswer(question, choice, button) {
 
 function prepareSpellQuestion(entry) {
   game.placedLetters = Array(entry.word.length).fill(null);
-  const letters = entry.word.split("").map((letter, index) => ({ id: `${letter}-${index}`, letter }));
+  const targetLetters = entry.word.split("").map((letter, index) => ({ id: `${letter}-${index}`, letter }));
   const extras = shuffle("abcdefghijklmnopqrstuvwxyz".split("").filter((letter) => !entry.word.includes(letter)))
     .slice(0, 2)
     .map((letter, index) => ({ id: `extra-${letter}-${index}`, letter }));
-  game.letterBank = shuffle([...letters, ...extras]);
+  game.letterBank = shuffle([...targetLetters, ...extras]);
 }
 
-function renderSpellQuestion(entry) {
+function renderSpellQuestion(entry, sentence) {
   prepareSpellQuestion(entry);
   const area = $("#questionArea");
   area.replaceChildren();
   const card = document.createElement("section");
   card.className = "drag-card";
-  card.innerHTML = `<span>拖动字母到格子里</span><h3>${entry.word.length} 个字母</h3>`;
-  card.append(createVoiceControls(entry, "word", "▶ 听单词"));
+  const visual = document.createElement("div");
+  visual.className = "drag-visual";
+  const image = document.createElement("img");
+  image.src = entry.image;
+  image.alt = entry.visual;
+  const example = document.createElement("strong");
+  example.textContent = sentence.blank;
+  visual.append(image, example);
+
+  const workspace = document.createElement("div");
+  workspace.className = "drag-workspace";
+  workspace.innerHTML = `<span>拖动字母到格子里</span><h3>${entry.word.length} 个字母</h3>`;
+  workspace.append(createVoiceButton(entry, null, "▶ 听单词"));
   const slots = document.createElement("div");
   slots.className = "spelling-slots";
   slots.id = "spellingSlots";
   const bank = document.createElement("div");
   bank.className = "letter-bank";
   bank.id = "letterBank";
-  card.append(slots, bank, createButton("primary-button check-button", "检查", checkSpelling));
+  workspace.append(slots, bank, createButton("primary-button check-button", "检查", checkSpelling));
+  card.append(visual, workspace);
   area.append(card);
   updateSpellingBoard();
 }
@@ -871,19 +988,17 @@ function updateSpellingBoard() {
     slot.dataset.slotIndex = String(index);
     slot.className = `spelling-slot${item ? " filled" : ""}`;
     slot.textContent = item ? item.letter : "";
-    slot.setAttribute("aria-label", item ? `拖动字母 ${item.letter}` : `第 ${index + 1} 个空格`);
     if (item) slot.addEventListener("pointerdown", (event) => startLetterDrag(event, item, index));
     slots.append(slot);
   });
   bank.replaceChildren();
   game.letterBank.forEach((item) => {
-    const isUsed = game.placedLetters.some((placed) => placed && placed.id === item.id);
+    const used = game.placedLetters.some((placed) => placed && placed.id === item.id);
     const tile = document.createElement("button");
     tile.type = "button";
-    tile.className = `letter-tile${isUsed ? " used" : ""}`;
+    tile.className = `letter-tile${used ? " used" : ""}`;
     tile.textContent = item.letter;
-    tile.disabled = isUsed || game.locked;
-    tile.setAttribute("aria-label", `拖动字母 ${item.letter}`);
+    tile.disabled = used || game.locked;
     tile.addEventListener("pointerdown", (event) => startLetterDrag(event, item, null));
     bank.append(tile);
   });
@@ -909,25 +1024,25 @@ function moveDragGhost(event) {
   activeDrag.ghost.style.left = `${event.clientX}px`;
   activeDrag.ghost.style.top = `${event.clientY}px`;
   document.querySelectorAll(".spelling-slot").forEach((slot) => slot.classList.remove("drop-target"));
-  const target = document.elementFromPoint(event.clientX, event.clientY);
-  const slot = target && target.closest(".spelling-slot");
+  const pointTarget = document.elementFromPoint(event.clientX, event.clientY);
+  const slot = pointTarget && pointTarget.closest(".spelling-slot");
   if (slot) slot.classList.add("drop-target");
 }
 
 function finishLetterDrag(event) {
   if (!activeDrag || event.pointerId !== activeDrag.pointerId) return;
-  const target = document.elementFromPoint(event.clientX, event.clientY);
-  const slot = target && target.closest(".spelling-slot");
-  const destinationIndex = slot ? Number(slot.dataset.slotIndex) : null;
+  const pointTarget = document.elementFromPoint(event.clientX, event.clientY);
+  const slot = pointTarget && pointTarget.closest(".spelling-slot");
+  const destination = slot ? Number(slot.dataset.slotIndex) : null;
   const drag = activeDrag;
   clearActiveDrag();
-  if (Number.isInteger(destinationIndex)) {
-    const displaced = game.placedLetters[destinationIndex];
+  if (Number.isInteger(destination)) {
+    const displaced = game.placedLetters[destination];
     if (drag.fromSlotIndex === null) {
-      game.placedLetters[destinationIndex] = drag.item;
-    } else if (drag.fromSlotIndex !== destinationIndex) {
+      game.placedLetters[destination] = drag.item;
+    } else if (drag.fromSlotIndex !== destination) {
       game.placedLetters[drag.fromSlotIndex] = displaced || null;
-      game.placedLetters[destinationIndex] = drag.item;
+      game.placedLetters[destination] = drag.item;
     }
     playEffect("tap");
   } else if (drag.fromSlotIndex !== null) {
@@ -952,22 +1067,21 @@ function clearActiveDrag() {
 
 function checkSpelling() {
   if (game.locked) return;
-  const answer = game.placedLetters.map((item) => item ? item.letter : "").join("");
-  const target = currentRound();
   if (game.placedLetters.some((item) => !item)) {
     setFeedback("把字母都拖进去。", "try-again");
     return;
   }
-  if (answer !== target.word) {
+  const answer = game.placedLetters.map((item) => item.letter).join("");
+  if (answer !== currentRound().word) {
     playEffect("wrong");
     setFeedback("顺序再试一次。", "try-again");
     return;
   }
   game.locked = true;
-  markCorrect(target, "拼对了！");
+  markCorrect(currentRound(), "拼对了！");
 }
 
-function renderDictationQuestion(entry) {
+function renderDictationQuestion(entry, sentence) {
   game.lastTypedValue = "";
   const area = $("#questionArea");
   area.replaceChildren();
@@ -978,8 +1092,8 @@ function renderDictationQuestion(entry) {
   layout.append(createSceneCard(entry));
   const card = document.createElement("section");
   card.className = "dictation-card";
-  card.innerHTML = "<span>听单词，写答案</span><h3>输入你记住的单词</h3>";
-  card.append(createVoiceControls(entry, "word", "▶ 听单词"));
+  card.innerHTML = `<span>${sentence.blank}</span><h3>写出单词</h3>`;
+  card.append(createVoiceButton(entry, null, "▶ 听单词"));
   const input = document.createElement("input");
   input.className = "input-answer";
   input.id = "dictationInput";
@@ -1000,7 +1114,7 @@ function renderDictationQuestion(entry) {
   const actions = document.createElement("div");
   actions.className = "dictation-actions";
   actions.append(
-    createButton("mini-button", "⌫ 删除", () => {
+    createButton("mini-button", "⌫", () => {
       input.value = input.value.slice(0, -1);
       game.lastTypedValue = input.value;
       playEffect("delete");
@@ -1018,20 +1132,17 @@ function renderDictationQuestion(entry) {
 function checkDictation() {
   if (game.locked) return;
   const input = $("#dictationInput");
-  const answer = input.value.trim().toLowerCase();
-  const target = currentRound();
-  if (answer !== target.word) {
+  if (input.value.trim().toLowerCase() !== currentRound().word) {
     playEffect("wrong");
     input.classList.remove("wrong");
     void input.offsetWidth;
     input.classList.add("wrong");
     setFeedback("再听一次。", "try-again");
-    input.focus();
     return;
   }
   game.locked = true;
   input.classList.add("correct");
-  markCorrect(target, `答对了！${target.meaning}`);
+  markCorrect(currentRound(), `答对了！${currentRound().meaning}`);
 }
 
 function currentRound() {
@@ -1044,17 +1155,18 @@ function renderRound() {
   updateStageHeader();
   const stage = STAGES[game.stageIndex];
   const round = currentRound();
-  if (stage.mode === "listening") renderListeningQuestion(round);
-  if (stage.mode === "soundFill") renderSoundFillQuestion(round);
-  if (stage.mode === "spell") renderSpellQuestion(round);
-  if (stage.mode === "dictation") renderDictationQuestion(round);
-  setFeedback(stage.mode === "spell" ? "拖动字母到上方格子。" : "点击播放按钮开始。");
+  const entry = stage.mode === "soundFill" ? WORD_BY_ID.get(round.wordId) : round;
+  game.sentence = randomSentence(entry);
+  if (stage.mode === "listening") renderListeningQuestion(entry, game.sentence);
+  if (stage.mode === "soundFill") renderSoundFillQuestion(round, game.sentence);
+  if (stage.mode === "spell") renderSpellQuestion(entry, game.sentence);
+  if (stage.mode === "dictation") renderDictationQuestion(entry, game.sentence);
+  setFeedback(stage.mode === "spell" ? "拖动字母到格子。" : "点击播放按钮开始。");
   saveMission(false);
 }
 
 function markRoundProgress(round) {
-  const stage = STAGES[game.stageIndex];
-  const progress = player.progress[stage.id];
+  const progress = player.progress[STAGES[game.stageIndex].id];
   if (!progress.includes(round.id)) progress.push(round.id);
 }
 
@@ -1089,8 +1201,7 @@ function completeStage() {
   createConfetti();
   if (game.stageIndex < STAGES.length - 1) {
     $("#completionTitle").textContent = `${stage.title}完成！`;
-    $("#completionCopy").textContent = `获得 ${stage.bonus} 颗能量星。`;
-    $("#nextStageButton").textContent = "下一关";
+    $("#completionCopy").textContent = `获得 ${stage.bonus} ⚡`;
     $("#nextStageButton").onclick = () => startStage(game.stageIndex + 1);
     $("#stageCompleteOverlay").hidden = false;
     return;
@@ -1134,13 +1245,13 @@ function resumeMission() {
   startStage(player.mission.stageIndex, player.mission.roundIds, player.mission.roundIndex);
 }
 
-function saveMission(showConfirmation = false) {
+function saveMission(showMessage = false) {
   if (!hasActiveProfile()) {
-    if (showConfirmation) openProfileChooser();
+    if (showMessage) openProfileChooser();
     return;
   }
   if (!game.active) {
-    if (showConfirmation) showToast("当前没有进行中的任务。");
+    if (showMessage) showToast("自动存档已开启。");
     return;
   }
   player.mission = {
@@ -1149,7 +1260,7 @@ function saveMission(showConfirmation = false) {
     roundIds: game.rounds.map((round) => round.id),
     savedAt: new Date().toISOString()
   };
-  savePlayerProfile(showConfirmation);
+  savePlayerProfile(showMessage);
 }
 
 function showOnlyScreen(screenId) {
@@ -1167,7 +1278,7 @@ function returnHome() {
   $("#stageCompleteOverlay").hidden = true;
   showOnlyScreen("landingScreen");
   renderTrainingProjects();
-  renderShop();
+  renderWorkshop();
 }
 
 function openProject(screenId) {
@@ -1191,8 +1302,9 @@ function openGardenProject() {
 
 function openWorkshopProject() {
   if (!openProject("workshopScreen")) return;
+  workshopMode = "rocket";
   shopPage = 0;
-  renderShop();
+  renderWorkshop();
 }
 
 function showFinish() {
@@ -1210,7 +1322,7 @@ function createConfetti() {
     const piece = document.createElement("span");
     piece.className = "confetti";
     piece.style.setProperty("--confetti-color", colors[index % colors.length]);
-    piece.style.setProperty("--x", `${Math.round((Math.random() - 0.5) * 540)}px`);
+    piece.style.setProperty("--x", `${Math.round((Math.random() - 0.5) * 530)}px`);
     piece.style.setProperty("--y", `${Math.round(120 + Math.random() * 390)}px`);
     piece.style.setProperty("--spin", `${Math.round((Math.random() - 0.5) * 900)}deg`);
     document.body.append(piece);
@@ -1222,7 +1334,7 @@ function createLearningProjectCard(stage, stageIndex) {
   const progress = stageProgress(stage, stageIndex);
   const card = createButton(`stage-project-card${progress.completed >= progress.total ? " is-complete" : ""}`, "", () => startStage(stageIndex));
   card.innerHTML = `
-    <span class="stage-project-icon">${stage.icon}</span>
+    <span class="stage-project-art"><img src="${stage.art}" alt=""></span>
     <span class="stage-project-number">关卡 0${stageIndex + 1}</span>
     <strong>${stage.title}</strong>
     <small>${stage.mapDescription}</small>
@@ -1231,9 +1343,9 @@ function createLearningProjectCard(stage, stageIndex) {
   return card;
 }
 
-function createFacilityCard(type, title, icon, count, onClick) {
-  const card = createButton(`facility-card ${type}`, "", onClick);
-  card.innerHTML = `<span class="facility-icon">${icon}</span><span class="facility-type">${type === "training" ? "单词训练营" : "装备工坊"}</span><strong>${title}</strong><small class="facility-count">${count}</small>`;
+function createFacilityCard(kind, title, icon, count, onClick) {
+  const card = createButton(`facility-card ${kind}`, "", onClick);
+  card.innerHTML = `<span class="facility-icon">${icon}</span><span class="facility-type">${kind === "training" ? "单词训练营" : "火箭工坊"}</span><strong>${title}</strong><small class="facility-count">${count}</small>`;
   return card;
 }
 
@@ -1245,7 +1357,7 @@ function renderTrainingProjects() {
   STAGES.forEach((stage, index) => stageGrid.append(createLearningProjectCard(stage, index)));
   facilityGrid.append(
     createFacilityCard("training", "星图复习", "🛰️", `${WORDS.length} 个单词`, openGardenProject),
-    createFacilityCard("shop", "装备工坊", "🧰", `${player.ownedGear.length} / ${GEAR_ITEMS.length} 装备`, openWorkshopProject)
+    createFacilityCard("shop", "火箭工坊", "🧰", `${player.ownedRocketParts.length} / ${ROCKET_PARTS.length} 火箭`, openWorkshopProject)
   );
   updateHome();
 }
@@ -1253,7 +1365,7 @@ function renderTrainingProjects() {
 function renderGarden() {
   const grid = $("#gardenGrid");
   grid.replaceChildren();
-  WORDS.forEach((entry) => {
+  shuffle(WORDS).forEach((entry) => {
     const card = createButton(`garden-word${entry.id === gardenWordId ? " selected" : ""}`, "", () => {
       gardenWordId = entry.id;
       playEffect("tap");
@@ -1272,97 +1384,117 @@ function renderGardenDetail() {
   const heading = document.createElement("div");
   heading.className = "lab-heading";
   heading.innerHTML = `<img src="${entry.image}" alt="${entry.visual}"><div><h3>${entry.word}</h3><p>${entry.meaning}</p></div>`;
-  const sentence = document.createElement("p");
-  sentence.className = "lab-sentence";
-  sentence.textContent = entry.sentence;
-  const controls = document.createElement("div");
-  controls.className = "audio-controls";
-  const wordButton = createButton("listen-button", "▶ 听单词", () => playVoice(audioMaps.word.get(entry.id), wordButton));
-  const sentenceButton = createButton("mini-button", "听句子", () => playVoice(audioMaps.sentence.get(entry.id), sentenceButton));
-  const slowButton = createButton("mini-button slow-button", "🐢 超慢", () => playVoice(audioMaps.word.get(entry.id), slowButton, true));
-  controls.append(wordButton, sentenceButton, slowButton);
-  const letters = document.createElement("div");
-  letters.className = "letter-trail";
-  entry.word.split("").forEach((letter) => {
-    const tile = createButton("memory-letter", letter, () => playEffect("tap"));
-    letters.append(tile);
+  const wordButton = createVoiceButton(entry, null, "▶ 听单词");
+  const sentenceList = document.createElement("div");
+  sentenceList.className = "sentence-list";
+  entry.sentences.forEach((sentence, index) => {
+    const button = createButton("sentence-sample", sentence.text, () => {
+      playVoice(audioMaps.sentence.get(`${entry.id}-${index}`), button);
+    });
+    sentenceList.append(button);
   });
-  detail.append(heading, sentence, controls, letters);
+  detail.append(heading, wordButton, sentenceList);
 }
 
-function renderHeroShip() {
-  const heroShip = $("#heroShip");
-  if (!heroShip) return;
-  const featured = player.ownedGear.slice(0, 4)
-    .map((itemId) => GEAR_ITEMS.find((item) => item.id === itemId))
-    .filter(Boolean);
-  heroShip.replaceChildren();
-  const glow = document.createElement("span");
-  glow.className = "ship-glow";
-  const ship = document.createElement("span");
-  ship.className = "ship-icon";
-  ship.textContent = player.ownedGear.length >= 10 ? "🛸" : "🚀";
-  const orbit = document.createElement("span");
-  orbit.className = "ship-orbit";
-  heroShip.append(glow, orbit, ship);
-  featured.forEach((item, index) => {
-    const gear = document.createElement("span");
-    gear.className = `hero-gear hero-gear-${index}`;
-    gear.textContent = item.emoji;
-    heroShip.append(gear);
+function renderRocket(container) {
+  if (!container) return;
+  container.replaceChildren();
+  const body = document.createElement("span");
+  body.className = "rocket-skeleton";
+  container.append(body);
+  ROCKET_PARTS.forEach((part) => {
+    const element = document.createElement("span");
+    element.className = `rocket-part part-${part.id}${player.ownedRocketParts.includes(part.id) ? " owned" : ""}`;
+    if (part.id === "star-decals") element.textContent = "✦✦";
+    container.append(element);
   });
 }
 
-function renderGearGallery() {
-  const gallery = $("#gearGallery");
+function selectedCollection() {
+  return COLLECTION_SETS.find((collection) => collection.id === selectedCollectionId) || COLLECTION_SETS[0];
+}
+
+function renderCollectionGallery() {
+  const gallery = $("#collectionGallery");
   gallery.replaceChildren();
-  GEAR_TYPES.forEach((type) => {
-    const owned = player.ownedGear
-      .map((itemId) => GEAR_ITEMS.find((item) => item.id === itemId))
-      .filter((item) => item && item.type === type.id).length;
-    const card = document.createElement("article");
-    card.className = `gear-showcase-card${owned ? " owned" : ""}`;
-    card.innerHTML = `<span class="gear-art">${type.emoji}</span><strong>${type.name}</strong><small>${owned} / 2</small>`;
+  COLLECTION_SETS.forEach((collection) => {
+    const progress = collectionProgress(collection);
+    const card = createButton(`collection-card${collection.id === selectedCollectionId ? " selected" : ""}${progress.completed === progress.total ? " completed" : ""}`, "", () => {
+      selectedCollectionId = collection.id;
+      shopPage = 0;
+      renderWorkshop();
+    });
+    card.innerHTML = `<span>${collection.icon}</span><strong>${collection.name}</strong><small>${progress.completed} / ${progress.total}</small>`;
     gallery.append(card);
   });
 }
 
-function renderShop() {
-  renderHeroShip();
-  renderGearGallery();
-  $("#shopBalance").textContent = `⚡ ${player.stars}`;
-  $("#ownedGearCount").textContent = `${player.ownedGear.length}`;
-  $("#totalGearCount").textContent = `${GEAR_ITEMS.length}`;
-  const pageCount = Math.ceil(GEAR_ITEMS.length / SHOP_PAGE_SIZE);
+function currentWorkshopItems() {
+  if (workshopMode === "rocket") return ROCKET_PARTS;
+  return COLLECTION_PARTS.filter((item) => item.collectionId === selectedCollectionId);
+}
+
+function ownedWorkshopItems() {
+  return workshopMode === "rocket" ? player.ownedRocketParts : player.ownedCollectionParts;
+}
+
+function renderWorkshop() {
+  const rocketMode = workshopMode === "rocket";
+  const collection = selectedCollection();
+  const canCollect = rocketComplete();
+  $("#rocketTabButton").classList.toggle("active", rocketMode);
+  $("#collectionTabButton").classList.toggle("active", !rocketMode);
+  $("#collectionTabButton").classList.toggle("locked", !canCollect);
+  $("#rocketTabCount").textContent = `${player.ownedRocketParts.length} / ${ROCKET_PARTS.length}`;
+  $("#collectionTabCount").textContent = `${completedCollectionSets()} / ${COLLECTION_SETS.length}`;
+  $("#workshopShowcaseTitle").textContent = rocketMode ? "专属火箭" : collection.name;
+  $("#workshopShowcaseCount").textContent = rocketMode
+    ? `${player.ownedRocketParts.length} / ${ROCKET_PARTS.length}`
+    : `${collectionProgress(collection).completed} / ${collection.parts.length}`;
+  $("#workshopRocket").hidden = !rocketMode;
+  $("#collectionGallery").hidden = rocketMode;
+  if (rocketMode) renderRocket($("#workshopRocket"));
+  else renderCollectionGallery();
+
+  const items = currentWorkshopItems();
+  const pageCount = Math.ceil(items.length / SHOP_PAGE_SIZE);
   shopPage = Math.min(Math.max(0, shopPage), pageCount - 1);
   $("#shopPageLabel").textContent = `${shopPage + 1} / ${pageCount}`;
   $("#shopPreviousButton").disabled = shopPage === 0;
   $("#shopNextButton").disabled = shopPage === pageCount - 1;
-  const grid = $("#shopGrid");
-  grid.replaceChildren();
-  GEAR_ITEMS.slice(shopPage * SHOP_PAGE_SIZE, (shopPage + 1) * SHOP_PAGE_SIZE).forEach((item) => {
-    const owned = player.ownedGear.includes(item.id);
-    const card = createButton(`shop-item${owned ? " owned" : ""}`, "", () => buyGear(item));
+  $("#shopBalance").textContent = `⚡ ${player.stars}`;
+  $("#shopNotice").textContent = rocketMode
+    ? canCollect ? "火箭完成！开始收集 10 套星际收藏。" : "集齐 20 个火箭组件，解锁 10 套星际收藏。"
+    : `${collection.name} · ${collectionProgress(collection).completed} / ${collection.parts.length}`;
+  const shopGrid = $("#shopGrid");
+  shopGrid.replaceChildren();
+  items.slice(shopPage * SHOP_PAGE_SIZE, (shopPage + 1) * SHOP_PAGE_SIZE).forEach((item) => {
+    const owned = ownedWorkshopItems().includes(item.id);
+    const card = createButton(`shop-item${owned ? " owned" : ""}`, "", () => buyWorkshopItem(item));
     card.disabled = owned;
-    card.innerHTML = `<span class="shop-icon">${item.emoji}</span><span><small>${GEAR_TYPES.find((type) => type.id === item.type).name}</small><strong>${item.name}</strong><em>${owned ? "已收藏" : `⚡ ${item.price}`}</em></span>`;
-    grid.append(card);
+    card.innerHTML = `<span class="shop-icon">${item.icon}</span><span><small>${rocketMode ? "火箭组件" : collection.name}</small><strong>${item.name}</strong><em>${owned ? "已收藏" : `⚡ ${item.price}`}</em></span>`;
+    shopGrid.append(card);
   });
 }
 
-function buyGear(item) {
-  if (player.ownedGear.includes(item.id)) return;
+function buyWorkshopItem(item) {
+  if (workshopMode === "collection" && !rocketComplete()) {
+    showToast("集齐火箭后解锁收藏。");
+    return;
+  }
+  const owned = ownedWorkshopItems();
+  if (owned.includes(item.id)) return;
   if (player.stars < item.price) {
     playEffect("wrong");
     $("#shopNotice").textContent = `还差 ${item.price - player.stars} ⚡`;
     return;
   }
   player.stars -= item.price;
-  player.ownedGear.push(item.id);
+  owned.push(item.id);
   playEffect("purchase");
   createConfetti();
   savePlayerProfile(false);
-  $("#shopNotice").textContent = `已收藏 ${item.name}！`;
-  renderShop();
+  renderWorkshop();
   renderTrainingProjects();
 }
 
@@ -1374,15 +1506,9 @@ function showIpadInstallHint() {
 }
 
 function toggleFullscreen() {
-  if (!document.fullscreenEnabled || !document.documentElement.requestFullscreen) {
-    showToast("添加到主屏幕后可全屏打开。");
-    return;
-  }
+  if (!document.fullscreenEnabled || !document.documentElement.requestFullscreen) return;
   const action = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
-  action.catch((error) => {
-    console.warn("Unable to enter fullscreen:", error);
-    showToast("浏览器未允许全屏。");
-  });
+  action.catch((error) => console.warn("Unable to enter fullscreen:", error));
 }
 
 function registerServiceWorker() {
@@ -1402,27 +1528,31 @@ function wireInterface() {
   $("#profileNameInput").addEventListener("keydown", (event) => {
     if (event.key === "Enter") createProfileFromForm();
   });
-  $("#speedButton").addEventListener("click", () => {
-    if (!hasActiveProfile()) {
-      openProfileChooser();
-      return;
-    }
-    player.speed = player.speed === "slow" ? "verySlow" : "slow";
-    savePlayerProfile(false);
-    updateSpeedButton();
-    showToast(player.speed === "verySlow" ? "🐢 超慢速" : "🔊 慢速");
-  });
   $("#fullscreenButton").addEventListener("click", toggleFullscreen);
-  $("#saveButton").addEventListener("click", () => saveMission(true));
   $("#homeFromCompletionButton").addEventListener("click", returnHome);
   $("#playAgainButton").addEventListener("click", startNewMission);
+  $("#rocketTabButton").addEventListener("click", () => {
+    workshopMode = "rocket";
+    shopPage = 0;
+    renderWorkshop();
+  });
+  $("#collectionTabButton").addEventListener("click", () => {
+    if (!rocketComplete()) {
+      playEffect("wrong");
+      showToast("集齐火箭后解锁 10 套收藏。");
+      return;
+    }
+    workshopMode = "collection";
+    shopPage = 0;
+    renderWorkshop();
+  });
   $("#shopPreviousButton").addEventListener("click", () => {
     shopPage -= 1;
-    renderShop();
+    renderWorkshop();
   });
   $("#shopNextButton").addEventListener("click", () => {
     shopPage += 1;
-    renderShop();
+    renderWorkshop();
   });
   $("#cancelDeleteProfileButton").addEventListener("click", cancelProfileDeletion);
   $("#confirmDeleteProfileButton").addEventListener("click", deleteProfile);
@@ -1447,10 +1577,9 @@ function wireInterface() {
 function initializeGame() {
   preloadAudio();
   wireInterface();
-  updateSpeedButton();
   renderTrainingProjects();
   renderGarden();
-  renderShop();
+  renderWorkshop();
   renderProfileChooser();
   showIpadInstallHint();
   registerServiceWorker();

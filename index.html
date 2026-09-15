@@ -31,9 +31,7 @@
       <div class="header-actions">
         <span class="bank-pill" data-star-balance>⚡ 20</span>
         <button class="top-action profile-action" id="openProfileButton" type="button"><span id="profileAvatar">🧑‍🚀</span><span id="profileName">驾驶员</span></button>
-        <button class="top-action" id="speedButton" type="button" title="切换发音速度">🔊 慢速</button>
-        <button class="top-action" id="fullscreenButton" type="button" title="进入全屏">⛶ 全屏</button>
-        <button class="top-action" id="saveButton" type="button">💾 存档</button>
+        <button class="top-action icon-only" id="fullscreenButton" type="button" title="进入全屏" aria-label="进入全屏">⛶</button>
       </div>
     </header>
 
@@ -48,8 +46,8 @@
           <div><span>能量星</span><strong data-star-balance>⚡ 20</strong></div>
         </div>
         <div class="home-ship-panel">
-          <div class="hero-ship" id="heroShip" aria-label="专属飞船收藏"></div>
-          <div class="collection-summary"><span>装备收藏</span><strong id="heroGearCount">0 / 20</strong></div>
+          <div class="assembled-rocket compact" id="heroRocket" aria-label="正在组装的专属火箭"></div>
+          <div class="collection-summary"><span>火箭组件</span><strong id="heroRocketCount">0 / 20</strong><small>收藏 <b id="heroCollectionCount">0 / 10</b></small></div>
         </div>
         <button class="primary-button resume-button" id="resumeButton" type="button" hidden>继续任务 ▶</button>
         <p class="save-note" id="saveNote">自动存档已开启</p>
@@ -93,11 +91,16 @@
 
     <section class="app-route project-route" id="workshopScreen" hidden>
       <article class="screen-card project-page">
-        <div class="project-page-heading"><h2>🧰 装备工坊</h2><p>收集 20 件星际装备。</p></div>
+        <div class="project-page-heading"><h2>🧰 火箭工坊</h2><p>组装火箭，继续收集星际收藏。</p></div>
+        <div class="workshop-tabs">
+          <button class="workshop-tab active" id="rocketTabButton" type="button">🚀 火箭 <span id="rocketTabCount">0 / 20</span></button>
+          <button class="workshop-tab" id="collectionTabButton" type="button">🌌 收藏 <span id="collectionTabCount">0 / 10</span></button>
+        </div>
         <div class="workshop-layout">
           <section class="collection-showcase">
-            <div class="collection-heading"><h3>装备展柜</h3><strong><span id="ownedGearCount">0</span> / <span id="totalGearCount">20</span></strong></div>
-            <div class="gear-gallery" id="gearGallery"></div>
+            <div class="collection-heading"><h3 id="workshopShowcaseTitle">专属火箭</h3><strong id="workshopShowcaseCount">0 / 20</strong></div>
+            <div class="assembled-rocket workshop-rocket" id="workshopRocket" aria-label="火箭组件预览"></div>
+            <div class="trophy-gallery" id="collectionGallery" hidden></div>
           </section>
           <section class="shop-catalog">
             <div class="store-balance" id="shopBalance">⚡ 20</div>

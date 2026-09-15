@@ -2124,3 +2124,539 @@ button:disabled {
     transition-duration: 0.01ms !important;
   }
 }
+
+.space-background::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(135deg, rgba(4, 19, 48, 0.84), rgba(10, 35, 83, 0.74)),
+    url("images/backgrounds/orion-nebula.jpg") center / cover;
+  opacity: 0.38;
+}
+
+.home-sidebar,
+.home-workspace,
+.game-card,
+.project-page,
+.finish-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.home-sidebar::before,
+.home-workspace::before,
+.game-card::before,
+.project-page::before,
+.finish-card::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(135deg, rgba(6, 27, 66, 0.65), rgba(18, 59, 113, 0.34)),
+    url("images/backgrounds/orion-nebula.jpg") center / cover;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.home-sidebar > *,
+.home-workspace > *,
+.game-card > *,
+.project-page > *,
+.finish-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.icon-only {
+  width: 42px;
+  padding: 0;
+  font-size: 23px;
+}
+
+.stage-project-art {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  margin-bottom: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(165, 239, 255, 0.42);
+  border-radius: 16px;
+  background: rgba(228, 252, 255, 0.13);
+}
+
+.stage-project-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.assembled-rocket {
+  position: relative;
+  width: 250px;
+  height: 310px;
+  margin: auto;
+}
+
+.rocket-skeleton {
+  position: absolute;
+  top: 36px;
+  left: 70px;
+  width: 110px;
+  height: 220px;
+  border: 3px dashed rgba(157, 227, 255, 0.5);
+  border-radius: 54% 54% 26% 26%;
+  background: rgba(17, 74, 130, 0.2);
+  box-shadow: 0 0 25px rgba(88, 219, 255, 0.18);
+}
+
+.rocket-part {
+  position: absolute;
+  z-index: 2;
+  opacity: 0.2;
+  filter: grayscale(0.7);
+  transition: opacity 220ms ease, filter 220ms ease, transform 220ms ease;
+}
+
+.rocket-part.owned {
+  opacity: 1;
+  filter: none;
+  animation: install 400ms ease both;
+}
+
+.part-nose-cone {
+  top: 23px;
+  left: 94px;
+  width: 62px;
+  height: 69px;
+  background: linear-gradient(90deg, #ff8b4b, #ffe26c 52%, #e96d44);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.part-cockpit-glass {
+  top: 88px;
+  left: 99px;
+  width: 53px;
+  height: 53px;
+  border: 5px solid #d8fbff;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 23%, #f6ffff 0 10%, #62dbfa 12% 50%, #1c6fc1 52% 100%);
+}
+
+.part-antenna {
+  top: 5px;
+  left: 120px;
+  width: 8px;
+  height: 34px;
+  border-radius: 6px;
+  background: #cbfaff;
+}
+
+.part-antenna::after {
+  position: absolute;
+  top: -9px;
+  left: -6px;
+  width: 20px;
+  height: 20px;
+  content: "";
+  border-radius: 50%;
+  background: #ffdd65;
+}
+
+.part-navigation-light {
+  top: 56px;
+  left: 142px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffea65;
+  box-shadow: 0 0 12px #ffea65;
+}
+
+.part-hull-core {
+  top: 131px;
+  left: 84px;
+  width: 84px;
+  height: 108px;
+  border: 3px solid #d6faff;
+  border-radius: 16px 16px 31px 31px;
+  background: linear-gradient(90deg, #197ac8, #dbfbff 45%, #5ee1f6 100%);
+}
+
+.part-left-wing {
+  top: 176px;
+  left: 31px;
+  width: 77px;
+  height: 81px;
+  background: #ff7f4a;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.part-right-wing {
+  top: 176px;
+  right: 30px;
+  width: 77px;
+  height: 81px;
+  background: #ff7f4a;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+
+.part-left-fin {
+  top: 217px;
+  left: 60px;
+  width: 32px;
+  height: 44px;
+  background: #ffe173;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.part-right-fin {
+  top: 217px;
+  right: 60px;
+  width: 32px;
+  height: 44px;
+  background: #ffe173;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+
+.part-fuel-tank {
+  top: 204px;
+  left: 104px;
+  width: 43px;
+  height: 62px;
+  border: 3px solid #b5fbff;
+  border-radius: 16px;
+  background: #3cbaaf;
+}
+
+.part-engine-core {
+  top: 251px;
+  left: 98px;
+  width: 54px;
+  height: 28px;
+  border-radius: 10px 10px 19px 19px;
+  background: #7462d1;
+}
+
+.part-left-thruster {
+  top: 258px;
+  left: 56px;
+  width: 42px;
+  height: 30px;
+  border-radius: 9px 9px 18px 18px;
+  background: #258bc7;
+}
+
+.part-right-thruster {
+  top: 258px;
+  right: 56px;
+  width: 42px;
+  height: 30px;
+  border-radius: 9px 9px 18px 18px;
+  background: #258bc7;
+}
+
+.part-plasma-flame {
+  top: 277px;
+  left: 102px;
+  width: 47px;
+  height: 31px;
+  background: linear-gradient(#ffdf69, #ff8b43 58%, #e84d4c);
+  clip-path: polygon(50% 100%, 0 0, 28% 12%, 50% 0, 72% 12%, 100% 0);
+}
+
+.part-shield-ring {
+  top: 114px;
+  left: 60px;
+  width: 132px;
+  height: 86px;
+  border: 5px solid #86f6e4;
+  border-radius: 50%;
+  transform: rotate(-14deg);
+}
+
+.part-star-decals {
+  top: 149px;
+  left: 100px;
+  color: #fff6a0;
+  font-size: 24px;
+  letter-spacing: 4px;
+  text-shadow: 0 0 9px #fff07b;
+}
+
+.part-radar-dish {
+  top: 65px;
+  right: 21px;
+  width: 31px;
+  height: 20px;
+  border: 4px solid #a0f5ff;
+  border-radius: 50% 50% 10% 10%;
+  transform: rotate(28deg);
+}
+
+.part-radar-dish::after {
+  position: absolute;
+  right: -9px;
+  bottom: -13px;
+  width: 4px;
+  height: 21px;
+  content: "";
+  background: #a0f5ff;
+  transform: rotate(-26deg);
+}
+
+.part-turbo-booster {
+  top: 220px;
+  right: 14px;
+  width: 36px;
+  height: 64px;
+  border: 3px solid #d5faff;
+  border-radius: 16px;
+  background: #8666d4;
+}
+
+.part-moon-flag {
+  top: 84px;
+  left: 19px;
+  width: 4px;
+  height: 61px;
+  background: #d9f8ff;
+}
+
+.part-moon-flag::after {
+  position: absolute;
+  top: 0;
+  left: 4px;
+  width: 34px;
+  height: 22px;
+  content: "☾";
+  color: #0c477b;
+  background: #ffe473;
+  font-size: 19px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.part-captain-seat {
+  top: 121px;
+  left: 115px;
+  width: 20px;
+  height: 27px;
+  border-radius: 8px 8px 3px 3px;
+  background: #f372a3;
+}
+
+.part-captain-seat::after {
+  position: absolute;
+  top: -9px;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  content: "";
+  border-radius: 50%;
+  background: #ffd6b4;
+}
+
+.workshop-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+
+.workshop-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid rgba(126, 230, 255, 0.43);
+  border-radius: 999px;
+  color: #c7ebf7;
+  background: #123b70;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.workshop-tab.active {
+  color: #07355e;
+  background: #81eaf2;
+  box-shadow: 0 4px 0 #2a95b5;
+}
+
+.workshop-tab.locked {
+  border-color: rgba(255, 224, 109, 0.37);
+  color: #c4bedf;
+  background: #342e63;
+}
+
+.workshop-tab.locked::after {
+  content: "🔒";
+  font-size: 11px;
+}
+
+.workshop-rocket {
+  flex: 1 1 auto;
+}
+
+.trophy-gallery {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.collection-card {
+  display: grid;
+  min-height: 0;
+  place-content: center;
+  padding: 5px;
+  border: 2px solid #4a83ba;
+  border-radius: 13px;
+  color: #b8d9e9;
+  background: #103767;
+  text-align: center;
+}
+
+.collection-card > span {
+  font-size: 30px;
+}
+
+.collection-card strong,
+.collection-card small {
+  display: block;
+}
+
+.collection-card strong {
+  margin-top: 2px;
+  color: #edfaff;
+  font-size: 11px;
+}
+
+.collection-card small {
+  color: #ffe279;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.collection-card.selected {
+  border-color: #a38bff;
+  background: #4a3b86;
+}
+
+.collection-card.completed {
+  border-color: #8df0c6;
+  background: #176d70;
+}
+
+.drag-card {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: minmax(250px, 0.7fr) minmax(0, 1.3fr);
+  gap: 16px;
+  padding: 15px;
+}
+
+.drag-visual {
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid #54a4db;
+  border-radius: 19px;
+  background: #0c2c61;
+  flex-direction: column;
+}
+
+.drag-visual img {
+  min-height: 0;
+  width: 100%;
+  flex: 1 1 auto;
+  object-fit: cover;
+}
+
+.drag-visual strong {
+  padding: 9px;
+  color: #e9fbff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  text-align: center;
+}
+
+.drag-workspace {
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: space-around;
+  padding: 15px;
+  border: 2px solid #57a7dd;
+  border-radius: 19px;
+  background: linear-gradient(145deg, #1a5792, #10356c);
+  text-align: center;
+  flex-direction: column;
+}
+
+@keyframes install {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotate(-15deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@media (orientation: landscape) and (min-width: 900px) {
+  .home-ship-panel .assembled-rocket {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.72);
+    transform-origin: top center;
+  }
+
+  #workshopScreen .collection-showcase {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  #workshopScreen .workshop-rocket {
+    margin-top: -12px;
+    transform: scale(0.78);
+    transform-origin: top center;
+  }
+
+  #workshopScreen .trophy-gallery {
+    min-height: 0;
+  }
+
+  #gameScreen .drag-card {
+    height: 100%;
+  }
+
+  #gameScreen .drag-visual,
+  #gameScreen .drag-workspace {
+    min-height: 0;
+  }
+
+  #gameScreen .drag-workspace h3 {
+    font-size: 42px;
+  }
+
+  #gameScreen .drag-workspace .spelling-slot {
+    width: 72px;
+    height: 80px;
+    font-size: 44px;
+  }
+
+  #gameScreen .drag-workspace .letter-tile {
+    width: 70px;
+    height: 70px;
+    font-size: 40px;
+  }
+}

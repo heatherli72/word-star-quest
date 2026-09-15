@@ -1,4 +1,4 @@
-const CACHE_NAME = "word-space-quest-v18";
+const CACHE_NAME = "word-space-quest-v20";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const APP_SHELL = [
   "./icons/icon-180.png",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
+  "./images/backgrounds/orion-nebula.jpg",
   "./images/one.svg",
   "./images/two.svg",
   "./images/three.svg",
@@ -30,16 +31,36 @@ const APP_SHELL = [
   "./audio/like.mp3",
   "./audio/black.mp3",
   "./audio/white.mp3",
-  "./audio/sentences/one.mp3",
-  "./audio/sentences/two.mp3",
-  "./audio/sentences/three.mp3",
-  "./audio/sentences/four.mp3",
-  "./audio/sentences/eat.mp3",
-  "./audio/sentences/that.mp3",
-  "./audio/sentences/they.mp3",
-  "./audio/sentences/like.mp3",
-  "./audio/sentences/black.mp3",
-  "./audio/sentences/white.mp3",
+  "./audio/sentences/one-1.mp3",
+  "./audio/sentences/one-2.mp3",
+  "./audio/sentences/one-3.mp3",
+  "./audio/sentences/two-1.mp3",
+  "./audio/sentences/two-2.mp3",
+  "./audio/sentences/two-3.mp3",
+  "./audio/sentences/three-1.mp3",
+  "./audio/sentences/three-2.mp3",
+  "./audio/sentences/three-3.mp3",
+  "./audio/sentences/four-1.mp3",
+  "./audio/sentences/four-2.mp3",
+  "./audio/sentences/four-3.mp3",
+  "./audio/sentences/eat-1.mp3",
+  "./audio/sentences/eat-2.mp3",
+  "./audio/sentences/eat-3.mp3",
+  "./audio/sentences/that-1.mp3",
+  "./audio/sentences/that-2.mp3",
+  "./audio/sentences/that-3.mp3",
+  "./audio/sentences/they-1.mp3",
+  "./audio/sentences/they-2.mp3",
+  "./audio/sentences/they-3.mp3",
+  "./audio/sentences/like-1.mp3",
+  "./audio/sentences/like-2.mp3",
+  "./audio/sentences/like-3.mp3",
+  "./audio/sentences/black-1.mp3",
+  "./audio/sentences/black-2.mp3",
+  "./audio/sentences/black-3.mp3",
+  "./audio/sentences/white-1.mp3",
+  "./audio/sentences/white-2.mp3",
+  "./audio/sentences/white-3.mp3",
   "./audio/sfx/tap.wav",
   "./audio/sfx/type.wav",
   "./audio/sfx/delete.wav",
@@ -81,16 +102,14 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          const cachedCopy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cachedCopy));
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
           return response;
         })
-        .catch(() => caches.match(event.request).then((cachedResponse) => cachedResponse || caches.match("./index.html")))
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
     );
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => cachedResponse || fetch(event.request))
-  );
+  event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request)));
 });
