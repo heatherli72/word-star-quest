@@ -29,6 +29,8 @@
         <span class="brand-mark">🚀</span><span>单词宇宙训练营</span><small aria-hidden="true">⌂</small>
       </button>
       <div class="header-actions">
+        <span class="top-status"><small>训练</small><strong id="homeTrainingCount">0 / 80</strong></span>
+        <span class="top-status collection-status"><small id="homeCollectionStatus">专属火箭</small><strong id="heroRocketCount">0 / 20</strong></span>
         <span class="bank-pill" data-star-balance>⚡ 20</span>
         <button class="top-action profile-action" id="openProfileButton" type="button"><span id="profileAvatar">🧑‍🚀</span><span id="profileName">驾驶员</span></button>
         <button class="top-action bonus-button" id="bonusChallengeButton" type="button">✨ +100</button>
@@ -37,15 +39,6 @@
     </header>
 
     <section class="home-screen" id="landingScreen">
-      <header class="home-status-bar">
-        <div class="home-pilot-chip"><span data-profile-avatar>🧑‍🚀</span><strong id="homePilotName">等待选择</strong></div>
-        <div class="home-status-stat"><span>训练进度</span><strong id="homeTrainingCount">0 / 80</strong></div>
-        <div class="home-status-stat"><span>当前收藏</span><strong id="homeCollectionStatus">专属火箭</strong></div>
-        <button class="primary-button resume-button" id="resumeButton" type="button" hidden>继续任务 ▶</button>
-        <span class="save-note" id="saveNote">自动存档</span>
-        <span class="save-note" id="iosInstallTip" hidden>横屏添加到主屏幕后，可全屏使用。</span>
-      </header>
-
       <section class="orbit-map" aria-labelledby="homeWorkspaceTitle">
         <div class="orbit-heading">
           <p class="eyebrow">TRAINING CAMP</p>
@@ -55,7 +48,6 @@
           <div class="core-glow"></div>
           <div class="assembled-rocket home-orbit-rocket" id="heroRocket" aria-label="正在组装的专属火箭"></div>
           <div class="home-collection-preview" id="homeCollectionPreview" hidden></div>
-          <div class="orbit-progress"><span id="homeCollectionName">专属火箭</span><strong id="heroRocketCount">0 / 20</strong><small>已激活 <b id="heroCollectionCount">0 / 10</b></small></div>
         </div>
         <div class="orbit-stage-grid" id="stageProjectGrid"></div>
       </section>
@@ -103,7 +95,7 @@
       <article class="screen-card project-page">
         <div class="project-page-heading">
           <div><h2>🧰 星际收藏工坊</h2><p>组装 <strong id="workshopCollectionName">专属火箭</strong>。</p></div>
-          <button class="secondary-button workshop-home-button" id="workshopHomeButton" type="button">← 收藏总览</button>
+          <button class="secondary-button workshop-home-button" id="workshopHomeButton" type="button">▦ 浏览全部收藏</button>
         </div>
         <div class="workshop-layout">
           <section class="collection-showcase">

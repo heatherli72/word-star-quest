@@ -4761,6 +4761,148 @@ button:disabled {
   }
 }
 
+.top-status {
+  display: grid;
+  min-width: 74px;
+  gap: 1px;
+  padding: 5px 10px;
+  border: 1px solid rgba(126, 228, 255, 0.48);
+  border-radius: 13px;
+  color: #b8ddee;
+  background: rgba(7, 38, 83, 0.72);
+  line-height: 1.1;
+}
+
+.top-status small {
+  overflow: hidden;
+  color: #9bc9e2;
+  font-size: 9px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-status strong {
+  overflow: hidden;
+  color: #ffe27c;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-status {
+  max-width: 126px;
+}
+
+@media (orientation: landscape) and (min-width: 900px) {
+  #landingScreen.home-screen {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    grid-template-rows: 1fr;
+    gap: 12px;
+  }
+
+  .orbit-map {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .facility-dock {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .orbit-stage-grid .stage-project-card {
+    width: min(28%, 185px);
+    min-height: 102px;
+    padding: 11px;
+  }
+
+  .orbit-stage-grid .stage-project-art {
+    width: 55px;
+    height: 49px;
+  }
+
+  .orbit-stage-grid .stage-project-card strong {
+    font-size: 16px;
+  }
+
+  .orbit-core {
+    width: 232px;
+    height: 250px;
+  }
+
+  .home-orbit-rocket {
+    transform: translateX(-50%) scale(0.76);
+  }
+
+  #gameScreen .game-card {
+    position: relative;
+    padding: 13px 28px;
+  }
+
+  #gameScreen .stage-heading {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 11px 6px 6px;
+    border: 1px solid rgba(139, 235, 255, 0.58);
+    border-radius: 15px;
+    background: rgba(8, 48, 100, 0.78);
+    box-shadow: 0 3px 0 rgba(2, 24, 65, 0.52);
+    text-align: left;
+  }
+
+  #gameScreen .stage-icon {
+    width: 39px;
+    height: 39px;
+    margin: 0;
+    border-radius: 12px;
+    font-size: 21px;
+  }
+
+  #gameScreen .stage-heading h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  #gameScreen .stage-heading p {
+    display: none;
+  }
+
+  #gameScreen .round-line {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    margin: 0;
+    font-size: 12px;
+  }
+
+  #gameScreen .question-area {
+    margin-top: 9px;
+  }
+
+  #gameScreen .handwriting-card {
+    grid-template-columns: minmax(224px, 0.56fr) minmax(0, 1.44fr);
+    gap: 12px;
+    padding: 12px;
+  }
+
+  #gameScreen .handwriting-prompt h3 {
+    font-size: 25px;
+  }
+
+  #gameScreen .paper-area {
+    padding: 9px;
+  }
+}
+
+@media (max-width: 899px), (orientation: portrait) {
+  .top-status {
+    display: none;
+  }
+}
+
 @media (orientation: landscape) and (min-width: 900px) {
   #gameScreen .dictation-workspace .spelling-keyboard {
     grid-template-columns: minmax(110px, 0.62fr) minmax(0, 1.38fr);

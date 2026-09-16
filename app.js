@@ -547,7 +547,6 @@ function updateProfileDisplay() {
   const avatar = getAvatar();
   $("#profileAvatar").textContent = avatar.emoji;
   $("#profileName").textContent = player.name;
-  $("#homePilotName").textContent = player.name;
   document.querySelectorAll("[data-profile-avatar]").forEach((element) => {
     element.textContent = avatar.emoji;
   });
@@ -574,17 +573,11 @@ function updateHome() {
   $("#homeTrainingCount").textContent = `${ready ? totalTrainingProgress() : 0} / ${totalTrainingQuestions()}`;
   const active = activeCollection();
   const activeProgress = collectionProgress(active);
-  $("#homeCollectionName").textContent = active.name;
   $("#homeCollectionStatus").textContent = active.name;
   $("#heroRocketCount").textContent = `${ready ? activeProgress.completed : 0} / ${activeProgress.total}`;
-  $("#heroCollectionCount").textContent = `${ready ? activatedCollectionSets() : 0} / ${COLLECTION_SETS.length}`;
-  $("#resumeButton").hidden = !ready || !player.mission;
   const bonusButton = $("#bonusChallengeButton");
   bonusButton.disabled = !ready;
   bonusButton.textContent = "✨ +100";
-  $("#saveNote").textContent = ready && player.mission
-    ? `上次：${STAGES[player.mission.stageIndex].title} · ${player.mission.roundIndex + 1} / ${player.mission.roundIds.length}`
-    : "自动存档已开启";
   renderHomeCollection();
 }
 
@@ -884,7 +877,7 @@ function preloadAudio() {
   audioMaps.bonus.set("space", createAudio("audio/bonus/space.mp3"));
   Object.entries(SFX_TRACKS).forEach(([name, source]) => {
     const sound = createAudio(source);
-    sound.volume = name === "correct" || name === "purchase" ? 0.52 : 0.38;
+    sound.volume = name === "wrong" ? 0.68 : name === "correct" || name === "purchase" ? 0.52 : 0.42;
     audioMaps.sfx.set(name, sound);
   });
   Object.entries(BACKGROUND_TRACKS).forEach(([screenId, source]) => {
@@ -1437,30 +1430,17 @@ function renderHandwritingQuestion(entry, sentence) {
 
   const paperArea = document.createElement("section");
   paperArea.className = "paper-area";
+  const isLastWord = game.roundIndex === game.rounds.length - 1;
   paperArea.innerHTML = `
     <div class="paper-toolbar">
       <strong>我的答卷</strong>
       <button class="mini-button" id="clearWritingButton" type="button">清空</button>
     </div>
     <canvas class="handwriting-canvas" id="handwritingCanvas" aria-label="手写答题纸"></canvas>
-    <button class="primary-button" id="submitWritingButton" type="button">检查本题</button>
+    <button class="primary-button" id="submitWritingButton" type="button">${isLastWord ? "提交整组答卷" : "下一题"}</button>
   `;
 
-  const check = document.createElement("section");
-  check.className = "handwriting-check";
-  check.id = "handwritingCheck";
-  check.hidden = true;
-  check.innerHTML = `
-    <div class="answer-sheet">
-      <span>自己检查</span>
-      <img id="writingPreview" alt="孩子的手写答卷">
-      <p>正确拼写</p>
-      <strong id="writingAnswer"></strong>
-      <button class="primary-button" id="nextWritingButton" type="button">下一题</button>
-    </div>
-  `;
-
-  card.append(prompt, paperArea, check);
+  card.append(prompt, paperArea);
   area.append(card);
   const writingCanvas = $("#handwritingCanvas");
   window.requestAnimationFrame(() => {
@@ -1468,8 +1448,7 @@ function renderHandwritingQuestion(entry, sentence) {
   });
 
   $("#clearWritingButton").addEventListener("click", () => clearHandwritingBoard(handwritingBoard));
-  $("#submitWritingButton").addEventListener("click", () => checkHandwritingEntry(entry));
-  $("#nextWritingButton").addEventListener("click", advanceHandwritingEntry);
+  $("#submitWritingButton").addEventListener("click", () => submitHandwritingEntry(entry));
 }
 
 function setupHandwritingBoard(canvas, letterCount, correctionMode) {
@@ -1509,9 +1488,10 @@ function drawWritingPaper(board) {
   context.fillRect(0, 0, width, height);
   context.lineWidth = 1;
   context.strokeStyle = "#9fc9ec";
-  const top = height * 0.27;
-  const middle = height * 0.53;
-  const bottom = height * 0.79;
+  const top = height * 0.14;
+  const upperGuide = height * 0.38;
+  const lowerGuide = height * 0.62;
+  const bottom = height * 0.86;
   if (correctionMode) {
     const boxWidth = width / letterCount;
     for (let index = 1; index < letterCount; index += 1) {
@@ -1530,8 +1510,10 @@ function drawWritingPaper(board) {
   context.stroke();
   context.setLineDash([8, 6]);
   context.beginPath();
-  context.moveTo(0, middle);
-  context.lineTo(width, middle);
+  context.moveTo(0, upperGuide);
+  context.lineTo(width, upperGuide);
+  context.moveTo(0, lowerGuide);
+  context.lineTo(width, lowerGuide);
   context.stroke();
   context.setLineDash([]);
 }
@@ -1586,7 +1568,7 @@ function clearHandwritingBoard(board) {
   playEffect("delete");
 }
 
-function checkHandwritingEntry(entry) {
+function submitHandwritingEntry(entry) {
   if (!handwritingBoard || !handwritingBoard.hasInk) {
     setFeedback("先在答题纸上写出单词。", "try-again");
     return;
@@ -1602,14 +1584,6 @@ function checkHandwritingEntry(entry) {
   handwritingSession.currentIndex = game.roundIndex;
   player.handwritingSession = handwritingSession;
   saveMission(false);
-  $("#writingPreview").src = handwritingBoard.canvas.toDataURL("image/png");
-  $("#writingAnswer").textContent = entry.word;
-  $("#handwritingCheck").hidden = false;
-  setFeedback("看看正确拼写，准备下一题。", "");
-}
-
-function advanceHandwritingEntry() {
-  $("#handwritingCheck").hidden = true;
   if (game.roundIndex + 1 < game.rounds.length) {
     game.roundIndex += 1;
     handwritingSession.currentIndex = game.roundIndex;
@@ -1954,8 +1928,10 @@ function openGardenProject() {
 }
 
 function openWorkshopProject() {
-  if (!openProject("workshopHomeScreen")) return;
-  renderWorkshopHome();
+  if (!openProject("workshopScreen")) return;
+  selectedCollectionId = activeCollection().id;
+  shopPage = 0;
+  renderWorkshop();
 }
 
 function showFinish() {
@@ -2197,13 +2173,6 @@ function buyWorkshopItem(item) {
   renderTrainingProjects();
 }
 
-function showIpadInstallHint() {
-  const isIpad = /iPad/i.test(navigator.userAgent)
-    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  const standalone = window.matchMedia("(display-mode: standalone)").matches || Boolean(navigator.standalone);
-  if (isIpad && !standalone) $("#iosInstallTip").hidden = false;
-}
-
 function toggleFullscreen() {
   if (!document.fullscreenEnabled || !document.documentElement.requestFullscreen) return;
   const action = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
@@ -2219,7 +2188,6 @@ function registerServiceWorker() {
 
 function wireInterface() {
   $("#homeButton").addEventListener("click", returnHome);
-  $("#resumeButton").addEventListener("click", resumeMission);
   $("#openProfileButton").addEventListener("click", openProfileChooser);
   $("#bonusChallengeButton").addEventListener("click", openBonusChallenge);
   $("#closeBonusChallengeButton").addEventListener("click", closeBonusChallenge);
@@ -2284,7 +2252,6 @@ function initializeGame() {
   renderWorkshopHome();
   renderWorkshop();
   renderProfileChooser();
-  showIpadInstallHint();
   registerServiceWorker();
   openProfileChooser();
   if (storageWarning) window.setTimeout(() => showToast(storageWarning), 250);
