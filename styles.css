@@ -2990,7 +2990,14 @@ button:disabled {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.6;
+  opacity: 0.29;
+  transform: scale(1.1);
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.collection-hero.is-building img {
+  opacity: 0.48;
+  transform: scale(1.04);
 }
 
 .collection-hero::after {
@@ -3008,15 +3015,68 @@ button:disabled {
 }
 
 .collection-hero-icon {
+  z-index: 2;
   font-size: 76px;
 }
 
 .collection-hero strong {
+  z-index: 4;
   padding: 6px 10px;
   border-radius: 999px;
   color: #fff0a2;
   background: rgba(4, 22, 57, 0.74);
   font-size: 16px;
+}
+
+.collection-assembly-grid {
+  position: absolute;
+  z-index: 3;
+  inset: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.collection-assembly-part {
+  display: grid;
+  min-width: 0;
+  place-items: center;
+  border: 1px dashed rgba(160, 224, 246, 0.47);
+  border-radius: 8px;
+  color: #789abd;
+  background: rgba(5, 25, 61, 0.32);
+  filter: grayscale(1);
+  opacity: 0.64;
+  transition: background 220ms ease, border-color 220ms ease, filter 220ms ease, opacity 220ms ease, transform 220ms ease;
+}
+
+.collection-assembly-part i,
+.collection-assembly-part small {
+  display: block;
+  font-style: normal;
+}
+
+.collection-assembly-part i {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.collection-assembly-part small {
+  margin-top: -2px;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.collection-assembly-part.owned {
+  border-style: solid;
+  border-color: #fff09a;
+  color: #fff7c1;
+  background: linear-gradient(145deg, rgba(250, 173, 76, 0.92), rgba(135, 75, 169, 0.92));
+  box-shadow: 0 0 11px rgba(255, 224, 105, 0.46);
+  filter: none;
+  opacity: 1;
+  transform: scale(1.06);
 }
 
 .workshop-rocket {
@@ -3228,6 +3288,20 @@ button:disabled {
     min-height: 164px;
     margin: 0 0 3px;
   }
+
+  #workshopScreen .collection-assembly-grid {
+    inset: 7px;
+    gap: 3px;
+  }
+
+  #workshopScreen .collection-assembly-part {
+    border-radius: 7px;
+  }
+
+  #workshopScreen .collection-assembly-part i {
+    font-size: 18px;
+  }
+
 
   #workshopHomeScreen .project-page {
     display: flex;

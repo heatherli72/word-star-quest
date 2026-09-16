@@ -1286,7 +1286,8 @@ function checkSpelling() {
 function renderDictationQuestion(entry, sentence) {
   game.allowLetterReuse = true;
   game.placedLetters = Array(entry.word.length).fill(null);
-  game.letterBank = "abcdefghijklmnopqrstuvwxyz".split("").map((letter) => ({ id: `keyboard-${letter}`, letter }));
+  game.letterBank = shuffle("abcdefghijklmnopqrstuvwxyz".split(""))
+    .map((letter) => ({ id: `keyboard-${letter}`, letter }));
   const area = $("#questionArea");
   area.replaceChildren();
   const panel = document.createElement("div");
@@ -1895,16 +1896,26 @@ function renderWorkshop() {
 function renderCollectionHero(collection, progress) {
   const hero = $("#collectionHero");
   hero.replaceChildren();
-  hero.style.setProperty("--collection-art", `url("${collection.image}")`);
   const image = document.createElement("img");
   image.src = collection.image;
   image.alt = collection.name;
   const icon = document.createElement("span");
   icon.className = "collection-hero-icon";
   icon.textContent = collection.icon;
+  const assembly = document.createElement("div");
+  assembly.className = "collection-assembly-grid";
+  currentWorkshopItems().forEach((part, index) => {
+    const owned = player.ownedCollectionParts.includes(part.id);
+    const cell = document.createElement("span");
+    cell.className = `collection-assembly-part${owned ? " owned" : ""}`;
+    cell.title = `${index + 1}. ${part.name}`;
+    cell.innerHTML = `<i>${part.icon}</i><small>${index + 1}</small>`;
+    assembly.append(cell);
+  });
   const label = document.createElement("strong");
   label.textContent = `${progress.completed} / ${progress.total} 部件`;
-  hero.append(image, icon, label);
+  hero.classList.toggle("is-building", progress.completed > 0);
+  hero.append(image, icon, assembly, label);
 }
 
 function buyWorkshopItem(item) {
