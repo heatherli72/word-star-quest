@@ -27,12 +27,15 @@
 
   <main class="app-shell">
     <header class="topbar">
-      <button class="brand-home" id="homeButton" type="button" aria-label="回到首页" data-i18n-aria-label="nav.home">
-        <span class="brand-mark" aria-hidden="true">🚀</span>
-        <span class="brand-copy" data-i18n="app.brand">单词星际任务</span>
-        <small aria-hidden="true">⌂</small>
+      <button class="brand-home" id="homeButton" type="button" aria-label="回到首页" data-i18n-aria-label="nav.home" title="回到首页" data-i18n-title="nav.home">
+        <span class="brand-mark" aria-hidden="true">⌂</span>
       </button>
       <div class="header-actions">
+        <span class="stage-nav-status" id="stageNavStatus" hidden aria-live="polite">
+          <span class="stage-nav-icon" id="stageNavIcon" aria-hidden="true">📡</span>
+          <span class="stage-nav-copy"><strong id="stageNavTitle">雷达听音站</strong><small id="stageNavRound">1 / 10</small></span>
+          <span class="stage-nav-meter" aria-hidden="true"><i id="roundFill"></i></span>
+        </span>
         <span class="top-status"><small data-i18n="home.training">任务</small><strong id="homeTrainingCount">0 / 80</strong></span>
         <span class="top-status collection-status"><small id="homeCollectionStatus">星际火箭</small><strong id="heroRocketCount">0 / 20</strong></span>
         <span class="bank-pill" data-star-balance>⚡ 20</span>
@@ -61,18 +64,13 @@
       </section>
 
       <aside class="facility-dock" aria-label="探索" data-i18n-aria-label="home.explore">
-        <div class="facility-heading"><span data-i18n="home.explore">探索</span><strong data-i18n="home.wordLab">单词舱</strong></div>
+        <div class="facility-heading"><span data-i18n="home.explore">探索</span></div>
         <div class="facility-project-grid" id="facilityProjectGrid"></div>
       </aside>
     </section>
 
     <section class="app-route" id="gameScreen" hidden>
       <article class="screen-card game-card">
-        <div class="stage-heading">
-          <div class="stage-icon" id="stageIcon">📡</div>
-          <div><h2 id="stageTitle">雷达听音站</h2><p id="stageDescription">听句子 · 选词</p></div>
-        </div>
-        <div class="round-line"><span id="roundText">1 / 10</span><div class="round-meter"><div class="round-fill" id="roundFill"></div></div></div>
         <div class="question-area" id="questionArea"></div>
         <div class="feedback" id="feedback" aria-live="polite" data-i18n="question.ready">准备听题</div>
       </article>
@@ -183,14 +181,11 @@
     <section class="modal-box small bonus-modal" role="dialog" aria-modal="true" aria-labelledby="bonusChallengeTitle">
       <button class="modal-close" id="closeBonusChallengeButton" type="button" aria-label="关闭" data-i18n-aria-label="common.close" title="关闭" data-i18n-title="common.close">×</button>
       <div class="bonus-orbit">✨</div>
-      <p class="bonus-kicker" data-i18n="bonus.kicker">秘密补给</p>
-      <h2 id="bonusChallengeTitle" data-i18n="bonus.title">拼出 SPACE</h2>
-      <p class="bonus-clue" id="bonusClue"></p>
-      <div class="bonus-scramble" id="bonusScramble" aria-label="打乱的字母" data-i18n-aria-label="bonus.letters"></div>
-      <button class="listen-button bonus-listen-button" id="bonusListenButton" type="button" aria-label="听 SPACE" data-i18n-aria-label="bonus.listen"><span aria-hidden="true">🔊</span><span class="button-label" data-i18n="bonus.listen">听 SPACE</span></button>
-      <input class="bonus-answer" id="bonusAnswerInput" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="拼出单词" data-i18n-placeholder="bonus.placeholder">
+      <h2 class="visually-hidden" id="bonusChallengeTitle" data-i18n="bonus.kicker">秘密补给</h2>
+      <button class="repeat-button bonus-listen-button" id="bonusListenButton" type="button" aria-label="听 SPACE" data-i18n-aria-label="bonus.listen" title="听 SPACE" data-i18n-title="bonus.listen"><span class="button-icon" aria-hidden="true">↻</span><span class="button-label" data-i18n="bonus.listen">听 SPACE</span></button>
+      <input class="bonus-answer" id="bonusAnswerInput" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="输入答案" data-i18n-aria-label="bonus.input">
       <p class="bonus-feedback" id="bonusFeedback" aria-live="polite"></p>
-      <button class="primary-button" id="checkBonusButton" type="button" aria-label="领取 +100" data-i18n-aria-label="bonus.submit"><span aria-hidden="true">✨</span><span class="button-label" data-i18n="bonus.submit">领取 +100</span></button>
+      <button class="primary-button bonus-submit" id="checkBonusButton" type="button" aria-label="领取 +100" data-i18n-aria-label="bonus.submit"><span class="button-icon" aria-hidden="true">✓</span><span class="button-label" data-i18n="bonus.submit">领取 +100</span></button>
     </section>
   </div>
 

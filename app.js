@@ -30,8 +30,10 @@ const I18N = {
       listen: "听",
       listenWord: "听单词",
       listenSentence: "听句子",
+      repeat: "重听",
       check: "检查",
       clear: "清空",
+      eraser: "清除笔迹",
       next: "下一题",
       submit: "提交",
       back: "返回",
@@ -56,6 +58,7 @@ const I18N = {
       vowels: "元音",
       consonants: "辅音",
       combinations: "组合",
+      moveLetters: "↔ 点字母放入，点格子返回",
       audioOnly: "只听",
       writing: "手写答题纸",
       myPaper: "我的答卷",
@@ -143,6 +146,7 @@ const I18N = {
       clue: "提示：太空",
       letters: "打乱的字母",
       listen: "听 SPACE",
+      input: "输入答案",
       placeholder: "拼出单词",
       submit: "领取 +100",
       wrong: "再看一眼字母",
@@ -177,8 +181,10 @@ const I18N = {
       listen: "Listen",
       listenWord: "Word",
       listenSentence: "Sentence",
+      repeat: "Repeat",
       check: "Check",
       clear: "Clear",
+      eraser: "Erase writing",
       next: "Next",
       submit: "Submit",
       back: "Back",
@@ -203,6 +209,7 @@ const I18N = {
       vowels: "Vowels",
       consonants: "Consonants",
       combinations: "Pairs",
+      moveLetters: "↔ Tap a tile to place it; tap a slot to return it",
       audioOnly: "Listen only",
       writing: "Writing paper",
       myPaper: "My answer",
@@ -290,6 +297,7 @@ const I18N = {
       clue: "Clue: outer space",
       letters: "Scrambled letters",
       listen: "Hear SPACE",
+      input: "Type your answer",
       placeholder: "Spell the word",
       submit: "Claim +100",
       wrong: "Check the letters again",
@@ -885,6 +893,8 @@ let audioPrimed = false;
 let activeBonusChallenge = null;
 let promptSequenceId = 0;
 let activeVoiceCompletion = null;
+let lastWrongEffectAt = -Infinity;
+let roundAdvanceTimer = 0;
 let handwritingBoard = null;
 let correctionBoard = null;
 let handwritingSession = null;
@@ -1174,7 +1184,6 @@ function refreshLocalizedViews() {
     const pendingProfile = saveBook.profiles.find((profile) => profile.id === pendingDeleteProfileId);
     if (pendingProfile) $("#deleteProfileCopy").textContent = t("profile.deleteCopy", { name: pendingProfile.name });
   }
-  if (activeBonusChallenge) $("#bonusClue").textContent = t("bonus.clue");
   updateHome();
   renderTrainingProjects();
   renderGarden();
@@ -1184,6 +1193,7 @@ function refreshLocalizedViews() {
   updateStageHeader();
   if (STAGES[game.stageIndex].mode === "handwriting") {
     if (handwritingSession && handwritingSession.reviewing) renderHandwritingReview();
+    else refreshHandwritingQuestionLabels();
     return;
   }
   renderRound(true);
@@ -1239,15 +1249,7 @@ function openBonusChallenge() {
     return;
   }
   activeBonusChallenge = BONUS_CHALLENGE;
-  $("#bonusClue").textContent = t("bonus.clue");
   $("#bonusFeedback").textContent = "";
-  const scramble = $("#bonusScramble");
-  scramble.replaceChildren();
-  activeBonusChallenge.scramble.forEach((letter) => {
-    const tile = document.createElement("span");
-    tile.textContent = letter;
-    scramble.append(tile);
-  });
   const answerInput = $("#bonusAnswerInput");
   answerInput.value = "";
   answerInput.classList.remove("wrong", "correct");
@@ -1631,24 +1633,59 @@ function wait(milliseconds) {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 }
 
+function cancelPendingRoundAdvance() {
+  window.clearTimeout(roundAdvanceTimer);
+  roundAdvanceTimer = 0;
+}
+
+function queueNextRound() {
+  cancelPendingRoundAdvance();
+  const stageIndex = game.stageIndex;
+  const roundIndex = game.roundIndex;
+  roundAdvanceTimer = window.setTimeout(() => {
+    roundAdvanceTimer = 0;
+    if (!game.active || game.stageIndex !== stageIndex || game.roundIndex !== roundIndex) return;
+    nextRound();
+  }, 1100);
+}
+
 async function autoplayPrompt(entry, sentence, mode) {
   const sequenceId = ++promptSequenceId;
   await wait(220);
   if (sequenceId !== promptSequenceId || !game.active) return;
+  await playPromptSequence(entry, sentence, mode, null, sequenceId);
+}
+
+async function playPromptSequence(entry, sentence, mode, button = null, sequenceId = ++promptSequenceId) {
+  if (button) button.classList.add("is-playing");
+  const canContinue = () => sequenceId === promptSequenceId && game.active;
   if (mode === "word-then-sentence") {
     await playVoiceAndWait(audioMaps.word.get(entry.id));
-    if (sequenceId !== promptSequenceId || !game.active) return;
+    if (!canContinue()) {
+      if (button && sequenceId === promptSequenceId) button.classList.remove("is-playing");
+      return;
+    }
     await wait(170);
   }
-  if (sequenceId !== promptSequenceId || !game.active) return;
+  if (!canContinue()) {
+    if (button && sequenceId === promptSequenceId) button.classList.remove("is-playing");
+    return;
+  }
   await playVoiceAndWait(audioMaps.sentence.get(`${entry.id}-${sentence.index}`));
+  if (button && sequenceId === promptSequenceId) button.classList.remove("is-playing");
 }
 
 function playEffect(name) {
   const sound = audioMaps.sfx.get(name);
   if (!sound) return;
+  if (name === "wrong") {
+    const now = performance.now();
+    if (now - lastWrongEffectAt < 240) return;
+    lastWrongEffectAt = now;
+  }
   sound.pause();
   sound.currentTime = 0;
+  sound.loop = false;
   sound.muted = false;
   sound.play().catch((error) => console.warn(`Unable to play ${name} sound:`, error));
 }
@@ -1703,11 +1740,18 @@ function createVoiceButton(entry, sentence) {
   return button;
 }
 
-function createPromptControls(entry, sentence, includeWord = true) {
+function createRepeatButton(entry, sentence, mode = "sentence") {
+  let button = null;
+  button = iconButton(createButton("repeat-button", "", () => {
+    void playPromptSequence(entry, sentence, mode, button);
+  }), "↻", t("common.repeat"));
+  return button;
+}
+
+function createPromptControls(entry, sentence, mode = "sentence") {
   const controls = document.createElement("div");
-  controls.className = "audio-controls";
-  if (includeWord) controls.append(createVoiceButton(entry, null));
-  controls.append(createVoiceButton(entry, sentence));
+  controls.className = "audio-controls stage-audio-controls";
+  controls.append(createRepeatButton(entry, sentence, mode));
   return controls;
 }
 
@@ -1719,10 +1763,10 @@ function setFeedback(message, kind = "") {
 
 function updateStageHeader() {
   const stage = STAGES[game.stageIndex];
-  $("#stageIcon").textContent = stage.icon;
-  $("#stageTitle").textContent = localized(stage.title);
-  $("#stageDescription").textContent = localized(stage.description);
-  $("#roundText").textContent = `${game.roundIndex + 1} / ${game.rounds.length}`;
+  $("#stageNavIcon").textContent = stage.icon;
+  $("#stageNavTitle").textContent = localized(stage.title);
+  $("#stageNavRound").textContent = `${game.roundIndex + 1} / ${game.rounds.length}`;
+  $("#stageNavStatus").setAttribute("aria-label", `${t("home.stage", { number: game.stageIndex + 1 })}: ${localized(stage.title)}, ${game.roundIndex + 1} / ${game.rounds.length}`);
   $("#roundFill").style.width = `${(game.roundIndex / game.rounds.length) * 100}%`;
 }
 
@@ -1746,8 +1790,8 @@ function renderListeningQuestion(entry, sentence) {
   layout.append(createSceneCard(entry));
   const mission = document.createElement("section");
   mission.className = "mission-card";
-  mission.innerHTML = `<span>${t("question.sentence")}</span><strong class="sentence-line" id="sentenceLine">${sentence.blank}</strong>`;
-  mission.append(createPromptControls(entry, sentence, false));
+  mission.innerHTML = `<strong class="sentence-line" id="sentenceLine">${sentence.blank}</strong>`;
+  mission.append(createPromptControls(entry, sentence));
   layout.append(mission);
   panel.append(layout);
   const choices = shuffle([
@@ -1786,10 +1830,10 @@ function renderSoundFillQuestion(question, sentence) {
   const card = document.createElement("section");
   card.className = "fill-card";
   card.innerHTML = `<span>${sentence.blank}</span><div class="fill-word"><b>${question.prefix}</b><b class="fill-slot" id="fillSlot">${"_".repeat(question.answer.length)}</b><b>${question.suffix}</b></div>`;
-  card.append(createPromptControls(entry, sentence));
+  card.append(createPromptControls(entry, sentence, "word-then-sentence"));
+  addChoiceGrid(card, shuffle(question.choices), (choice, button) => checkFillAnswer(question, choice, button), "fill-choices");
   layout.append(card);
   panel.append(layout);
-  addChoiceGrid(panel, shuffle(question.choices), (choice, button) => checkFillAnswer(question, choice, button), "fill-choices");
   area.append(panel);
 }
 
@@ -1838,15 +1882,17 @@ function renderSpellQuestion(entry, sentence) {
 
   const workspace = document.createElement("div");
   workspace.className = "drag-workspace";
-  workspace.innerHTML = `<span>${t("question.drag")}</span><h3>${t("question.letters", { count: entry.word.length })}</h3>`;
-  workspace.append(createPromptControls(entry, sentence));
+  const dragHint = document.createElement("p");
+  dragHint.className = "drag-hint";
+  dragHint.textContent = t("question.moveLetters");
+  workspace.append(createPromptControls(entry, sentence, "word-then-sentence"));
   const slots = document.createElement("div");
   slots.className = "spelling-slots";
   slots.id = "spellingSlots";
   const bank = document.createElement("div");
   bank.className = "letter-bank";
   bank.id = "letterBank";
-  workspace.append(slots, bank, iconButton(createButton("primary-button check-button", "", checkSpelling), "✓", t("common.check")));
+  workspace.append(slots, bank, iconButton(createButton("primary-button check-button", "", checkSpelling), "✓", t("common.check")), dragHint);
   card.append(visual, workspace);
   area.append(card);
   updateSpellingBoard();
@@ -2038,25 +2084,21 @@ function renderDictationQuestion(entry, sentence) {
   card.className = "dictation-drag-card";
   const visual = document.createElement("div");
   visual.className = "dictation-visual";
-  visual.innerHTML = `<span>${t("question.audioOnly")}</span><strong>${sentence.blank}</strong>`;
+  visual.innerHTML = `<strong>${sentence.blank}</strong>`;
   visual.append(createSceneCard(entry));
   const workspace = document.createElement("div");
   workspace.className = "dictation-workspace";
-  const clue = document.createElement("div");
-  clue.className = "dictation-clue";
-  clue.innerHTML = `<span>${t("question.keyboard")}</span><h3>${t("question.letters", { count: entry.word.length })}</h3>`;
-  clue.append(createPromptControls(entry, sentence));
   const slots = document.createElement("div");
   slots.className = "spelling-slots dictation-slots";
   slots.id = "spellingSlots";
   const keyboard = document.createElement("div");
   keyboard.className = "spelling-keyboard";
   keyboard.innerHTML = `
-    <section class="keyboard-group"><span>${t("question.vowels")}</span><div class="letter-bank keyboard-bank vowel-bank" id="vowelBank"></div></section>
-    <section class="keyboard-group"><span>${t("question.consonants")}</span><div class="letter-bank keyboard-bank consonant-bank" id="letterBank"></div></section>
-    <section class="spelling-block-group" id="spellingBlockGroup" hidden><span>${t("question.combinations")}</span><div class="spelling-block-bank" id="spellingBlockBank"></div></section>
+    <section class="keyboard-group vowel-keyboard-group" aria-label="${t("question.vowels")}"><span>${t("question.vowels")}</span><div class="letter-bank keyboard-bank vowel-bank" id="vowelBank"></div></section>
+    <section class="keyboard-group consonant-keyboard-group" aria-label="${t("question.consonants")}"><span>${t("question.consonants")}</span><div class="letter-bank keyboard-bank consonant-bank" id="letterBank"></div></section>
+    <section class="spelling-block-group combo-keyboard-group" id="spellingBlockGroup" hidden aria-label="${t("question.combinations")}"><span>${t("question.combinations")}</span><div class="spelling-block-bank" id="spellingBlockBank"></div></section>
   `;
-  workspace.append(clue, slots, keyboard, iconButton(createButton("primary-button check-button", "", checkDictation), "✓", t("common.check")));
+  workspace.append(createPromptControls(entry, sentence, "word-then-sentence"), slots, keyboard, iconButton(createButton("primary-button check-button", "", checkDictation), "✓", t("common.check")));
   card.append(visual, workspace);
   panel.append(card);
   area.append(panel);
@@ -2088,19 +2130,16 @@ function renderHandwritingQuestion(entry, sentence) {
 
   const prompt = document.createElement("section");
   prompt.className = "handwriting-prompt";
-  prompt.innerHTML = `
-    <span>✍️ ${t("question.writing")}</span>
-    <h3>${t("question.writeWord")}</h3>
-    <p>${sentence.blank}</p>
-  `;
-  prompt.append(createPromptControls(entry, sentence));
+  const illustration = createSceneCard(entry);
+  illustration.classList.add("handwriting-scene");
+  prompt.innerHTML = `<p class="handwriting-sentence">${sentence.blank}</p>`;
+  prompt.append(illustration, createPromptControls(entry, sentence, "word-then-sentence"));
 
   const paperArea = document.createElement("section");
   paperArea.className = "paper-area";
   const isLastWord = game.roundIndex === game.rounds.length - 1;
   paperArea.innerHTML = `
     <div class="paper-toolbar">
-      <strong>${t("question.myPaper")}</strong>
       <button class="mini-button icon-button" id="clearWritingButton" type="button"></button>
     </div>
     <canvas class="handwriting-canvas" id="handwritingCanvas" aria-label="${t("question.writing")}"></canvas>
@@ -2109,7 +2148,7 @@ function renderHandwritingQuestion(entry, sentence) {
 
   card.append(prompt, paperArea);
   area.append(card);
-  iconButton($("#clearWritingButton"), "⌫", t("common.clear"), "icon-button");
+  iconButton($("#clearWritingButton"), "⌫", t("common.eraser"), "icon-button eraser-button");
   iconButton($("#submitWritingButton"), isLastWord ? "📨" : "➜", isLastWord ? t("common.submit") : t("common.next"));
   const writingCanvas = $("#handwritingCanvas");
   window.requestAnimationFrame(() => {
@@ -2118,6 +2157,25 @@ function renderHandwritingQuestion(entry, sentence) {
 
   $("#clearWritingButton").addEventListener("click", () => clearHandwritingBoard(handwritingBoard));
   $("#submitWritingButton").addEventListener("click", () => submitHandwritingEntry(entry));
+}
+
+function refreshHandwritingQuestionLabels() {
+  const repeatButton = $("#questionArea .repeat-button");
+  const clearButton = $("#clearWritingButton");
+  const submitButton = $("#submitWritingButton");
+  if (repeatButton) {
+    const label = t("common.repeat");
+    repeatButton.querySelector(".button-label").textContent = label;
+    repeatButton.title = label;
+    repeatButton.setAttribute("aria-label", label);
+  }
+  if (clearButton) iconButton(clearButton, "⌫", t("common.eraser"));
+  if (submitButton) {
+    const isLastWord = game.roundIndex === game.rounds.length - 1;
+    iconButton(submitButton, isLastWord ? "📨" : "➜", isLastWord ? t("common.submit") : t("common.next"));
+  }
+  const canvas = $("#handwritingCanvas");
+  if (canvas) canvas.setAttribute("aria-label", t("question.writing"));
 }
 
 function setupHandwritingBoard(canvas, letterCount, correctionMode) {
@@ -2452,7 +2510,7 @@ function markCorrect(round, message) {
   createConfetti();
   renderTrainingProjects();
   saveMission(false);
-  window.setTimeout(nextRound, 1100);
+  queueNextRound();
 }
 
 function nextRound() {
@@ -2494,6 +2552,7 @@ function startStage(stageIndex, savedRoundIds = null, savedRoundIndex = 0) {
     openProfileChooser();
     return;
   }
+  cancelPendingRoundAdvance();
   clearActiveDrag();
   game.stageIndex = stageIndex;
   game.rounds = savedRoundIds ? restoreRounds(stageIndex, savedRoundIds) : shuffle(getStageSource(stageIndex));
@@ -2565,11 +2624,15 @@ function showOnlyScreen(screenId) {
   ["landingScreen", "gameScreen", "gardenScreen", "workshopHomeScreen", "workshopScreen", "finishScreen"].forEach((id) => {
     $(`#${id}`).hidden = id !== screenId;
   });
+  const isGameScreen = screenId === "gameScreen";
+  $("#stageNavStatus").hidden = !isGameScreen;
+  document.body.classList.toggle("game-active", isGameScreen);
   updateBackgroundMusic(screenId);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function returnHome() {
+  cancelPendingRoundAdvance();
   if (game.active) saveMission(false);
   game.active = false;
   promptSequenceId += 1;
@@ -2587,6 +2650,7 @@ function openProject(screenId) {
     openProfileChooser();
     return false;
   }
+  cancelPendingRoundAdvance();
   if (game.active) saveMission(false);
   game.active = false;
   promptSequenceId += 1;
@@ -2611,6 +2675,7 @@ function openWorkshopProject() {
 }
 
 function showFinish() {
+  cancelPendingRoundAdvance();
   game.active = false;
   player.mission = null;
   savePlayerProfile(false);
@@ -2637,21 +2702,20 @@ function createLearningProjectCard(stage, stageIndex) {
   const progress = stageProgress(stage, stageIndex);
   const card = createButton(`stage-project-card${progress.completed >= progress.total ? " is-complete" : ""}`, "", () => startStage(stageIndex));
   card.innerHTML = `
-    <span class="stage-project-art"><img src="${stage.art}" alt=""></span>
-    <span class="stage-project-number">${t("home.stage", { number: String(stageIndex + 1).padStart(2, "0") })}</span>
-    <strong>${localized(stage.title)}</strong>
-    <small>${localized(stage.mapDescription)}</small>
-    <small class="stage-project-count">${progress.completed} / ${progress.total}</small>
+    <span class="stage-project-number" aria-hidden="true">${stageIndex + 1}</span>
+    <span class="stage-project-icon" aria-hidden="true">${stage.icon}</span>
+    <span class="stage-project-copy"><strong>${localized(stage.title)}</strong><small>${localized(stage.mapDescription)}</small></span>
+    <span class="stage-project-progress" aria-hidden="true"><i></i><em>${progress.completed} / ${progress.total}</em></span>
   `;
+  card.querySelector(".stage-project-progress i").style.width = `${(progress.completed / progress.total) * 100}%`;
   card.title = localized(stage.title);
-  card.setAttribute("aria-label", localized(stage.title));
+  card.setAttribute("aria-label", `${t("home.stage", { number: stageIndex + 1 })}: ${localized(stage.title)} — ${progress.completed} / ${progress.total}`);
   return card;
 }
 
 function createFacilityCard(kind, title, icon, count, image, onClick) {
   const card = createButton(`facility-card ${kind}`, "", onClick);
-  const type = kind === "training" ? t("home.wordLab") : t("home.workshop");
-  card.innerHTML = `<img src="${image}" alt=""><span class="facility-icon" aria-hidden="true">${icon}</span><span class="facility-type">${type}</span><strong>${title}</strong><small class="facility-count">${count}</small>`;
+  card.innerHTML = `<img src="${image}" alt=""><span class="facility-icon" aria-hidden="true">${icon}</span><strong>${title}</strong><small class="facility-count">${count}</small>`;
   card.title = title;
   card.setAttribute("aria-label", title);
   return card;
@@ -2664,8 +2728,8 @@ function renderTrainingProjects() {
   facilityGrid.replaceChildren();
   STAGES.forEach((stage, index) => stageGrid.append(createLearningProjectCard(stage, index)));
   facilityGrid.append(
-    createFacilityCard("training", t("home.wordLab"), "🛰️", t("home.words", { count: WORDS.length }), "images/one.svg", openGardenProject),
-    createFacilityCard("shop", t("home.workshop"), "🧰", t("home.sets", { done: activatedCollectionSets(), total: COLLECTION_SETS.length }), "images/two.svg", openWorkshopProject)
+    createFacilityCard("training", t("home.wordLab"), "🛰️", t("home.words", { count: WORDS.length }), "images/backgrounds/mars-rover.jpg", openGardenProject),
+    createFacilityCard("shop", t("home.workshop"), "🧰", t("home.sets", { done: activatedCollectionSets(), total: COLLECTION_SETS.length }), "images/backgrounds/orion-nebula.jpg", openWorkshopProject)
   );
   updateHome();
 }
@@ -2777,10 +2841,13 @@ function renderHomeCollection() {
   const progress = collectionProgress(collection);
   const preview = $("#homeCollectionPreview");
   renderCollectionAssembly(preview, collection, true);
+  const label = document.createElement("span");
+  label.className = "home-collection-label";
+  label.innerHTML = `<small>${t("home.collection")}</small><strong>${localized(collection.name)}</strong>`;
   const completion = document.createElement("strong");
   completion.className = "assembly-count";
   completion.textContent = `${progress.completed} / ${progress.total}`;
-  preview.append(completion);
+  preview.append(label, completion);
 }
 
 function selectedCollection() {
@@ -2945,7 +3012,8 @@ function wireInterface() {
   document.addEventListener("pointerdown", (event) => {
     primeAudio();
     const button = event.target.closest("button");
-    if (button && !button.classList.contains("letter-tile") && !button.classList.contains("spelling-slot")) {
+    const gameplayAnswer = button && button.matches(".choice-button, .check-button, .letter-tile, .spelling-slot, .bonus-submit");
+    if (button && !gameplayAnswer) {
       playEffect("tap");
     }
   }, { capture: true });
