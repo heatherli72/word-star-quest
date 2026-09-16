@@ -1,7 +1,7 @@
 {
-  "name": "单词宇宙训练营",
-  "short_name": "单词训练营",
-  "description": "带有英语 Edge-TTS 发音的儿童单词训练游戏。",
+  "name": "单词星际任务",
+  "short_name": "单词星际",
+  "description": "横屏 iPad 儿童英语单词星际任务。",
   "lang": "zh-CN",
   "start_url": "./",
   "display": "standalone",

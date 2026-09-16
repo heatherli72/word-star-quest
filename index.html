@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#081b3d">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="单词训练营">
+  <meta name="apple-mobile-web-app-title" content="单词星际任务">
   <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="icons/icon-180.png">
   <link rel="stylesheet" href="styles.css">
-  <title>单词宇宙训练营</title>
+  <title>单词星际任务</title>
 </head>
 <body>
   <div class="space-background" aria-hidden="true">
@@ -25,35 +27,41 @@
 
   <main class="app-shell">
     <header class="topbar">
-      <button class="brand-home" id="homeButton" type="button" aria-label="回到训练营首页">
-        <span class="brand-mark">🚀</span><span>单词宇宙训练营</span><small aria-hidden="true">⌂</small>
+      <button class="brand-home" id="homeButton" type="button" aria-label="回到首页" data-i18n-aria-label="nav.home">
+        <span class="brand-mark" aria-hidden="true">🚀</span>
+        <span class="brand-copy" data-i18n="app.brand">单词星际任务</span>
+        <small aria-hidden="true">⌂</small>
       </button>
       <div class="header-actions">
-        <span class="top-status"><small>训练</small><strong id="homeTrainingCount">0 / 80</strong></span>
-        <span class="top-status collection-status"><small id="homeCollectionStatus">专属火箭</small><strong id="heroRocketCount">0 / 20</strong></span>
+        <span class="top-status"><small data-i18n="home.training">任务</small><strong id="homeTrainingCount">0 / 80</strong></span>
+        <span class="top-status collection-status"><small id="homeCollectionStatus">星际火箭</small><strong id="heroRocketCount">0 / 20</strong></span>
         <span class="bank-pill" data-star-balance>⚡ 20</span>
-        <button class="top-action profile-action" id="openProfileButton" type="button"><span id="profileAvatar">🧑‍🚀</span><span id="profileName">驾驶员</span></button>
-        <button class="top-action bonus-button" id="bonusChallengeButton" type="button">✨ +100</button>
-        <button class="top-action icon-only" id="fullscreenButton" type="button" title="进入全屏" aria-label="进入全屏">⛶</button>
+        <button class="language-toggle" id="languageToggle" type="button" aria-label="切换语言" data-i18n-aria-label="nav.language" title="切换语言" data-i18n-title="nav.language">
+          <span data-language-option="en">EN</span><i aria-hidden="true">/</i><span data-language-option="zh">中文</span>
+        </button>
+        <button class="top-action profile-action" id="openProfileButton" type="button" aria-label="选择驾驶员" data-i18n-aria-label="nav.profile">
+          <span id="profileAvatar" aria-hidden="true">🧑‍🚀</span><span id="profileName">驾驶员</span>
+        </button>
+        <button class="top-action bonus-button" id="bonusChallengeButton" type="button" aria-label="秘密补给" data-i18n-aria-label="bonus.kicker" title="秘密补给" data-i18n-title="bonus.kicker">✨ <small>+100</small></button>
+        <button class="top-action icon-only" id="fullscreenButton" type="button" title="全屏" aria-label="全屏" data-i18n-title="nav.fullscreen" data-i18n-aria-label="nav.fullscreen">⛶</button>
       </div>
     </header>
 
     <section class="home-screen" id="landingScreen">
       <section class="orbit-map" aria-labelledby="homeWorkspaceTitle">
         <div class="orbit-heading">
-          <p class="eyebrow">TRAINING CAMP</p>
-          <h2 id="homeWorkspaceTitle">今日星际任务</h2>
+          <p class="eyebrow">WORD STAR QUEST</p>
+          <h2 id="homeWorkspaceTitle" data-i18n="home.today">今天出发</h2>
         </div>
         <div class="orbit-core">
           <div class="core-glow"></div>
-          <div class="assembled-rocket home-orbit-rocket" id="heroRocket" aria-label="正在组装的专属火箭"></div>
-          <div class="home-collection-preview" id="homeCollectionPreview" hidden></div>
+          <div class="home-collection-preview" id="homeCollectionPreview"></div>
         </div>
         <div class="orbit-stage-grid" id="stageProjectGrid"></div>
       </section>
 
-      <aside class="facility-dock" aria-label="训练营设施">
-        <div class="facility-heading"><span>探索</span><strong>训练营</strong></div>
+      <aside class="facility-dock" aria-label="探索" data-i18n-aria-label="home.explore">
+        <div class="facility-heading"><span data-i18n="home.explore">探索</span><strong data-i18n="home.wordLab">单词舱</strong></div>
         <div class="facility-project-grid" id="facilityProjectGrid"></div>
       </aside>
     </section>
@@ -62,18 +70,17 @@
       <article class="screen-card game-card">
         <div class="stage-heading">
           <div class="stage-icon" id="stageIcon">📡</div>
-          <h2 id="stageTitle">雷达听音站</h2>
-          <p id="stageDescription">听句子，选单词。</p>
+          <div><h2 id="stageTitle">雷达听音站</h2><p id="stageDescription">听句子 · 选词</p></div>
         </div>
-        <div class="round-line"><span id="roundText">第 1 / 10 题</span><div class="round-meter"><div class="round-fill" id="roundFill"></div></div></div>
+        <div class="round-line"><span id="roundText">1 / 10</span><div class="round-meter"><div class="round-fill" id="roundFill"></div></div></div>
         <div class="question-area" id="questionArea"></div>
-        <div class="feedback" id="feedback" aria-live="polite">点击播放按钮开始。</div>
+        <div class="feedback" id="feedback" aria-live="polite" data-i18n="question.ready">准备听题</div>
       </article>
     </section>
 
     <section class="app-route project-route" id="gardenScreen" hidden>
       <article class="screen-card project-page">
-        <div class="project-page-heading"><h2>🛰️ 单词训练营</h2><p>看图、听词、读句子。</p></div>
+        <div class="project-page-heading"><div><h2>🛰️ <span data-i18n="home.wordLab">单词舱</span></h2><p data-i18n="garden.copy">看图 · 听词 · 读句</p></div></div>
         <div class="garden-layout">
           <div class="garden-grid" id="gardenGrid"></div>
           <section class="word-lab" id="gardenDetail" aria-live="polite"></section>
@@ -84,7 +91,7 @@
     <section class="app-route project-route" id="workshopHomeScreen" hidden>
       <article class="screen-card project-page workshop-home-page">
         <div class="project-page-heading">
-          <div><h2>🧰 星际收藏工坊</h2><p>选择一套收藏，集齐 20 个部件。</p></div>
+          <div><h2>🧰 <span data-i18n="workshop.title">星际收藏工坊</span></h2><p data-i18n="workshop.homeCopy">集齐 20 个部件</p></div>
           <strong class="collection-total" id="activatedCollectionCount">0 / 10 已激活</strong>
         </div>
         <div class="workshop-home-grid" id="workshopCollectionGrid"></div>
@@ -92,25 +99,23 @@
     </section>
 
     <section class="app-route project-route" id="workshopScreen" hidden>
-      <article class="screen-card project-page">
+      <article class="screen-card project-page workshop-detail-page">
         <div class="project-page-heading">
-          <div><h2>🧰 星际收藏工坊</h2><p>组装 <strong id="workshopCollectionName">专属火箭</strong>。</p></div>
-          <button class="secondary-button workshop-home-button" id="workshopHomeButton" type="button">▦ 浏览全部收藏</button>
+          <div><h2>🧰 <span data-i18n="workshop.title">星际收藏工坊</span></h2><p id="workshopBuildingCopy">正在组装星际火箭</p></div>
+          <button class="secondary-button workshop-home-button" id="workshopHomeButton" type="button" aria-label="全部收藏" data-i18n-aria-label="nav.collections" title="全部收藏" data-i18n-title="nav.collections"><span aria-hidden="true">▦</span><span class="button-label" data-i18n="nav.collections">全部收藏</span></button>
         </div>
         <div class="workshop-layout">
           <section class="collection-showcase">
-            <div class="collection-heading"><h3 id="workshopShowcaseTitle">专属火箭</h3><strong id="workshopShowcaseCount">0 / 20</strong></div>
-            <div class="assembled-rocket workshop-rocket" id="workshopRocket" aria-label="火箭组件预览"></div>
-            <div class="collection-hero" id="collectionHero" hidden></div>
+            <div class="collection-heading"><h3 id="workshopShowcaseTitle">星际火箭</h3><strong id="workshopShowcaseCount">0 / 20</strong></div>
+            <div class="collection-hero" id="collectionHero"></div>
           </section>
           <section class="shop-catalog">
-            <div class="store-balance" id="shopBalance">⚡ 20</div>
-            <p class="shop-notice" id="shopNotice">训练获得能量星，兑换装备。</p>
+            <div class="shop-header"><div class="store-balance" id="shopBalance">⚡ 20</div><p class="shop-notice" id="shopNotice">星际火箭 · 0 / 20</p></div>
             <div class="shop-grid" id="shopGrid"></div>
             <div class="shop-pager">
-              <button class="mini-button" id="shopPreviousButton" type="button" aria-label="上一页装备">‹</button>
+              <button class="mini-button pager-button" id="shopPreviousButton" type="button" aria-label="上一页" data-i18n-aria-label="common.pagePrevious" title="上一页" data-i18n-title="common.pagePrevious">‹</button>
               <span id="shopPageLabel">1 / 4</span>
-              <button class="mini-button" id="shopNextButton" type="button" aria-label="下一页装备">›</button>
+              <button class="mini-button pager-button" id="shopNextButton" type="button" aria-label="下一页" data-i18n-aria-label="common.pageNext" title="下一页" data-i18n-title="common.pageNext">›</button>
             </div>
           </section>
         </div>
@@ -120,10 +125,10 @@
     <section class="app-route" id="finishScreen" hidden>
       <article class="finish-card">
         <div class="finish-badge">🏆</div>
-        <h2>任务完成！</h2>
-        <p>你已经完成这组单词训练。</p>
+        <h2 data-i18n="finish.title">任务完成！</h2>
+        <p data-i18n="finish.copy">干得漂亮</p>
         <div class="final-score" id="finalScore">⚡ 20</div>
-        <button class="primary-button" id="playAgainButton" type="button">再练一轮 🚀</button>
+        <button class="primary-button" id="playAgainButton" type="button" aria-label="再来一轮" data-i18n-aria-label="finish.again"><span aria-hidden="true">🚀</span><span class="button-label" data-i18n="finish.again">再来一轮</span></button>
       </article>
     </section>
   </main>
@@ -133,24 +138,30 @@
       <div class="completion-medal">🌟</div>
       <h2 id="completionTitle">关卡完成！</h2>
       <p class="completion-copy" id="completionCopy"></p>
-      <div class="modal-actions"><button class="primary-button" id="nextStageButton" type="button">下一关</button><button class="secondary-button" id="homeFromCompletionButton" type="button">返回首页</button></div>
+      <div class="modal-actions">
+        <button class="primary-button" id="nextStageButton" type="button" aria-label="继续" data-i18n-aria-label="common.continue"><span aria-hidden="true">➜</span><span class="button-label" data-i18n="common.continue">继续</span></button>
+        <button class="secondary-button" id="homeFromCompletionButton" type="button" aria-label="回到首页" data-i18n-aria-label="nav.home"><span aria-hidden="true">⌂</span><span class="button-label" data-i18n="nav.home">首页</span></button>
+      </div>
     </section>
   </div>
 
   <div class="overlay profile-overlay" id="profileGateOverlay" hidden>
     <section class="modal-box profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
-      <button class="modal-close" id="closeProfileButton" type="button" aria-label="关闭驾驶员选择">×</button>
-      <div class="modal-heading"><h2 id="profileTitle">🧑‍🚀 选择驾驶员</h2><p>每位驾驶员都有独立存档。</p></div>
+      <button class="modal-close" id="closeProfileButton" type="button" aria-label="关闭" data-i18n-aria-label="common.close" title="关闭" data-i18n-title="common.close">×</button>
+      <div class="modal-heading"><h2 id="profileTitle">🧑‍🚀 <span data-i18n="profile.title">选择驾驶员</span></h2><p data-i18n="profile.copy">每位驾驶员都有自己的存档</p></div>
       <div class="profile-layout">
-        <section class="saved-profiles"><h3>已有驾驶员</h3><div class="profile-grid" id="profileGrid"></div></section>
+        <section class="saved-profiles"><h3 data-i18n="profile.saved">已有驾驶员</h3><div class="profile-grid" id="profileGrid"></div></section>
         <section class="profile-form">
-          <h3 id="profileFormTitle">创建驾驶员</h3>
-          <label for="profileNameInput">名字</label>
-          <input id="profileNameInput" type="text" maxlength="12" autocomplete="name" placeholder="例如：小宇航员">
-          <p class="avatar-label">选择头像</p>
+          <h3 id="profileFormTitle">新驾驶员</h3>
+          <label for="profileNameInput" data-i18n="profile.name">名字</label>
+          <input id="profileNameInput" type="text" maxlength="12" autocomplete="name" placeholder="小宇航员" data-i18n-placeholder="profile.placeholder">
+          <p class="avatar-label" data-i18n="profile.avatar">头像</p>
           <div class="avatar-grid" id="avatarGrid"></div>
           <p class="profile-form-message" id="profileFormMessage" aria-live="polite"></p>
-          <div class="profile-form-actions"><button class="primary-button" id="saveProfileButton" type="button">创建驾驶员</button><button class="secondary-button" id="cancelProfileEditButton" type="button" hidden>取消修改</button></div>
+          <div class="profile-form-actions">
+            <button class="primary-button" id="saveProfileButton" type="button"><span aria-hidden="true">🚀</span><span class="button-label" data-i18n="profile.create">新驾驶员</span></button>
+            <button class="secondary-button" id="cancelProfileEditButton" type="button" hidden><span aria-hidden="true">↶</span><span class="button-label" data-i18n="common.cancel">取消</span></button>
+          </div>
         </section>
       </div>
     </section>
@@ -159,28 +170,31 @@
   <div class="overlay" id="deleteProfileOverlay" hidden>
     <section class="modal-box small delete-profile-modal" role="dialog" aria-modal="true" aria-labelledby="deleteProfileTitle">
       <div class="completion-medal">⚠️</div>
-      <h2 id="deleteProfileTitle">删除驾驶员？</h2>
-      <p class="completion-copy">将删除 <strong id="deleteProfileName"></strong> 的全部存档。</p>
-      <div class="modal-actions"><button class="secondary-button" id="cancelDeleteProfileButton" type="button">保留</button><button class="primary-button danger-button" id="confirmDeleteProfileButton" type="button">删除</button></div>
+      <h2 id="deleteProfileTitle" data-i18n="profile.deleteTitle">删除驾驶员？</h2>
+      <p class="completion-copy" id="deleteProfileCopy"></p>
+      <div class="modal-actions">
+        <button class="secondary-button" id="cancelDeleteProfileButton" type="button" data-i18n="profile.keep">保留</button>
+        <button class="primary-button danger-button" id="confirmDeleteProfileButton" type="button" data-i18n="common.delete">删除</button>
+      </div>
     </section>
   </div>
 
   <div class="overlay" id="bonusChallengeOverlay" hidden>
     <section class="modal-box small bonus-modal" role="dialog" aria-modal="true" aria-labelledby="bonusChallengeTitle">
-      <button class="modal-close" id="closeBonusChallengeButton" type="button" aria-label="关闭奖励挑战">×</button>
+      <button class="modal-close" id="closeBonusChallengeButton" type="button" aria-label="关闭" data-i18n-aria-label="common.close" title="关闭" data-i18n-title="common.close">×</button>
       <div class="bonus-orbit">✨</div>
-      <p class="bonus-kicker">秘密补给</p>
-      <h2 id="bonusChallengeTitle">拼出 SPACE，获得 +100 ⚡</h2>
+      <p class="bonus-kicker" data-i18n="bonus.kicker">秘密补给</p>
+      <h2 id="bonusChallengeTitle" data-i18n="bonus.title">拼出 SPACE</h2>
       <p class="bonus-clue" id="bonusClue"></p>
-      <div class="bonus-scramble" id="bonusScramble" aria-label="打乱的字母"></div>
-      <button class="listen-button bonus-listen-button" id="bonusListenButton" type="button">▶ 听 SPACE</button>
-      <input class="bonus-answer" id="bonusAnswerInput" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="拼出单词">
+      <div class="bonus-scramble" id="bonusScramble" aria-label="打乱的字母" data-i18n-aria-label="bonus.letters"></div>
+      <button class="listen-button bonus-listen-button" id="bonusListenButton" type="button" aria-label="听 SPACE" data-i18n-aria-label="bonus.listen"><span aria-hidden="true">🔊</span><span class="button-label" data-i18n="bonus.listen">听 SPACE</span></button>
+      <input class="bonus-answer" id="bonusAnswerInput" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="拼出单词" data-i18n-placeholder="bonus.placeholder">
       <p class="bonus-feedback" id="bonusFeedback" aria-live="polite"></p>
-      <button class="primary-button" id="checkBonusButton" type="button">提交挑战</button>
+      <button class="primary-button" id="checkBonusButton" type="button" aria-label="领取 +100" data-i18n-aria-label="bonus.submit"><span aria-hidden="true">✨</span><span class="button-label" data-i18n="bonus.submit">领取 +100</span></button>
     </section>
   </div>
 
-  <div class="rotate-hint"><div>↻</div><strong>请横向旋转 iPad</strong><span>横屏体验更好。</span></div>
+  <div class="rotate-hint"><div>↻</div><strong data-i18n="orientation.title">请横向旋转 iPad</strong><span data-i18n="orientation.copy">横屏更好玩</span></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="app.js" defer></script>
 </body>
