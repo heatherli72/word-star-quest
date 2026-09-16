@@ -121,24 +121,31 @@ const WORDS = [
   }
 ];
 
-const FILL_QUESTIONS = [
-  { id: "one-fill", wordId: "one", prefix: "o", suffix: "e", answer: "n", choices: ["n", "m", "t"] },
-  { id: "two-fill", wordId: "two", prefix: "", suffix: "wo", answer: "t", choices: ["t", "d", "p"] },
-  { id: "three-fill", wordId: "three", prefix: "th", suffix: "ee", answer: "r", choices: ["r", "l", "n"] },
-  { id: "four-fill", wordId: "four", prefix: "fo", suffix: "r", answer: "u", choices: ["u", "a", "e"] },
-  { id: "eat-fill", wordId: "eat", prefix: "e", suffix: "t", answer: "a", choices: ["a", "e", "i"] },
-  { id: "that-fill", wordId: "that", prefix: "t", suffix: "at", answer: "h", choices: ["h", "w", "r"] },
-  { id: "they-fill", wordId: "they", prefix: "th", suffix: "y", answer: "e", choices: ["e", "a", "i"] },
-  { id: "like-fill", wordId: "like", prefix: "li", suffix: "e", answer: "k", choices: ["k", "c", "t"] },
-  { id: "black-fill", wordId: "black", prefix: "bl", suffix: "ck", answer: "a", choices: ["a", "e", "i"] },
-  { id: "white-fill", wordId: "white", prefix: "whit", suffix: "", answer: "e", choices: ["e", "a", "i"] }
-];
+function buildFillChoices(answer) {
+  const vowels = ["a", "e", "i", "o", "u"];
+  const consonants = "bcdfghjklmnpqrstvwxyz".split("");
+  const candidates = vowels.includes(answer) ? vowels : consonants;
+  const distractors = candidates.filter((letter) => letter !== answer).slice(0, 2);
+  return [answer, ...distractors];
+}
+
+const FILL_QUESTIONS = WORDS.flatMap((entry) => {
+  return entry.word.split("").map((answer, index) => ({
+    id: `${entry.id}-fill-${index + 1}`,
+    wordId: entry.id,
+    prefix: entry.word.slice(0, index),
+    suffix: entry.word.slice(index + 1),
+    answer,
+    choices: buildFillChoices(answer)
+  }));
+});
 
 const STAGES = [
   { id: "listening", icon: "📡", art: "images/three.svg", title: "雷达听音站", description: "听句子，选单词。", mapDescription: "听句子选单词", mode: "listening", reward: 2, bonus: 8 },
   { id: "soundFill", icon: "🔊", art: "images/eat.svg", title: "声波填空站", description: "听单词，补字母。", mapDescription: "听读音填空", mode: "soundFill", reward: 2, bonus: 8 },
   { id: "spell", icon: "🧩", art: "images/two.svg", title: "字母拼装舱", description: "拖动字母，拼单词。", mapDescription: "拖拽字母拼词", mode: "spell", reward: 3, bonus: 10 },
-  { id: "dictation", icon: "⌨️", art: "images/black.svg", title: "星际默写台", description: "听单词，写答案。", mapDescription: "听音默写", mode: "dictation", reward: 4, bonus: 12 }
+  { id: "dictation", icon: "⌨️", art: "images/black.svg", title: "星际默写台", description: "听单词，拖字母默写。", mapDescription: "拖字母默写", mode: "dictation", reward: 5, bonus: 14 },
+  { id: "handwriting", icon: "✍️", art: "images/one.svg", title: "星际手写台", description: "听单词，手写答卷。", mapDescription: "手写默写", mode: "handwriting", reward: 15, bonus: 30 }
 ];
 
 const ROCKET_PARTS = [
@@ -243,6 +250,7 @@ const SFX_TRACKS = {
 const BACKGROUND_TRACKS = {
   landingScreen: "audio/bgm/home.wav",
   gardenScreen: "audio/bgm/garden.wav",
+  workshopHomeScreen: "audio/bgm/workshop.wav",
   workshopScreen: "audio/bgm/workshop.wav"
 };
 
@@ -267,6 +275,7 @@ const game = {
   locked: false,
   letterBank: [],
   placedLetters: [],
+  allowLetterReuse: false,
   lastTypedValue: ""
 };
 
@@ -286,6 +295,10 @@ let shopPage = 0;
 let toastTimer = 0;
 let audioPrimed = false;
 let activeBonusChallenge = null;
+let promptSequenceId = 0;
+let activeVoiceCompletion = null;
+let handwritingBoard = null;
+let correctionBoard = null;
 
 const audioMaps = {
   word: new Map(),
@@ -313,7 +326,7 @@ function createDefaultProfile(name = "新驾驶员", avatarId = "astronaut", id 
     stars: 20,
     ownedRocketParts: [],
     ownedCollectionParts: [],
-    progress: { listening: [], soundFill: [], spell: [], dictation: [] },
+    progress: { listening: [], soundFill: [], spell: [], dictation: [], handwriting: [] },
     mission: null,
     updatedAt: null
   };
@@ -475,8 +488,8 @@ function stageProgress(stage, stageIndex) {
   return { completed: complete.size, total: getStageSource(stageIndex).length };
 }
 
-function completedCollectionSets() {
-  return COLLECTION_SETS.filter((collection) => collectionProgress(collection).completed === collection.parts.length).length;
+function activatedCollectionSets() {
+  return COLLECTION_SETS.filter((collection) => collectionProgress(collection).completed > 0).length;
 }
 
 function collectionProgress(collection) {
@@ -507,13 +520,17 @@ function totalTrainingProgress() {
   return STAGES.reduce((sum, stage, index) => sum + stageProgress(stage, index).completed, 0);
 }
 
+function totalTrainingQuestions() {
+  return STAGES.reduce((sum, _stage, index) => sum + getStageSource(index).length, 0);
+}
+
 function updateHome() {
   const ready = hasActiveProfile();
   updateProfileDisplay();
   updateStarDisplays();
-  $("#homeTrainingCount").textContent = `${ready ? totalTrainingProgress() : 0} / 40`;
+  $("#homeTrainingCount").textContent = `${ready ? totalTrainingProgress() : 0} / ${totalTrainingQuestions()}`;
   $("#heroRocketCount").textContent = `${ready ? player.ownedRocketParts.length : 0} / ${ROCKET_PARTS.length}`;
-  $("#heroCollectionCount").textContent = `${ready ? completedCollectionSets() : 0} / ${COLLECTION_SETS.length}`;
+  $("#heroCollectionCount").textContent = `${ready ? activatedCollectionSets() : 0} / ${COLLECTION_SETS.length}`;
   $("#resumeButton").hidden = !ready || !player.mission;
   const bonusButton = $("#bonusChallengeButton");
   bonusButton.disabled = !ready;
@@ -683,6 +700,7 @@ function activateProfile(profileId) {
   savePlayerProfile(false);
   renderTrainingProjects();
   renderGarden();
+  renderWorkshopHome();
   renderWorkshop();
   showToast(`欢迎回来，${player.name}！`);
 }
@@ -790,6 +808,7 @@ function deleteProfile() {
   renderProfileChooser();
   renderTrainingProjects();
   renderGarden();
+  renderWorkshopHome();
   renderWorkshop();
   updateHome();
   showToast(`已删除 ${profile.name} 的档案。`);
@@ -800,12 +819,10 @@ function createAudio(source) {
   audio.preload = "auto";
   audio.playsInline = true;
   audio.addEventListener("ended", () => {
-    if (audio === activeVoice) {
-      activeVoice = null;
-      if (activeVoiceButton) activeVoiceButton.classList.remove("is-playing");
-      activeVoiceButton = null;
-      restoreBackgroundMusicVolume();
-    }
+    finishActiveVoice(audio);
+  });
+  audio.addEventListener("error", () => {
+    finishActiveVoice(audio);
   });
   return audio;
 }
@@ -845,31 +862,89 @@ function stopActiveVoice() {
     activeVoice.pause();
     activeVoice.currentTime = 0;
   }
+  const completion = activeVoiceCompletion;
+  activeVoiceCompletion = null;
   if (activeVoiceButton) activeVoiceButton.classList.remove("is-playing");
   activeVoice = null;
   activeVoiceButton = null;
   restoreBackgroundMusicVolume();
+  if (completion) completion();
 }
 
-function playVoice(audio, button) {
+function finishActiveVoice(audio) {
+  if (audio !== activeVoice) return;
+  const completion = activeVoiceCompletion;
+  activeVoiceCompletion = null;
+  activeVoice = null;
+  if (activeVoiceButton) activeVoiceButton.classList.remove("is-playing");
+  activeVoiceButton = null;
+  restoreBackgroundMusicVolume();
+  if (completion) completion();
+}
+
+function startVoicePlayback(audio, button, completion = null) {
   primeAudio();
   stopActiveVoice();
-  if (!audio) return;
+  if (!audio) {
+    if (completion) completion();
+    return;
+  }
   activeVoice = audio;
   activeVoiceButton = button || null;
+  activeVoiceCompletion = completion;
   if (activeVoiceButton) activeVoiceButton.classList.add("is-playing");
   lowerBackgroundMusicVolume();
   audio.currentTime = 0;
   audio.playbackRate = 0.82;
   audio.play().catch((error) => {
     console.warn("Unable to play voice:", error);
-    if (audio === activeVoice) {
-      activeVoice = null;
-      if (activeVoiceButton) activeVoiceButton.classList.remove("is-playing");
-      activeVoiceButton = null;
-      restoreBackgroundMusicVolume();
-    }
+    finishActiveVoice(audio);
   });
+}
+
+function playVoice(audio, button) {
+  promptSequenceId += 1;
+  startVoicePlayback(audio, button);
+}
+
+function playVoiceAndWait(audio) {
+  return new Promise((resolve) => {
+    if (!audio) {
+      resolve();
+      return;
+    }
+    let settled = false;
+    let timer = 0;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      resolve();
+    };
+    const duration = Number.isFinite(audio.duration) ? audio.duration : 1.7;
+    timer = window.setTimeout(() => {
+      if (activeVoice === audio) stopActiveVoice();
+      finish();
+    }, Math.max(900, (duration / 0.82) * 1000 + 360));
+    startVoicePlayback(audio, null, finish);
+  });
+}
+
+function wait(milliseconds) {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
+async function autoplayPrompt(entry, sentence, mode) {
+  const sequenceId = ++promptSequenceId;
+  await wait(220);
+  if (sequenceId !== promptSequenceId || !game.active) return;
+  if (mode === "word-then-sentence") {
+    await playVoiceAndWait(audioMaps.word.get(entry.id));
+    if (sequenceId !== promptSequenceId || !game.active) return;
+    await wait(170);
+  }
+  if (sequenceId !== promptSequenceId || !game.active) return;
+  await playVoiceAndWait(audioMaps.sentence.get(`${entry.id}-${sentence.index}`));
 }
 
 function playEffect(name) {
@@ -930,6 +1005,14 @@ function createVoiceButton(entry, sentence, label) {
   return button;
 }
 
+function createPromptControls(entry, sentence, includeWord = true) {
+  const controls = document.createElement("div");
+  controls.className = "audio-controls";
+  if (includeWord) controls.append(createVoiceButton(entry, null, "▶ 重听单词"));
+  controls.append(createVoiceButton(entry, sentence, "↻ 重听句子"));
+  return controls;
+}
+
 function setFeedback(message, kind = "") {
   const feedback = $("#feedback");
   feedback.className = `feedback ${kind}`.trim();
@@ -966,7 +1049,7 @@ function renderListeningQuestion(entry, sentence) {
   const mission = document.createElement("section");
   mission.className = "mission-card";
   mission.innerHTML = `<span>任务句子</span><strong class="sentence-line" id="sentenceLine">${sentence.blank}</strong>`;
-  mission.append(createVoiceButton(entry, sentence, "▶ 听句子"));
+  mission.append(createPromptControls(entry, sentence, false));
   layout.append(mission);
   panel.append(layout);
   const choices = shuffle([
@@ -1005,7 +1088,7 @@ function renderSoundFillQuestion(question, sentence) {
   const card = document.createElement("section");
   card.className = "fill-card";
   card.innerHTML = `<span>${sentence.blank}</span><div class="fill-word"><b>${question.prefix}</b><b class="fill-slot" id="fillSlot">${"_".repeat(question.answer.length)}</b><b>${question.suffix}</b></div>`;
-  card.append(createVoiceButton(entry, null, "▶ 听单词"));
+  card.append(createPromptControls(entry, sentence));
   layout.append(card);
   panel.append(layout);
   addChoiceGrid(panel, shuffle(question.choices), (choice, button) => checkFillAnswer(question, choice, button), "fill-choices");
@@ -1029,6 +1112,7 @@ function checkFillAnswer(question, choice, button) {
 }
 
 function prepareSpellQuestion(entry) {
+  game.allowLetterReuse = false;
   game.placedLetters = Array(entry.word.length).fill(null);
   const targetLetters = entry.word.split("").map((letter, index) => ({ id: `${letter}-${index}`, letter }));
   const extras = shuffle("abcdefghijklmnopqrstuvwxyz".split("").filter((letter) => !entry.word.includes(letter)))
@@ -1055,7 +1139,7 @@ function renderSpellQuestion(entry, sentence) {
   const workspace = document.createElement("div");
   workspace.className = "drag-workspace";
   workspace.innerHTML = `<span>拖动字母到格子里</span><h3>${entry.word.length} 个字母</h3>`;
-  workspace.append(createVoiceButton(entry, null, "▶ 听单词"));
+  workspace.append(createPromptControls(entry, sentence));
   const slots = document.createElement("div");
   slots.className = "spelling-slots";
   slots.id = "spellingSlots";
@@ -1083,11 +1167,12 @@ function updateSpellingBoard() {
     slots.append(slot);
   });
   bank.replaceChildren();
+  bank.classList.toggle("keyboard-bank", game.allowLetterReuse);
   game.letterBank.forEach((item) => {
-    const used = game.placedLetters.some((placed) => placed && placed.id === item.id);
+    const used = !game.allowLetterReuse && game.placedLetters.some((placed) => placed && placed.id === item.id);
     const tile = document.createElement("button");
     tile.type = "button";
-    tile.className = `letter-tile${used ? " used" : ""}`;
+    tile.className = `letter-tile${used ? " used" : ""}${game.allowLetterReuse && "aeiou".includes(item.letter) ? " vowel-tile" : ""}`;
     tile.textContent = item.letter;
     tile.disabled = used || game.locked;
     tile.addEventListener("pointerdown", (event) => startLetterDrag(event, item, null));
@@ -1102,9 +1187,15 @@ function startLetterDrag(event, item, fromSlotIndex) {
   const ghost = document.createElement("span");
   ghost.className = "drag-ghost";
   ghost.textContent = item.letter;
-  document.body.append(ghost);
-  activeDrag = { item, fromSlotIndex, pointerId: event.pointerId, ghost };
-  moveDragGhost(event);
+  activeDrag = {
+    item,
+    fromSlotIndex,
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    moved: false,
+    ghost
+  };
   document.addEventListener("pointermove", moveDragGhost);
   document.addEventListener("pointerup", finishLetterDrag, { once: true });
   document.addEventListener("pointercancel", cancelLetterDrag, { once: true });
@@ -1112,6 +1203,12 @@ function startLetterDrag(event, item, fromSlotIndex) {
 
 function moveDragGhost(event) {
   if (!activeDrag || event.pointerId !== activeDrag.pointerId) return;
+  const distance = Math.hypot(event.clientX - activeDrag.startX, event.clientY - activeDrag.startY);
+  if (!activeDrag.moved && distance < 8) return;
+  if (!activeDrag.moved) {
+    activeDrag.moved = true;
+    document.body.append(activeDrag.ghost);
+  }
   activeDrag.ghost.style.left = `${event.clientX}px`;
   activeDrag.ghost.style.top = `${event.clientY}px`;
   document.querySelectorAll(".spelling-slot").forEach((slot) => slot.classList.remove("drop-target"));
@@ -1127,6 +1224,20 @@ function finishLetterDrag(event) {
   const destination = slot ? Number(slot.dataset.slotIndex) : null;
   const drag = activeDrag;
   clearActiveDrag();
+  if (!drag.moved) {
+    if (drag.fromSlotIndex !== null) {
+      game.placedLetters[drag.fromSlotIndex] = null;
+      playEffect("delete");
+    } else {
+      const firstOpenSlot = game.placedLetters.findIndex((placed) => !placed);
+      if (firstOpenSlot >= 0) {
+        game.placedLetters[firstOpenSlot] = drag.item;
+        playEffect("tap");
+      }
+    }
+    updateSpellingBoard();
+    return;
+  }
   if (Number.isInteger(destination)) {
     const displaced = game.placedLetters[destination];
     if (drag.fromSlotIndex === null) {
@@ -1173,67 +1284,272 @@ function checkSpelling() {
 }
 
 function renderDictationQuestion(entry, sentence) {
-  game.lastTypedValue = "";
+  game.allowLetterReuse = true;
+  game.placedLetters = Array(entry.word.length).fill(null);
+  game.letterBank = "abcdefghijklmnopqrstuvwxyz".split("").map((letter) => ({ id: `keyboard-${letter}`, letter }));
   const area = $("#questionArea");
   area.replaceChildren();
   const panel = document.createElement("div");
   panel.className = "question-panel dictation-question";
-  const layout = document.createElement("div");
-  layout.className = "question-layout";
-  layout.append(createSceneCard(entry));
   const card = document.createElement("section");
-  card.className = "dictation-card";
-  card.innerHTML = `<span>${sentence.blank}</span><h3>写出单词</h3>`;
-  card.append(createVoiceButton(entry, null, "▶ 听单词"));
-  const input = document.createElement("input");
-  input.className = "input-answer";
-  input.id = "dictationInput";
-  input.type = "text";
-  input.autocomplete = "off";
-  input.autocapitalize = "none";
-  input.spellcheck = false;
-  input.placeholder = "type here";
-  input.addEventListener("input", () => {
-    const value = input.value;
-    if (value.length > game.lastTypedValue.length) playEffect("type");
-    if (value.length < game.lastTypedValue.length) playEffect("delete");
-    game.lastTypedValue = value;
-  });
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") checkDictation();
-  });
-  const actions = document.createElement("div");
-  actions.className = "dictation-actions";
-  actions.append(
-    createButton("mini-button", "⌫", () => {
-      input.value = input.value.slice(0, -1);
-      game.lastTypedValue = input.value;
-      playEffect("delete");
-      input.focus();
-    }),
-    createButton("primary-button check-button", "检查", checkDictation)
-  );
-  card.append(input, actions);
-  layout.append(card);
-  panel.append(layout);
+  card.className = "dictation-drag-card";
+  const visual = document.createElement("div");
+  visual.className = "dictation-visual";
+  visual.innerHTML = `<span>只听不看</span><strong>${sentence.blank}</strong>`;
+  visual.append(createSceneCard(entry));
+  const workspace = document.createElement("div");
+  workspace.className = "dictation-workspace";
+  workspace.innerHTML = `<span>拖动字母拼出答案</span><h3>${entry.word.length} 个字母</h3>`;
+  workspace.append(createPromptControls(entry, sentence));
+  const slots = document.createElement("div");
+  slots.className = "spelling-slots dictation-slots";
+  slots.id = "spellingSlots";
+  const bank = document.createElement("div");
+  bank.className = "letter-bank keyboard-bank";
+  bank.id = "letterBank";
+  workspace.append(slots, bank, createButton("primary-button check-button", "检查", checkDictation));
+  card.append(visual, workspace);
+  panel.append(card);
   area.append(panel);
-  window.setTimeout(() => input.focus(), 0);
+  updateSpellingBoard();
 }
 
 function checkDictation() {
   if (game.locked) return;
-  const input = $("#dictationInput");
-  if (input.value.trim().toLowerCase() !== currentRound().word) {
+  if (game.placedLetters.some((item) => !item)) {
+    setFeedback("把字母都拖进去。", "try-again");
+    return;
+  }
+  if (game.placedLetters.map((item) => item.letter).join("") !== currentRound().word) {
     playEffect("wrong");
-    input.classList.remove("wrong");
-    void input.offsetWidth;
-    input.classList.add("wrong");
     setFeedback("再听一次。", "try-again");
     return;
   }
   game.locked = true;
-  input.classList.add("correct");
   markCorrect(currentRound(), `答对了！${currentRound().meaning}`);
+}
+
+function renderHandwritingQuestion(entry, sentence) {
+  handwritingBoard = null;
+  correctionBoard = null;
+  const area = $("#questionArea");
+  area.replaceChildren();
+  const card = document.createElement("section");
+  card.className = "handwriting-card";
+
+  const prompt = document.createElement("section");
+  prompt.className = "handwriting-prompt";
+  prompt.innerHTML = `
+    <span>真实默写</span>
+    <h3>听到单词后，写在答题纸上</h3>
+    <p>${sentence.blank}</p>
+  `;
+  prompt.append(createPromptControls(entry, sentence));
+
+  const paperArea = document.createElement("section");
+  paperArea.className = "paper-area";
+  paperArea.innerHTML = `
+    <div class="paper-toolbar">
+      <strong>我的答卷</strong>
+      <button class="mini-button" id="clearWritingButton" type="button">清空</button>
+    </div>
+    <canvas class="handwriting-canvas" id="handwritingCanvas" aria-label="手写答题纸"></canvas>
+    <button class="primary-button" id="submitWritingButton" type="button">交给爸爸妈妈批改</button>
+  `;
+
+  const review = document.createElement("section");
+  review.className = "handwriting-review";
+  review.id = "handwritingReview";
+  review.hidden = true;
+  review.innerHTML = `
+    <div class="answer-sheet">
+      <span>爸爸妈妈批改</span>
+      <img id="writingPreview" alt="孩子的手写答卷">
+      <p>正确答案</p>
+      <strong id="writingAnswer"></strong>
+      <div class="review-actions">
+        <button class="primary-button" id="writingCorrectButton" type="button">✓ 写对了</button>
+        <button class="secondary-button" id="writingRetryButton" type="button">需要修改</button>
+      </div>
+    </div>
+  `;
+
+  const correction = document.createElement("section");
+  correction.className = "handwriting-correction";
+  correction.id = "handwritingCorrection";
+  correction.hidden = true;
+  correction.innerHTML = `
+    <p>看着答案，在方格里认真改写一次。</p>
+    <div class="correction-answer" id="correctionAnswer"></div>
+    <canvas class="handwriting-canvas correction-canvas" id="correctionCanvas" aria-label="手写修改方格"></canvas>
+    <div class="review-actions">
+      <button class="mini-button" id="clearCorrectionButton" type="button">清空修改</button>
+      <button class="primary-button" id="submitCorrectionButton" type="button">再次交卷</button>
+    </div>
+  `;
+
+  card.append(prompt, paperArea, review, correction);
+  area.append(card);
+  window.requestAnimationFrame(() => {
+    handwritingBoard = setupHandwritingBoard($("#handwritingCanvas"), entry.word.length, false);
+  });
+
+  $("#clearWritingButton").addEventListener("click", () => clearHandwritingBoard(handwritingBoard));
+  $("#submitWritingButton").addEventListener("click", () => showHandwritingReview(entry));
+  $("#writingCorrectButton").addEventListener("click", () => {
+    game.locked = true;
+    markCorrect(entry, "爸爸妈妈批改通过！");
+  });
+  $("#writingRetryButton").addEventListener("click", () => showCorrectionBoard(entry));
+  $("#clearCorrectionButton").addEventListener("click", () => clearHandwritingBoard(correctionBoard));
+  $("#submitCorrectionButton").addEventListener("click", () => {
+    if (!correctionBoard || !correctionBoard.hasInk) {
+      setFeedback("先在方格里改写一次。", "try-again");
+      return;
+    }
+    $("#writingPreview").src = correctionBoard.canvas.toDataURL("image/png");
+    $("#handwritingCorrection").hidden = true;
+    $("#handwritingReview").hidden = false;
+    setFeedback("答卷已更新，请爸爸妈妈再次批改。", "");
+  });
+}
+
+function setupHandwritingBoard(canvas, letterCount, correctionMode) {
+  const bounds = canvas.getBoundingClientRect();
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const width = Math.max(1, Math.floor(bounds.width));
+  const height = Math.max(1, Math.floor(bounds.height));
+  canvas.width = Math.floor(width * ratio);
+  canvas.height = Math.floor(height * ratio);
+  const context = canvas.getContext("2d");
+  context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  const board = {
+    canvas,
+    context,
+    width,
+    height,
+    ratio,
+    letterCount,
+    correctionMode,
+    hasInk: false,
+    drawing: false,
+    lastX: 0,
+    lastY: 0
+  };
+  drawWritingPaper(board);
+  canvas.addEventListener("pointerdown", (event) => beginWriting(board, event));
+  canvas.addEventListener("pointermove", (event) => continueWriting(board, event));
+  canvas.addEventListener("pointerup", () => endWriting(board));
+  canvas.addEventListener("pointercancel", () => endWriting(board));
+  return board;
+}
+
+function drawWritingPaper(board) {
+  const { context, width, height, correctionMode, letterCount } = board;
+  context.clearRect(0, 0, width, height);
+  context.fillStyle = "#fffdf5";
+  context.fillRect(0, 0, width, height);
+  context.lineWidth = 1;
+  context.strokeStyle = "#9fc9ec";
+  if (correctionMode) {
+    const boxWidth = width / letterCount;
+    for (let index = 1; index < letterCount; index += 1) {
+      context.beginPath();
+      context.moveTo(index * boxWidth, 0);
+      context.lineTo(index * boxWidth, height);
+      context.stroke();
+    }
+    for (const fraction of [0.24, 0.5, 0.77]) {
+      context.beginPath();
+      context.moveTo(0, height * fraction);
+      context.lineTo(width, height * fraction);
+      context.stroke();
+    }
+  } else {
+    for (const fraction of [0.28, 0.53, 0.78]) {
+      context.beginPath();
+      context.moveTo(0, height * fraction);
+      context.lineTo(width, height * fraction);
+      context.stroke();
+    }
+  }
+}
+
+function beginWriting(board, event) {
+  if (!board || game.locked || (event.pointerType === "mouse" && event.button !== 0)) return;
+  event.preventDefault();
+  primeAudio();
+  board.drawing = true;
+  board.hasInk = true;
+  const point = writingPoint(board, event);
+  board.lastX = point.x;
+  board.lastY = point.y;
+  board.context.beginPath();
+  board.context.arc(point.x, point.y, 1.5, 0, Math.PI * 2);
+  board.context.fillStyle = "#193c70";
+  board.context.fill();
+  board.canvas.setPointerCapture(event.pointerId);
+}
+
+function continueWriting(board, event) {
+  if (!board || !board.drawing) return;
+  event.preventDefault();
+  const point = writingPoint(board, event);
+  const context = board.context;
+  context.beginPath();
+  context.moveTo(board.lastX, board.lastY);
+  context.lineTo(point.x, point.y);
+  context.strokeStyle = "#193c70";
+  context.lineWidth = 5;
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  context.stroke();
+  board.lastX = point.x;
+  board.lastY = point.y;
+}
+
+function endWriting(board) {
+  if (!board) return;
+  board.drawing = false;
+}
+
+function writingPoint(board, event) {
+  const bounds = board.canvas.getBoundingClientRect();
+  return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+}
+
+function clearHandwritingBoard(board) {
+  if (!board || game.locked) return;
+  drawWritingPaper(board);
+  board.hasInk = false;
+  playEffect("delete");
+}
+
+function showHandwritingReview(entry) {
+  if (!handwritingBoard || !handwritingBoard.hasInk) {
+    setFeedback("先在答题纸上写出单词。", "try-again");
+    return;
+  }
+  $("#writingPreview").src = handwritingBoard.canvas.toDataURL("image/png");
+  $("#writingAnswer").textContent = entry.word;
+  $("#handwritingReview").hidden = false;
+  setFeedback("请爸爸妈妈看看答卷。", "");
+}
+
+function showCorrectionBoard(entry) {
+  $("#handwritingReview").hidden = true;
+  $("#handwritingCorrection").hidden = false;
+  const answer = $("#correctionAnswer");
+  answer.replaceChildren();
+  entry.word.split("").forEach((letter) => {
+    const cell = document.createElement("span");
+    cell.textContent = letter;
+    answer.append(cell);
+  });
+  window.requestAnimationFrame(() => {
+    correctionBoard = setupHandwritingBoard($("#correctionCanvas"), entry.word.length, true);
+  });
+  setFeedback("看着答案，在方格里再写一遍。", "");
 }
 
 function currentRound() {
@@ -1252,8 +1568,10 @@ function renderRound() {
   if (stage.mode === "soundFill") renderSoundFillQuestion(round, game.sentence);
   if (stage.mode === "spell") renderSpellQuestion(entry, game.sentence);
   if (stage.mode === "dictation") renderDictationQuestion(entry, game.sentence);
-  setFeedback(stage.mode === "spell" ? "拖动字母到格子。" : "点击播放按钮开始。");
+  if (stage.mode === "handwriting") renderHandwritingQuestion(entry, game.sentence);
+  setFeedback(stage.mode === "spell" || stage.mode === "dictation" ? "拖动字母到格子。" : "准备听题。");
   saveMission(false);
+  autoplayPrompt(entry, game.sentence, stage.mode === "listening" ? "sentence" : "word-then-sentence");
 }
 
 function markRoundProgress(round) {
@@ -1355,7 +1673,7 @@ function saveMission(showMessage = false) {
 }
 
 function showOnlyScreen(screenId) {
-  ["landingScreen", "gameScreen", "gardenScreen", "workshopScreen", "finishScreen"].forEach((id) => {
+  ["landingScreen", "gameScreen", "gardenScreen", "workshopHomeScreen", "workshopScreen", "finishScreen"].forEach((id) => {
     $(`#${id}`).hidden = id !== screenId;
   });
   updateBackgroundMusic(screenId);
@@ -1364,11 +1682,14 @@ function showOnlyScreen(screenId) {
 
 function returnHome() {
   if (game.active) saveMission(false);
+  game.active = false;
+  promptSequenceId += 1;
   stopActiveVoice();
   clearActiveDrag();
   $("#stageCompleteOverlay").hidden = true;
   showOnlyScreen("landingScreen");
   renderTrainingProjects();
+  renderWorkshopHome();
   renderWorkshop();
 }
 
@@ -1378,6 +1699,8 @@ function openProject(screenId) {
     return false;
   }
   if (game.active) saveMission(false);
+  game.active = false;
+  promptSequenceId += 1;
   stopActiveVoice();
   clearActiveDrag();
   $("#stageCompleteOverlay").hidden = true;
@@ -1392,9 +1715,8 @@ function openGardenProject() {
 }
 
 function openWorkshopProject() {
-  if (!openProject("workshopScreen")) return;
-  shopPage = 0;
-  renderWorkshop();
+  if (!openProject("workshopHomeScreen")) return;
+  renderWorkshopHome();
 }
 
 function showFinish() {
@@ -1447,7 +1769,7 @@ function renderTrainingProjects() {
   STAGES.forEach((stage, index) => stageGrid.append(createLearningProjectCard(stage, index)));
   facilityGrid.append(
     createFacilityCard("training", "星图复习", "🛰️", `${WORDS.length} 个单词`, openGardenProject),
-    createFacilityCard("shop", "火箭工坊", "🧰", `${player.ownedRocketParts.length} / ${ROCKET_PARTS.length} 火箭`, openWorkshopProject)
+    createFacilityCard("shop", "收藏工坊", "🧰", `${activatedCollectionSets()} / ${COLLECTION_SETS.length} 套`, openWorkshopProject)
   );
   updateHome();
 }
@@ -1504,16 +1826,14 @@ function selectedCollection() {
   return COLLECTION_SETS.find((collection) => collection.id === selectedCollectionId) || COLLECTION_SETS[0];
 }
 
-function renderCollectionGallery() {
-  const gallery = $("#collectionGallery");
+function renderWorkshopHome() {
+  const gallery = $("#workshopCollectionGrid");
+  if (!gallery) return;
   gallery.replaceChildren();
+  $("#activatedCollectionCount").textContent = `${activatedCollectionSets()} / ${COLLECTION_SETS.length} 已激活`;
   COLLECTION_SETS.forEach((collection) => {
     const progress = collectionProgress(collection);
-    const card = createButton(`collection-card${collection.id === selectedCollectionId ? " selected" : ""}${progress.completed === progress.total ? " completed" : ""}`, "", () => {
-      selectedCollectionId = collection.id;
-      shopPage = 0;
-      renderWorkshop();
-    });
+    const card = createButton(`workshop-home-card${progress.completed === progress.total ? " completed" : ""}`, "", () => openCollection(collection.id));
     card.innerHTML = `
       <img src="${collection.image}" alt="">
       <span>${collection.icon}</span>
@@ -1522,6 +1842,14 @@ function renderCollectionGallery() {
     `;
     gallery.append(card);
   });
+}
+
+function openCollection(collectionId) {
+  selectedCollectionId = collectionId;
+  shopPage = 0;
+  showOnlyScreen("workshopScreen");
+  playEffect("enter");
+  renderWorkshop();
 }
 
 function currentWorkshopItems() {
@@ -1537,6 +1865,7 @@ function renderWorkshop() {
   const progress = collectionProgress(collection);
   $("#workshopShowcaseTitle").textContent = collection.name;
   $("#workshopShowcaseCount").textContent = `${progress.completed} / ${progress.total}`;
+  $("#workshopCollectionName").textContent = collection.name;
   $("#workshopRocket").hidden = collection.id !== "rocket";
   $("#collectionHero").hidden = collection.id === "rocket";
   if (collection.id === "rocket") {
@@ -1544,8 +1873,6 @@ function renderWorkshop() {
   } else {
     renderCollectionHero(collection, progress);
   }
-  renderCollectionGallery();
-
   const items = currentWorkshopItems();
   const pageCount = Math.ceil(items.length / SHOP_PAGE_SIZE);
   shopPage = Math.min(Math.max(0, shopPage), pageCount - 1);
@@ -1640,6 +1967,11 @@ function wireInterface() {
   $("#fullscreenButton").addEventListener("click", toggleFullscreen);
   $("#homeFromCompletionButton").addEventListener("click", returnHome);
   $("#playAgainButton").addEventListener("click", startNewMission);
+  $("#workshopHomeButton").addEventListener("click", () => {
+    showOnlyScreen("workshopHomeScreen");
+    playEffect("tap");
+    renderWorkshopHome();
+  });
   $("#shopPreviousButton").addEventListener("click", () => {
     shopPage -= 1;
     renderWorkshop();
@@ -1676,6 +2008,7 @@ function initializeGame() {
   wireInterface();
   renderTrainingProjects();
   renderGarden();
+  renderWorkshopHome();
   renderWorkshop();
   renderProfileChooser();
   showIpadInstallHint();

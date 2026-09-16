@@ -168,12 +168,26 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 0;
+  padding: 4px 11px 4px 4px;
+  border: 1px solid rgba(131, 234, 255, 0.62);
+  border-radius: 18px;
   color: var(--ink);
-  background: transparent;
+  background: linear-gradient(135deg, rgba(18, 88, 150, 0.88), rgba(24, 52, 118, 0.88));
+  box-shadow: 0 4px 0 rgba(3, 27, 71, 0.72);
   font-size: clamp(18px, 2.5vw, 24px);
   font-weight: 900;
   white-space: nowrap;
+  transition: transform 140ms ease, filter 140ms ease;
+}
+
+.brand-home:hover {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+}
+
+.brand-home:active {
+  box-shadow: none;
+  transform: translateY(3px);
 }
 
 .brand-mark {
@@ -190,12 +204,12 @@ button:disabled {
 }
 
 .brand-home small {
-  padding: 4px 7px;
-  border: 1px solid rgba(132, 235, 255, 0.5);
+  padding: 6px 8px;
+  border: 1px solid rgba(166, 244, 255, 0.65);
   border-radius: 999px;
-  color: #aaf0fb;
-  background: rgba(15, 91, 158, 0.48);
-  font-size: 10px;
+  color: #e4fbff;
+  background: rgba(4, 30, 74, 0.64);
+  font-size: 11px;
 }
 
 .header-actions {
@@ -2844,6 +2858,12 @@ button:disabled {
     url("images/backgrounds/mars-rover.jpg") center / cover;
 }
 
+#workshopHomeScreen .project-page {
+  background:
+    linear-gradient(145deg, rgba(7, 25, 64, 0.45), rgba(91, 38, 50, 0.48)),
+    url("images/backgrounds/mars-rover.jpg") center / cover;
+}
+
 .stage-project-card {
   background:
     linear-gradient(130deg, rgba(14, 56, 106, 0.9), rgba(33, 42, 105, 0.72)),
@@ -3004,6 +3024,133 @@ button:disabled {
   flex: 0 0 175px;
 }
 
+.collection-total {
+  display: inline-flex;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 229, 122, 0.55);
+  border-radius: 999px;
+  color: #fff0a3;
+  background: rgba(74, 45, 95, 0.68);
+  font-size: 14px;
+}
+
+.workshop-home-page {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.workshop-home-page .project-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.workshop-home-grid {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.workshop-home-card {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  align-items: flex-end;
+  padding: 12px;
+  overflow: hidden;
+  border: 2px solid rgba(132, 222, 255, 0.57);
+  border-radius: 18px;
+  color: #f3fcff;
+  background: #164b84;
+  box-shadow: 0 5px 0 rgba(4, 26, 68, 0.64);
+  text-align: left;
+  transition: transform 150ms ease, filter 150ms ease;
+}
+
+.workshop-home-card:hover {
+  filter: brightness(1.12);
+  transform: translateY(-4px);
+}
+
+.workshop-home-card img {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.78;
+  transform: scale(1.08);
+  transition: transform 220ms ease;
+}
+
+.workshop-home-card:hover img {
+  transform: scale(1.16);
+}
+
+.workshop-home-card::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  content: "";
+  background: linear-gradient(180deg, rgba(5, 25, 62, 0.08), rgba(5, 21, 56, 0.94));
+}
+
+.workshop-home-card > span,
+.workshop-home-card > strong,
+.workshop-home-card > small {
+  position: relative;
+  z-index: 1;
+}
+
+.workshop-home-card > span {
+  position: absolute;
+  z-index: 2;
+  top: 11px;
+  left: 11px;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid rgba(239, 252, 255, 0.65);
+  border-radius: 14px;
+  background: rgba(9, 32, 73, 0.56);
+  font-size: 27px;
+}
+
+.workshop-home-card strong {
+  margin-right: auto;
+  font-size: clamp(15px, 1.8vw, 20px);
+  text-shadow: 0 2px 6px rgba(0, 4, 27, 0.8);
+}
+
+.workshop-home-card small {
+  position: absolute;
+  z-index: 2;
+  right: 11px;
+  bottom: 12px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #fff1a6;
+  background: rgba(4, 22, 58, 0.72);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.workshop-home-card.completed {
+  border-color: #84f1c8;
+  box-shadow: 0 0 16px rgba(119, 237, 198, 0.36), 0 5px 0 rgba(6, 63, 73, 0.68);
+}
+
+.workshop-home-button {
+  flex: 0 0 auto;
+}
+
 .bonus-listen-button {
   min-width: 170px;
   margin: 0 auto 9px;
@@ -3082,6 +3229,53 @@ button:disabled {
     margin: 0 0 3px;
   }
 
+  #workshopHomeScreen .project-page {
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+  }
+
+  #workshopHomeScreen .project-page-heading {
+    flex: 0 0 auto;
+    margin-bottom: 11px;
+  }
+
+  #workshopHomeScreen .workshop-home-grid {
+    min-height: 0;
+  }
+
+  #workshopHomeScreen .workshop-home-card {
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  #workshopHomeScreen .workshop-home-card > span {
+    top: 9px;
+    left: 9px;
+    width: 39px;
+    height: 39px;
+    border-radius: 12px;
+    font-size: 23px;
+  }
+
+  #workshopHomeScreen .workshop-home-card strong {
+    font-size: 16px;
+  }
+
+  #workshopHomeScreen .workshop-home-card small {
+    right: 8px;
+    bottom: 8px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 899px), (orientation: portrait) {
+  .workshop-home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
+
   #gardenScreen .word-lab {
     display: grid;
     grid-template-rows: auto auto minmax(0, 1fr);
@@ -3143,5 +3337,783 @@ button:disabled {
     width: 70px;
     height: 70px;
     font-size: 40px;
+  }
+}
+
+.pilot-dock,
+.orbit-map,
+.facility-dock {
+  border: 1px solid rgba(104, 218, 255, 0.5);
+  border-radius: 25px;
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(236, 253, 255, 0.15);
+}
+
+.pilot-dock {
+  display: flex;
+  gap: 12px;
+  padding: 17px;
+  background:
+    linear-gradient(145deg, rgba(4, 24, 60, 0.48), rgba(15, 69, 123, 0.58)),
+    url("images/backgrounds/mars-rover.jpg") center / cover;
+  flex-direction: column;
+}
+
+.orbit-map {
+  position: relative;
+  min-height: 580px;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(5, 22, 56, 0.45), rgba(42, 18, 91, 0.57)),
+    url("images/backgrounds/andromeda-galaxy.jpg") center / cover;
+}
+
+.orbit-map::before,
+.orbit-map::after {
+  position: absolute;
+  content: "";
+  border: 2px solid rgba(123, 237, 255, 0.25);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.orbit-map::before {
+  top: 16%;
+  left: 50%;
+  width: 54%;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+}
+
+.orbit-map::after {
+  top: 25%;
+  left: 50%;
+  width: 34%;
+  aspect-ratio: 1;
+  border-style: dashed;
+  transform: translateX(-50%);
+}
+
+.facility-dock {
+  display: flex;
+  gap: 10px;
+  padding: 13px;
+  background:
+    linear-gradient(145deg, rgba(8, 30, 69, 0.53), rgba(91, 37, 50, 0.35)),
+    url("images/backgrounds/orion-nebula.jpg") center / cover;
+  flex-direction: column;
+}
+
+.facility-heading {
+  display: grid;
+  gap: 1px;
+  padding: 2px 4px;
+}
+
+.facility-heading span {
+  color: #90d8ef;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.facility-heading strong {
+  color: #f4fcff;
+  font-size: 22px;
+}
+
+.facility-dock .facility-project-grid {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.facility-dock .facility-card {
+  min-height: 0;
+  padding: 15px 10px 12px;
+  text-align: center;
+}
+
+.facility-dock .facility-icon {
+  position: static;
+  width: 59px;
+  height: 59px;
+  margin: 0 auto 6px;
+  border-radius: 17px;
+  font-size: 34px;
+}
+
+.facility-dock .facility-type {
+  font-size: 11px;
+}
+
+.facility-dock .facility-card strong {
+  font-size: 18px;
+}
+
+.facility-dock .facility-card .facility-count {
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+.orbit-heading {
+  position: absolute;
+  z-index: 3;
+  top: 17px;
+  left: 22px;
+}
+
+.orbit-heading h2 {
+  margin: 0;
+  color: #f4fcff;
+  font-size: clamp(26px, 3.6vw, 39px);
+  letter-spacing: -0.04em;
+}
+
+.orbit-core {
+  position: absolute;
+  z-index: 2;
+  top: 52%;
+  left: 50%;
+  width: 230px;
+  height: 250px;
+  transform: translate(-50%, -40%);
+}
+
+.core-glow {
+  position: absolute;
+  inset: 23px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(83, 227, 255, 0.46), rgba(88, 118, 255, 0.08) 61%, transparent 72%);
+  filter: blur(5px);
+}
+
+.home-orbit-rocket {
+  position: absolute;
+  z-index: 1;
+  top: -7px;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%) scale(0.73);
+  transform-origin: top center;
+}
+
+.orbit-progress {
+  position: absolute;
+  z-index: 3;
+  bottom: 0;
+  left: 50%;
+  display: grid;
+  min-width: 145px;
+  padding: 7px 10px;
+  border: 1px solid rgba(133, 235, 255, 0.5);
+  border-radius: 14px;
+  color: #c4eefa;
+  background: rgba(5, 27, 65, 0.78);
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.orbit-progress strong {
+  color: var(--yellow);
+  font-size: 22px;
+}
+
+.orbit-progress small {
+  color: #a8d4e8;
+  font-size: 10px;
+}
+
+.orbit-stage-grid {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+}
+
+.orbit-stage-grid .stage-project-card {
+  position: absolute;
+  width: min(29%, 172px);
+  min-height: 104px;
+  padding: 10px 11px;
+  background:
+    linear-gradient(145deg, rgba(15, 64, 119, 0.9), rgba(30, 32, 97, 0.78)),
+    url("images/backgrounds/orion-nebula.jpg") center / cover;
+}
+
+.orbit-stage-grid .stage-project-card:nth-child(1) {
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.orbit-stage-grid .stage-project-card:nth-child(2) {
+  top: 30%;
+  left: 16px;
+}
+
+.orbit-stage-grid .stage-project-card:nth-child(3) {
+  top: 30%;
+  right: 16px;
+}
+
+.orbit-stage-grid .stage-project-card:nth-child(4) {
+  bottom: 16px;
+  left: 9%;
+}
+
+.orbit-stage-grid .stage-project-card:nth-child(5) {
+  right: 9%;
+  bottom: 16px;
+}
+
+.orbit-stage-grid .stage-project-art {
+  width: 48px;
+  height: 43px;
+  margin-bottom: 4px;
+  border-radius: 11px;
+}
+
+.orbit-stage-grid .stage-project-number {
+  top: 10px;
+  right: 10px;
+  font-size: 9px;
+}
+
+.orbit-stage-grid .stage-project-card strong {
+  margin-top: 1px;
+  font-size: 15px;
+}
+
+.orbit-stage-grid .stage-project-card small {
+  font-size: 10px;
+}
+
+.orbit-stage-grid .stage-project-count {
+  bottom: 10px;
+  left: 11px;
+  font-size: 10px;
+}
+
+.dictation-drag-card {
+  display: grid;
+  min-height: 0;
+  height: 100%;
+  grid-template-columns: minmax(270px, 0.7fr) minmax(0, 1.3fr);
+  gap: 15px;
+  padding: 15px;
+  border: 2px solid #5daedf;
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(18, 73, 135, 0.94), rgba(10, 34, 80, 0.91));
+}
+
+.dictation-visual,
+.dictation-workspace {
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: space-around;
+  border: 2px solid rgba(142, 235, 255, 0.43);
+  border-radius: 18px;
+  background: rgba(4, 25, 65, 0.46);
+  flex-direction: column;
+}
+
+.dictation-visual > span,
+.dictation-workspace > span {
+  padding: 7px 12px;
+  color: #87ecff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.dictation-visual > strong {
+  padding: 7px 14px;
+  color: #fff0ab;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  text-align: center;
+}
+
+.dictation-visual .scene-card {
+  width: min(100%, 230px);
+  min-height: 0;
+  flex: 1 1 auto;
+  margin: 0 10px;
+}
+
+.dictation-workspace h3 {
+  margin: 1px 0;
+  color: #f5fcff;
+  font-size: clamp(31px, 4vw, 45px);
+}
+
+.keyboard-bank {
+  display: grid;
+  width: min(100%, 560px);
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.keyboard-bank .letter-tile {
+  width: 100%;
+  height: 49px;
+  min-width: 0;
+  border-radius: 11px;
+  font-size: 26px;
+}
+
+.keyboard-bank .vowel-tile {
+  border-color: #fff1a0;
+  color: #5b3e00;
+  background: #ffe174;
+  box-shadow: 0 4px 0 #bd8b31;
+}
+
+.handwriting-card {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: minmax(260px, 0.68fr) minmax(0, 1.32fr);
+  gap: 15px;
+  padding: 15px;
+  border: 2px solid #6dadec;
+  border-radius: 23px;
+  background: linear-gradient(145deg, rgba(18, 71, 131, 0.94), rgba(30, 38, 105, 0.88));
+}
+
+.handwriting-prompt {
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  border: 2px solid rgba(148, 239, 255, 0.47);
+  border-radius: 19px;
+  background:
+    linear-gradient(145deg, rgba(8, 30, 74, 0.48), rgba(56, 29, 111, 0.46)),
+    url("images/backgrounds/orion-nebula.jpg") center / cover;
+  text-align: center;
+  flex-direction: column;
+}
+
+.handwriting-prompt > span {
+  color: #8befff;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.handwriting-prompt h3 {
+  margin: 12px 0 11px;
+  color: #f5fcff;
+  font-size: clamp(26px, 3vw, 37px);
+  line-height: 1.18;
+}
+
+.handwriting-prompt p {
+  margin: 0 0 19px;
+  color: #ffe99b;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.paper-area {
+  display: flex;
+  min-height: 0;
+  padding: 14px;
+  border: 3px solid #d9efff;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 0 rgba(2, 21, 58, 0.33);
+  flex-direction: column;
+}
+
+.paper-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #effaff;
+  font-size: 17px;
+}
+
+.handwriting-canvas {
+  min-height: 0;
+  width: 100%;
+  flex: 1 1 auto;
+  border: 1px solid #d2eafc;
+  border-radius: 10px;
+  background: #fffdf5;
+  box-shadow: inset 0 0 13px rgba(100, 164, 220, 0.12);
+  touch-action: none;
+}
+
+.paper-area > .primary-button {
+  align-self: center;
+  margin-top: 9px;
+}
+
+.handwriting-review,
+.handwriting-correction {
+  position: absolute;
+  z-index: 5;
+  inset: 15px;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(4, 22, 61, 0.91);
+  backdrop-filter: blur(5px);
+}
+
+.answer-sheet,
+.handwriting-correction {
+  width: min(100%, 700px);
+  min-height: 0;
+  padding: 19px;
+  border: 3px solid #dbf5ff;
+  border-radius: 20px;
+  background: #fffdf4;
+  color: #1b4274;
+  text-align: center;
+}
+
+.answer-sheet > span {
+  display: block;
+  color: #4b8bc1;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.answer-sheet img {
+  display: block;
+  width: min(100%, 450px);
+  max-height: 158px;
+  margin: 8px auto;
+  border: 2px solid #afcee9;
+  border-radius: 9px;
+  object-fit: contain;
+}
+
+.answer-sheet p {
+  margin: 5px 0 1px;
+  color: #648ab1;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.answer-sheet > strong {
+  display: block;
+  margin-bottom: 12px;
+  color: #e06150;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.review-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.handwriting-correction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b4274;
+  flex-direction: column;
+}
+
+.handwriting-correction > p {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.correction-answer {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin: 0 0 8px;
+}
+
+.correction-answer span {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  place-items: center;
+  border-radius: 8px;
+  color: #7a5bb6;
+  background: #f1e8ff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.correction-canvas {
+  width: min(100%, 600px);
+  height: min(28vh, 150px);
+  flex: 0 0 auto;
+  margin-bottom: 11px;
+}
+
+@media (orientation: landscape) and (min-width: 900px) {
+  #landingScreen.home-screen {
+    display: grid;
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-columns: 214px minmax(0, 1fr) 192px;
+    grid-template-rows: 1fr;
+    gap: 12px;
+  }
+
+  .pilot-dock,
+  .orbit-map,
+  .facility-dock {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .pilot-dock {
+    gap: 8px;
+    padding: 13px;
+  }
+
+  .pilot-dock .pilot-identity {
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pilot-dock .pilot-avatar {
+    width: 47px;
+    height: 47px;
+    border-radius: 14px;
+    font-size: 26px;
+  }
+
+  .pilot-dock .pilot-identity h1 {
+    font-size: 29px;
+  }
+
+  .pilot-dock .home-stat-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .pilot-dock .home-stat-row > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 8px;
+  }
+
+  .pilot-dock .home-stat-row strong {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .pilot-dock .resume-button {
+    min-width: 0;
+    padding: 10px 9px 11px;
+    font-size: 13px;
+  }
+
+  .pilot-dock .save-note {
+    font-size: 10px;
+    line-height: 1.25;
+  }
+
+  .orbit-map {
+    min-height: 0;
+  }
+
+  .orbit-heading {
+    top: 13px;
+    left: 17px;
+  }
+
+  .orbit-heading h2 {
+    font-size: 27px;
+  }
+
+  .orbit-core {
+    width: 190px;
+    height: 218px;
+  }
+
+  .home-orbit-rocket {
+    transform: translateX(-50%) scale(0.64);
+  }
+
+  .orbit-stage-grid .stage-project-card {
+    width: min(31%, 148px);
+    min-height: 87px;
+    padding: 8px;
+    border-radius: 15px;
+  }
+
+  .orbit-stage-grid .stage-project-card:nth-child(1) {
+    top: 10px;
+  }
+
+  .orbit-stage-grid .stage-project-card:nth-child(2),
+  .orbit-stage-grid .stage-project-card:nth-child(3) {
+    top: 31%;
+  }
+
+  .orbit-stage-grid .stage-project-card:nth-child(2) {
+    left: 10px;
+  }
+
+  .orbit-stage-grid .stage-project-card:nth-child(3) {
+    right: 10px;
+  }
+
+  .orbit-stage-grid .stage-project-card:nth-child(4),
+  .orbit-stage-grid .stage-project-card:nth-child(5) {
+    bottom: 10px;
+  }
+
+  .orbit-stage-grid .stage-project-card:nth-child(4) {
+    left: 5%;
+  }
+
+  .orbit-stage-grid .stage-project-card:nth-child(5) {
+    right: 5%;
+  }
+
+  .orbit-stage-grid .stage-project-art {
+    width: 42px;
+    height: 37px;
+    margin-bottom: 2px;
+  }
+
+  .orbit-stage-grid .stage-project-card strong {
+    font-size: 13px;
+  }
+
+  .orbit-stage-grid .stage-project-card small {
+    font-size: 9px;
+  }
+
+  .orbit-progress {
+    bottom: -3px;
+    min-width: 124px;
+    padding: 5px 7px;
+  }
+
+  .orbit-progress strong {
+    font-size: 18px;
+  }
+
+  .facility-dock {
+    gap: 7px;
+    padding: 10px;
+  }
+
+  .facility-heading strong {
+    font-size: 19px;
+  }
+
+  .facility-dock .facility-card {
+    padding: 10px 7px;
+  }
+
+  .facility-dock .facility-icon {
+    width: 47px;
+    height: 47px;
+    margin-bottom: 3px;
+    border-radius: 13px;
+    font-size: 27px;
+  }
+
+  .facility-dock .facility-card strong {
+    font-size: 15px;
+  }
+
+  .facility-dock .facility-card .facility-count {
+    margin-top: 3px;
+    font-size: 10px;
+  }
+
+  #gameScreen .handwriting-card {
+    grid-template-columns: minmax(240px, 0.64fr) minmax(0, 1.36fr);
+  }
+
+  #gameScreen .handwriting-prompt {
+    padding: 14px;
+  }
+
+  #gameScreen .handwriting-prompt h3 {
+    margin: 8px 0;
+    font-size: 28px;
+  }
+
+  #gameScreen .handwriting-prompt p {
+    margin-bottom: 12px;
+    font-size: 18px;
+  }
+
+  #gameScreen .handwriting-prompt .listen-button,
+  #gameScreen .handwriting-prompt .mini-button {
+    min-width: 0;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  #gameScreen .paper-area {
+    padding: 10px;
+  }
+
+  #gameScreen .paper-toolbar {
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+
+  #gameScreen .paper-area > .primary-button {
+    margin-top: 6px;
+    padding: 9px 13px 10px;
+    font-size: 13px;
+  }
+
+  #gameScreen .handwriting-review,
+  #gameScreen .handwriting-correction {
+    inset: 10px;
+    padding: 10px;
+  }
+
+  #gameScreen .answer-sheet,
+  #gameScreen .handwriting-correction {
+    padding: 12px;
+  }
+
+  #gameScreen .answer-sheet img {
+    max-height: 112px;
+    margin: 5px auto;
+  }
+
+  #gameScreen .answer-sheet > strong {
+    margin-bottom: 7px;
+    font-size: 33px;
+  }
+
+  #gameScreen .handwriting-correction > p {
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+
+  #gameScreen .correction-canvas {
+    height: 105px;
+    margin-bottom: 7px;
   }
 }

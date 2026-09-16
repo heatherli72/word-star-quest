@@ -1,4 +1,4 @@
-const CACHE_NAME = "word-space-quest-v23";
+const CACHE_NAME = "word-space-quest-v25";
 const APP_SHELL = [
   "./",
   "./index.html",

@@ -26,7 +26,7 @@
   <main class="app-shell">
     <header class="topbar">
       <button class="brand-home" id="homeButton" type="button" aria-label="回到训练营首页">
-        <span class="brand-mark">🚀</span><span>单词宇宙训练营</span><small>首页</small>
+        <span class="brand-mark">🚀</span><span>单词宇宙训练营</span><small>⌂ 首页</small>
       </button>
       <div class="header-actions">
         <span class="bank-pill" data-star-balance>⚡ 20</span>
@@ -37,7 +37,7 @@
     </header>
 
     <section class="home-screen" id="landingScreen">
-      <aside class="home-sidebar">
+      <aside class="pilot-dock">
         <div class="pilot-identity">
           <span class="pilot-avatar" data-profile-avatar>🧑‍🚀</span>
           <div><span>当前驾驶员</span><h1 id="homePilotName">等待选择</h1></div>
@@ -46,25 +46,28 @@
           <div><span>训练进度</span><strong id="homeTrainingCount">0 / 40</strong></div>
           <div><span>能量星</span><strong data-star-balance>⚡ 20</strong></div>
         </div>
-        <div class="home-ship-panel">
-          <div class="assembled-rocket compact" id="heroRocket" aria-label="正在组装的专属火箭"></div>
-          <div class="collection-summary"><span>火箭组件</span><strong id="heroRocketCount">0 / 20</strong><small>收藏 <b id="heroCollectionCount">0 / 10</b></small></div>
-        </div>
         <button class="primary-button resume-button" id="resumeButton" type="button" hidden>继续任务 ▶</button>
         <p class="save-note" id="saveNote">自动存档已开启</p>
         <p class="save-note" id="iosInstallTip" hidden>📱 横屏添加到主屏幕后，可全屏使用。</p>
       </aside>
 
-      <section class="home-workspace" aria-labelledby="homeWorkspaceTitle">
-        <div class="home-workspace-heading">
-          <div><p class="eyebrow">TRAINING CAMP</p><h2 id="homeWorkspaceTitle">选择训练项目</h2></div>
+      <section class="orbit-map" aria-labelledby="homeWorkspaceTitle">
+        <div class="orbit-heading">
+          <p class="eyebrow">TRAINING CAMP</p>
+          <h2 id="homeWorkspaceTitle">今日星际任务</h2>
         </div>
-        <section class="stage-program" aria-labelledby="stageProgramTitle">
-          <div class="program-heading"><h3 id="stageProgramTitle">闯关训练</h3><span>4 个关卡</span></div>
-          <div class="stage-project-grid" id="stageProjectGrid"></div>
-        </section>
-        <section class="camp-facilities" aria-label="训练营设施"><div class="facility-project-grid" id="facilityProjectGrid"></div></section>
+        <div class="orbit-core">
+          <div class="core-glow"></div>
+          <div class="assembled-rocket home-orbit-rocket" id="heroRocket" aria-label="正在组装的专属火箭"></div>
+          <div class="orbit-progress"><span>火箭组件</span><strong id="heroRocketCount">0 / 20</strong><small>收藏 <b id="heroCollectionCount">0 / 10</b></small></div>
+        </div>
+        <div class="orbit-stage-grid" id="stageProjectGrid"></div>
       </section>
+
+      <aside class="facility-dock" aria-label="训练营设施">
+        <div class="facility-heading"><span>探索</span><strong>训练营</strong></div>
+        <div class="facility-project-grid" id="facilityProjectGrid"></div>
+      </aside>
     </section>
 
     <section class="app-route" id="gameScreen" hidden>
@@ -90,15 +93,27 @@
       </article>
     </section>
 
+    <section class="app-route project-route" id="workshopHomeScreen" hidden>
+      <article class="screen-card project-page workshop-home-page">
+        <div class="project-page-heading">
+          <div><h2>🧰 星际收藏工坊</h2><p>选择一套收藏，集齐 20 个部件。</p></div>
+          <strong class="collection-total" id="activatedCollectionCount">0 / 10 已激活</strong>
+        </div>
+        <div class="workshop-home-grid" id="workshopCollectionGrid"></div>
+      </article>
+    </section>
+
     <section class="app-route project-route" id="workshopScreen" hidden>
       <article class="screen-card project-page">
-        <div class="project-page-heading"><h2>🧰 星际收藏工坊</h2><p>自由选择一套收藏，慢慢集齐 20 个部件。</p></div>
+        <div class="project-page-heading">
+          <div><h2>🧰 星际收藏工坊</h2><p>组装 <strong id="workshopCollectionName">专属火箭</strong>。</p></div>
+          <button class="secondary-button workshop-home-button" id="workshopHomeButton" type="button">← 收藏总览</button>
+        </div>
         <div class="workshop-layout">
           <section class="collection-showcase">
             <div class="collection-heading"><h3 id="workshopShowcaseTitle">专属火箭</h3><strong id="workshopShowcaseCount">0 / 20</strong></div>
             <div class="assembled-rocket workshop-rocket" id="workshopRocket" aria-label="火箭组件预览"></div>
             <div class="collection-hero" id="collectionHero" hidden></div>
-            <div class="collection-gallery" id="collectionGallery"></div>
           </section>
           <section class="shop-catalog">
             <div class="store-balance" id="shopBalance">⚡ 20</div>
