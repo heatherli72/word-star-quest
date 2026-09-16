@@ -129,6 +129,10 @@ function buildFillChoices(answer) {
   return [answer, ...distractors];
 }
 
+function activeCollection() {
+  return COLLECTION_SETS.find((collection) => collection.id === player.activeCollectionId) || COLLECTION_SETS[0];
+}
+
 const FILL_QUESTIONS = WORDS.flatMap((entry) => {
   return entry.word.split("").map((answer, index) => ({
     id: `${entry.id}-fill-${index + 1}`,
@@ -144,8 +148,8 @@ const STAGES = [
   { id: "listening", icon: "📡", art: "images/three.svg", title: "雷达听音站", description: "听句子，选单词。", mapDescription: "听句子选单词", mode: "listening", reward: 2, bonus: 8 },
   { id: "soundFill", icon: "🔊", art: "images/eat.svg", title: "声波填空站", description: "听单词，补字母。", mapDescription: "听读音填空", mode: "soundFill", reward: 2, bonus: 8 },
   { id: "spell", icon: "🧩", art: "images/two.svg", title: "字母拼装舱", description: "拖动字母，拼单词。", mapDescription: "拖拽字母拼词", mode: "spell", reward: 3, bonus: 10 },
-  { id: "dictation", icon: "⌨️", art: "images/black.svg", title: "星际默写台", description: "听单词，拖字母默写。", mapDescription: "拖字母默写", mode: "dictation", reward: 5, bonus: 14 },
-  { id: "handwriting", icon: "✍️", art: "images/one.svg", title: "星际手写台", description: "听单词，手写答卷。", mapDescription: "手写默写", mode: "handwriting", reward: 15, bonus: 30 }
+  { id: "dictation", icon: "⌨️", art: "images/black.svg", title: "拼写键盘舱", description: "用字母键盘拼出答案。", mapDescription: "字母键盘默写", mode: "dictation", reward: 5, bonus: 14 },
+  { id: "handwriting", icon: "✍️", art: "images/one.svg", title: "星际默写台", description: "手写整组默写答卷。", mapDescription: "手写默写答卷", mode: "handwriting", reward: 15, bonus: 40 }
 ];
 
 const ROCKET_PARTS = [
@@ -276,6 +280,8 @@ const game = {
   letterBank: [],
   placedLetters: [],
   allowLetterReuse: false,
+  keyboardMode: false,
+  spellingBlocks: [],
   lastTypedValue: ""
 };
 
@@ -299,6 +305,8 @@ let promptSequenceId = 0;
 let activeVoiceCompletion = null;
 let handwritingBoard = null;
 let correctionBoard = null;
+let handwritingSession = null;
+let handwritingReviewPage = 0;
 
 const audioMaps = {
   word: new Map(),
@@ -326,9 +334,40 @@ function createDefaultProfile(name = "新驾驶员", avatarId = "astronaut", id 
     stars: 20,
     ownedRocketParts: [],
     ownedCollectionParts: [],
+    activeCollectionId: "rocket",
     progress: { listening: [], soundFill: [], spell: [], dictation: [], handwriting: [] },
     mission: null,
+    handwritingSession: null,
     updatedAt: null
+  };
+}
+
+function normalizeHandwritingSession(candidate) {
+  if (!candidate || typeof candidate !== "object" || !Array.isArray(candidate.roundIds) || !Array.isArray(candidate.entries)) {
+    return null;
+  }
+  const validIds = new Set(WORDS.map((entry) => entry.id));
+  const roundIds = candidate.roundIds.filter((id) => validIds.has(id));
+  if (roundIds.length !== WORDS.length) return null;
+  const seen = new Set();
+  const entries = candidate.entries
+    .filter((entry) => entry && validIds.has(entry.id) && typeof entry.image === "string" && entry.image.startsWith("data:image/"))
+    .map((entry) => ({
+      id: entry.id,
+      image: entry.image,
+      status: entry.status === "approved" ? "approved" : "pending"
+    }))
+    .filter((entry) => {
+      if (seen.has(entry.id)) return false;
+      seen.add(entry.id);
+      return true;
+    });
+  return {
+    roundIds,
+    entries,
+    currentIndex: Number.isInteger(candidate.currentIndex) ? Math.min(Math.max(candidate.currentIndex, 0), roundIds.length) : entries.length,
+    reviewPage: Number.isInteger(candidate.reviewPage) ? Math.max(candidate.reviewPage, 0) : 0,
+    reviewing: Boolean(candidate.reviewing)
   };
 }
 
@@ -355,7 +394,11 @@ function normalizeProfile(candidate, fallbackName = "新驾驶员") {
   profile.ownedCollectionParts = Array.isArray(candidate.ownedCollectionParts)
     ? [...new Set(candidate.ownedCollectionParts.filter((itemId) => COLLECTION_PART_IDS.has(itemId)))]
     : [];
+  profile.activeCollectionId = COLLECTION_SETS.some((collection) => collection.id === candidate.activeCollectionId)
+    ? candidate.activeCollectionId
+    : "rocket";
   profile.updatedAt = typeof candidate.updatedAt === "string" ? candidate.updatedAt : null;
+  profile.handwritingSession = normalizeHandwritingSession(candidate.handwritingSession);
 
   if (candidate.progress && typeof candidate.progress === "object") {
     STAGES.forEach((stage, index) => {
@@ -529,7 +572,11 @@ function updateHome() {
   updateProfileDisplay();
   updateStarDisplays();
   $("#homeTrainingCount").textContent = `${ready ? totalTrainingProgress() : 0} / ${totalTrainingQuestions()}`;
-  $("#heroRocketCount").textContent = `${ready ? player.ownedRocketParts.length : 0} / ${ROCKET_PARTS.length}`;
+  const active = activeCollection();
+  const activeProgress = collectionProgress(active);
+  $("#homeCollectionName").textContent = active.name;
+  $("#homeCollectionStatus").textContent = active.name;
+  $("#heroRocketCount").textContent = `${ready ? activeProgress.completed : 0} / ${activeProgress.total}`;
   $("#heroCollectionCount").textContent = `${ready ? activatedCollectionSets() : 0} / ${COLLECTION_SETS.length}`;
   $("#resumeButton").hidden = !ready || !player.mission;
   const bonusButton = $("#bonusChallengeButton");
@@ -538,7 +585,7 @@ function updateHome() {
   $("#saveNote").textContent = ready && player.mission
     ? `上次：${STAGES[player.mission.stageIndex].title} · ${player.mission.roundIndex + 1} / ${player.mission.roundIds.length}`
     : "自动存档已开启";
-  renderRocket($("#heroRocket"));
+  renderHomeCollection();
 }
 
 function showToast(message) {
@@ -1113,6 +1160,8 @@ function checkFillAnswer(question, choice, button) {
 
 function prepareSpellQuestion(entry) {
   game.allowLetterReuse = false;
+  game.keyboardMode = false;
+  game.spellingBlocks = [];
   game.placedLetters = Array(entry.word.length).fill(null);
   const targetLetters = entry.word.split("").map((letter, index) => ({ id: `${letter}-${index}`, letter }));
   const extras = shuffle("abcdefghijklmnopqrstuvwxyz".split("").filter((letter) => !entry.word.includes(letter)))
@@ -1156,6 +1205,9 @@ function updateSpellingBoard() {
   const slots = $("#spellingSlots");
   const bank = $("#letterBank");
   if (!slots || !bank) return;
+  const vowelBank = $("#vowelBank");
+  const spellingBlockBank = $("#spellingBlockBank");
+  const spellingBlockGroup = $("#spellingBlockGroup");
   slots.replaceChildren();
   game.placedLetters.forEach((item, index) => {
     const slot = document.createElement("button");
@@ -1167,6 +1219,7 @@ function updateSpellingBoard() {
     slots.append(slot);
   });
   bank.replaceChildren();
+  if (vowelBank) vowelBank.replaceChildren();
   bank.classList.toggle("keyboard-bank", game.allowLetterReuse);
   game.letterBank.forEach((item) => {
     const used = !game.allowLetterReuse && game.placedLetters.some((placed) => placed && placed.id === item.id);
@@ -1176,8 +1229,37 @@ function updateSpellingBoard() {
     tile.textContent = item.letter;
     tile.disabled = used || game.locked;
     tile.addEventListener("pointerdown", (event) => startLetterDrag(event, item, null));
-    bank.append(tile);
+    const targetBank = vowelBank && "aeiou".includes(item.letter) ? vowelBank : bank;
+    targetBank.append(tile);
   });
+  if (spellingBlockBank && spellingBlockGroup) {
+    spellingBlockBank.replaceChildren();
+    spellingBlockGroup.hidden = game.spellingBlocks.length === 0;
+    game.spellingBlocks.forEach((block) => {
+      const button = createButton("spelling-block", block.toUpperCase(), () => placeSpellingBlock(block));
+      button.disabled = game.locked;
+      spellingBlockBank.append(button);
+    });
+  }
+}
+
+function getSpellingBlocks(entry) {
+  const blocks = ["th", "wh", "ee", "ea", "ck", "ey"];
+  return blocks.filter((block) => entry.word.includes(block));
+}
+
+function placeSpellingBlock(block) {
+  if (game.locked) return;
+  let openIndex = game.placedLetters.findIndex((item) => !item);
+  if (openIndex < 0) return;
+  block.split("").forEach((letter, index) => {
+    const slotIndex = openIndex + index;
+    if (slotIndex < game.placedLetters.length && !game.placedLetters[slotIndex]) {
+      game.placedLetters[slotIndex] = { id: `block-${block}-${Date.now()}-${index}`, letter };
+    }
+  });
+  playEffect("tap");
+  updateSpellingBoard();
 }
 
 function startLetterDrag(event, item, fromSlotIndex) {
@@ -1285,9 +1367,11 @@ function checkSpelling() {
 
 function renderDictationQuestion(entry, sentence) {
   game.allowLetterReuse = true;
+  game.keyboardMode = true;
   game.placedLetters = Array(entry.word.length).fill(null);
-  game.letterBank = shuffle("abcdefghijklmnopqrstuvwxyz".split(""))
+  game.letterBank = "abcdefghijklmnopqrstuvwxyz".split("")
     .map((letter) => ({ id: `keyboard-${letter}`, letter }));
+  game.spellingBlocks = getSpellingBlocks(entry);
   const area = $("#questionArea");
   area.replaceChildren();
   const panel = document.createElement("div");
@@ -1300,15 +1384,19 @@ function renderDictationQuestion(entry, sentence) {
   visual.append(createSceneCard(entry));
   const workspace = document.createElement("div");
   workspace.className = "dictation-workspace";
-  workspace.innerHTML = `<span>拖动字母拼出答案</span><h3>${entry.word.length} 个字母</h3>`;
+  workspace.innerHTML = `<span>字母键盘</span><h3>${entry.word.length} 个字母</h3>`;
   workspace.append(createPromptControls(entry, sentence));
   const slots = document.createElement("div");
   slots.className = "spelling-slots dictation-slots";
   slots.id = "spellingSlots";
-  const bank = document.createElement("div");
-  bank.className = "letter-bank keyboard-bank";
-  bank.id = "letterBank";
-  workspace.append(slots, bank, createButton("primary-button check-button", "检查", checkDictation));
+  const keyboard = document.createElement("div");
+  keyboard.className = "spelling-keyboard";
+  keyboard.innerHTML = `
+    <section class="keyboard-group"><span>元音</span><div class="letter-bank keyboard-bank vowel-bank" id="vowelBank"></div></section>
+    <section class="keyboard-group"><span>辅音</span><div class="letter-bank keyboard-bank consonant-bank" id="letterBank"></div></section>
+    <section class="spelling-block-group" id="spellingBlockGroup" hidden><span>常见组合</span><div class="spelling-block-bank" id="spellingBlockBank"></div></section>
+  `;
+  workspace.append(slots, keyboard, createButton("primary-button check-button", "检查", checkDictation));
   card.append(visual, workspace);
   panel.append(card);
   area.append(panel);
@@ -1341,7 +1429,7 @@ function renderHandwritingQuestion(entry, sentence) {
   const prompt = document.createElement("section");
   prompt.className = "handwriting-prompt";
   prompt.innerHTML = `
-    <span>真实默写</span>
+    <span>整组手写默写</span>
     <h3>听到单词后，写在答题纸上</h3>
     <p>${sentence.blank}</p>
   `;
@@ -1355,64 +1443,33 @@ function renderHandwritingQuestion(entry, sentence) {
       <button class="mini-button" id="clearWritingButton" type="button">清空</button>
     </div>
     <canvas class="handwriting-canvas" id="handwritingCanvas" aria-label="手写答题纸"></canvas>
-    <button class="primary-button" id="submitWritingButton" type="button">交给爸爸妈妈批改</button>
+    <button class="primary-button" id="submitWritingButton" type="button">检查本题</button>
   `;
 
-  const review = document.createElement("section");
-  review.className = "handwriting-review";
-  review.id = "handwritingReview";
-  review.hidden = true;
-  review.innerHTML = `
+  const check = document.createElement("section");
+  check.className = "handwriting-check";
+  check.id = "handwritingCheck";
+  check.hidden = true;
+  check.innerHTML = `
     <div class="answer-sheet">
-      <span>爸爸妈妈批改</span>
+      <span>自己检查</span>
       <img id="writingPreview" alt="孩子的手写答卷">
-      <p>正确答案</p>
+      <p>正确拼写</p>
       <strong id="writingAnswer"></strong>
-      <div class="review-actions">
-        <button class="primary-button" id="writingCorrectButton" type="button">✓ 写对了</button>
-        <button class="secondary-button" id="writingRetryButton" type="button">需要修改</button>
-      </div>
+      <button class="primary-button" id="nextWritingButton" type="button">下一题</button>
     </div>
   `;
 
-  const correction = document.createElement("section");
-  correction.className = "handwriting-correction";
-  correction.id = "handwritingCorrection";
-  correction.hidden = true;
-  correction.innerHTML = `
-    <p>看着答案，在方格里认真改写一次。</p>
-    <div class="correction-answer" id="correctionAnswer"></div>
-    <canvas class="handwriting-canvas correction-canvas" id="correctionCanvas" aria-label="手写修改方格"></canvas>
-    <div class="review-actions">
-      <button class="mini-button" id="clearCorrectionButton" type="button">清空修改</button>
-      <button class="primary-button" id="submitCorrectionButton" type="button">再次交卷</button>
-    </div>
-  `;
-
-  card.append(prompt, paperArea, review, correction);
+  card.append(prompt, paperArea, check);
   area.append(card);
+  const writingCanvas = $("#handwritingCanvas");
   window.requestAnimationFrame(() => {
-    handwritingBoard = setupHandwritingBoard($("#handwritingCanvas"), entry.word.length, false);
+    if (writingCanvas.isConnected) handwritingBoard = setupHandwritingBoard(writingCanvas, entry.word.length, false);
   });
 
   $("#clearWritingButton").addEventListener("click", () => clearHandwritingBoard(handwritingBoard));
-  $("#submitWritingButton").addEventListener("click", () => showHandwritingReview(entry));
-  $("#writingCorrectButton").addEventListener("click", () => {
-    game.locked = true;
-    markCorrect(entry, "爸爸妈妈批改通过！");
-  });
-  $("#writingRetryButton").addEventListener("click", () => showCorrectionBoard(entry));
-  $("#clearCorrectionButton").addEventListener("click", () => clearHandwritingBoard(correctionBoard));
-  $("#submitCorrectionButton").addEventListener("click", () => {
-    if (!correctionBoard || !correctionBoard.hasInk) {
-      setFeedback("先在方格里改写一次。", "try-again");
-      return;
-    }
-    $("#writingPreview").src = correctionBoard.canvas.toDataURL("image/png");
-    $("#handwritingCorrection").hidden = true;
-    $("#handwritingReview").hidden = false;
-    setFeedback("答卷已更新，请爸爸妈妈再次批改。", "");
-  });
+  $("#submitWritingButton").addEventListener("click", () => checkHandwritingEntry(entry));
+  $("#nextWritingButton").addEventListener("click", advanceHandwritingEntry);
 }
 
 function setupHandwritingBoard(canvas, letterCount, correctionMode) {
@@ -1452,28 +1509,31 @@ function drawWritingPaper(board) {
   context.fillRect(0, 0, width, height);
   context.lineWidth = 1;
   context.strokeStyle = "#9fc9ec";
+  const top = height * 0.27;
+  const middle = height * 0.53;
+  const bottom = height * 0.79;
   if (correctionMode) {
     const boxWidth = width / letterCount;
     for (let index = 1; index < letterCount; index += 1) {
       context.beginPath();
-      context.moveTo(index * boxWidth, 0);
-      context.lineTo(index * boxWidth, height);
-      context.stroke();
-    }
-    for (const fraction of [0.24, 0.5, 0.77]) {
-      context.beginPath();
-      context.moveTo(0, height * fraction);
-      context.lineTo(width, height * fraction);
-      context.stroke();
-    }
-  } else {
-    for (const fraction of [0.28, 0.53, 0.78]) {
-      context.beginPath();
-      context.moveTo(0, height * fraction);
-      context.lineTo(width, height * fraction);
+      context.moveTo(index * boxWidth, top);
+      context.lineTo(index * boxWidth, bottom);
       context.stroke();
     }
   }
+  context.setLineDash([]);
+  context.beginPath();
+  context.moveTo(0, top);
+  context.lineTo(width, top);
+  context.moveTo(0, bottom);
+  context.lineTo(width, bottom);
+  context.stroke();
+  context.setLineDash([8, 6]);
+  context.beginPath();
+  context.moveTo(0, middle);
+  context.lineTo(width, middle);
+  context.stroke();
+  context.setLineDash([]);
 }
 
 function beginWriting(board, event) {
@@ -1526,31 +1586,180 @@ function clearHandwritingBoard(board) {
   playEffect("delete");
 }
 
-function showHandwritingReview(entry) {
+function checkHandwritingEntry(entry) {
   if (!handwritingBoard || !handwritingBoard.hasInk) {
     setFeedback("先在答题纸上写出单词。", "try-again");
     return;
   }
+  const existingEntry = handwritingSession.entries.find((item) => item.id === entry.id);
+  const answer = {
+    id: entry.id,
+    image: handwritingBoard.canvas.toDataURL("image/png"),
+    status: existingEntry ? existingEntry.status : "pending"
+  };
+  if (existingEntry) Object.assign(existingEntry, answer);
+  else handwritingSession.entries.push(answer);
+  handwritingSession.currentIndex = game.roundIndex;
+  player.handwritingSession = handwritingSession;
+  saveMission(false);
   $("#writingPreview").src = handwritingBoard.canvas.toDataURL("image/png");
   $("#writingAnswer").textContent = entry.word;
-  $("#handwritingReview").hidden = false;
-  setFeedback("请爸爸妈妈看看答卷。", "");
+  $("#handwritingCheck").hidden = false;
+  setFeedback("看看正确拼写，准备下一题。", "");
 }
 
-function showCorrectionBoard(entry) {
-  $("#handwritingReview").hidden = true;
-  $("#handwritingCorrection").hidden = false;
-  const answer = $("#correctionAnswer");
-  answer.replaceChildren();
-  entry.word.split("").forEach((letter) => {
-    const cell = document.createElement("span");
-    cell.textContent = letter;
-    answer.append(cell);
+function advanceHandwritingEntry() {
+  $("#handwritingCheck").hidden = true;
+  if (game.roundIndex + 1 < game.rounds.length) {
+    game.roundIndex += 1;
+    handwritingSession.currentIndex = game.roundIndex;
+    player.handwritingSession = handwritingSession;
+    saveMission(false);
+    renderRound();
+    return;
+  }
+  handwritingSession.reviewing = true;
+  handwritingSession.currentIndex = game.rounds.length;
+  player.handwritingSession = handwritingSession;
+  saveMission(false);
+  renderHandwritingReview();
+}
+
+function renderHandwritingReview() {
+  handwritingReviewPage = Math.min(handwritingReviewPage, Math.max(0, Math.ceil(handwritingSession.entries.length / 2) - 1));
+  const area = $("#questionArea");
+  area.replaceChildren();
+  const approvedCount = handwritingSession.entries.filter((entry) => entry.status === "approved").length;
+  const stage = STAGES[game.stageIndex];
+  const reward = handwritingSession.entries.length * stage.reward + stage.bonus;
+  const review = document.createElement("section");
+  review.className = "batch-review-card";
+  review.innerHTML = `
+    <div class="batch-review-heading">
+      <div><span>爸爸妈妈批改</span><h3>${approvedCount} / ${handwritingSession.entries.length} 已确认</h3></div>
+      <strong>完成可得 +${reward} ⚡</strong>
+    </div>
+    <div class="answer-sheet-grid" id="answerSheetGrid"></div>
+    <div class="review-pagination">
+      <button class="mini-button" id="reviewPreviousButton" type="button">‹</button>
+      <span id="reviewPageLabel"></span>
+      <button class="mini-button" id="reviewNextButton" type="button">›</button>
+    </div>
+    <button class="primary-button" id="finishHandwritingButton" type="button">完成批改</button>
+  `;
+  area.append(review);
+  renderHandwritingReviewPage();
+  $("#reviewPreviousButton").addEventListener("click", () => {
+    handwritingReviewPage -= 1;
+    renderHandwritingReviewPage();
   });
+  $("#reviewNextButton").addEventListener("click", () => {
+    handwritingReviewPage += 1;
+    renderHandwritingReviewPage();
+  });
+  $("#finishHandwritingButton").addEventListener("click", finishHandwritingReview);
+}
+
+function renderHandwritingReviewPage() {
+  const entries = handwritingSession.entries;
+  const pageCount = Math.max(1, Math.ceil(entries.length / 2));
+  handwritingReviewPage = Math.min(Math.max(handwritingReviewPage, 0), pageCount - 1);
+  handwritingSession.reviewPage = handwritingReviewPage;
+  const grid = $("#answerSheetGrid");
+  if (!grid) return;
+  grid.replaceChildren();
+  entries.slice(handwritingReviewPage * 2, handwritingReviewPage * 2 + 2).forEach((answer) => {
+    const entry = WORD_BY_ID.get(answer.id);
+    const sheet = document.createElement("article");
+    sheet.className = `review-sheet${answer.status === "approved" ? " approved" : ""}`;
+    sheet.innerHTML = `
+      <img src="${answer.image}" alt="${entry.word} 的手写答卷">
+      <div><span>正确拼写</span><strong>${entry.word}</strong></div>
+      <div class="review-actions">
+        <button class="primary-button" type="button">✓ 答对</button>
+        <button class="secondary-button" type="button">修改</button>
+      </div>
+    `;
+    const [approveButton, reviseButton] = sheet.querySelectorAll("button");
+    approveButton.disabled = answer.status === "approved";
+    approveButton.addEventListener("click", () => approveHandwritingEntry(answer.id));
+    reviseButton.addEventListener("click", () => openHandwritingCorrection(answer.id));
+    grid.append(sheet);
+  });
+  $("#reviewPageLabel").textContent = `${handwritingReviewPage + 1} / ${pageCount}`;
+  $("#reviewPreviousButton").disabled = handwritingReviewPage === 0;
+  $("#reviewNextButton").disabled = handwritingReviewPage === pageCount - 1;
+  const approvedCount = entries.filter((entry) => entry.status === "approved").length;
+  $("#finishHandwritingButton").disabled = approvedCount !== entries.length;
+}
+
+function approveHandwritingEntry(entryId) {
+  const answer = handwritingSession.entries.find((entry) => entry.id === entryId);
+  if (!answer) return;
+  answer.status = "approved";
+  player.handwritingSession = handwritingSession;
+  saveMission(false);
+  playEffect("correct");
+  renderHandwritingReview();
+}
+
+function openHandwritingCorrection(entryId) {
+  const answer = handwritingSession.entries.find((entry) => entry.id === entryId);
+  const entry = answer && WORD_BY_ID.get(answer.id);
+  if (!answer || !entry) return;
+  const area = $("#questionArea");
+  area.replaceChildren();
+  const correction = document.createElement("section");
+  correction.className = "correction-workspace";
+  correction.innerHTML = `
+    <div class="correction-heading"><span>一起修改</span><h3>${entry.word}</h3><p>照着答案，在两线三格里写一遍。</p></div>
+    <canvas class="handwriting-canvas correction-canvas" id="correctionCanvas" aria-label="手写修改方格"></canvas>
+    <div class="review-actions">
+      <button class="mini-button" id="clearCorrectionButton" type="button">清空</button>
+      <button class="primary-button" id="saveCorrectionButton" type="button">保存修改</button>
+    </div>
+  `;
+  area.append(correction);
+  const correctionCanvas = $("#correctionCanvas");
   window.requestAnimationFrame(() => {
-    correctionBoard = setupHandwritingBoard($("#correctionCanvas"), entry.word.length, true);
+    if (correctionCanvas.isConnected) correctionBoard = setupHandwritingBoard(correctionCanvas, entry.word.length, true);
   });
-  setFeedback("看着答案，在方格里再写一遍。", "");
+  $("#clearCorrectionButton").addEventListener("click", () => clearHandwritingBoard(correctionBoard));
+  $("#saveCorrectionButton").addEventListener("click", () => {
+    if (!correctionBoard || !correctionBoard.hasInk) {
+      setFeedback("先在方格里写一遍。", "try-again");
+      return;
+    }
+    answer.image = correctionBoard.canvas.toDataURL("image/png");
+    answer.status = "pending";
+    player.handwritingSession = handwritingSession;
+    saveMission(false);
+    renderHandwritingReview();
+    setFeedback("修改已保存，请爸爸妈妈确认。", "");
+  });
+}
+
+function finishHandwritingReview() {
+  if (!handwritingSession.entries.length || handwritingSession.entries.some((entry) => entry.status !== "approved")) {
+    setFeedback("请先完成所有答卷的确认。", "try-again");
+    return;
+  }
+  const stage = STAGES[game.stageIndex];
+  handwritingSession.entries.forEach((entry) => {
+    if (!player.progress[stage.id].includes(entry.id)) player.progress[stage.id].push(entry.id);
+  });
+  const reward = handwritingSession.entries.length * stage.reward + stage.bonus;
+  player.stars += reward;
+  player.handwritingSession = null;
+  handwritingSession = null;
+  game.active = false;
+  player.mission = null;
+  playEffect("correct");
+  createConfetti();
+  savePlayerProfile(false);
+  renderTrainingProjects();
+  $("#finalScore").textContent = `手写奖励 +${reward} ⚡ · 总能量 ${player.stars}`;
+  showOnlyScreen("finishScreen");
 }
 
 function currentRound() {
@@ -1562,6 +1771,10 @@ function renderRound() {
   game.locked = false;
   updateStageHeader();
   const stage = STAGES[game.stageIndex];
+  if (stage.mode === "handwriting" && handwritingSession && handwritingSession.reviewing) {
+    renderHandwritingReview();
+    return;
+  }
   const round = currentRound();
   const entry = stage.mode === "soundFill" ? WORD_BY_ID.get(round.wordId) : round;
   game.sentence = randomSentence(entry);
@@ -1635,6 +1848,27 @@ function startStage(stageIndex, savedRoundIds = null, savedRoundIndex = 0) {
   game.stageIndex = stageIndex;
   game.rounds = savedRoundIds ? restoreRounds(stageIndex, savedRoundIds) : shuffle(getStageSource(stageIndex));
   game.roundIndex = Math.min(Math.max(0, savedRoundIndex), game.rounds.length - 1);
+  const stage = STAGES[stageIndex];
+  if (stage.mode === "handwriting") {
+    const storedSession = player.handwritingSession;
+    const matchingSession = storedSession
+      && savedRoundIds
+      && storedSession.roundIds.join("|") === game.rounds.map((round) => round.id).join("|");
+    handwritingSession = matchingSession
+      ? storedSession
+      : {
+        roundIds: game.rounds.map((round) => round.id),
+        entries: [],
+        currentIndex: game.roundIndex,
+        reviewPage: 0,
+        reviewing: false
+      };
+    player.handwritingSession = handwritingSession;
+    handwritingReviewPage = handwritingSession.reviewPage || 0;
+    game.roundIndex = handwritingSession.currentIndex;
+  } else {
+    handwritingSession = null;
+  }
   game.active = true;
   stopActiveVoice();
   showOnlyScreen("gameScreen");
@@ -1663,6 +1897,10 @@ function saveMission(showMessage = false) {
   if (!game.active) {
     if (showMessage) showToast("自动存档已开启。");
     return;
+  }
+  if (STAGES[game.stageIndex].mode === "handwriting" && handwritingSession) {
+    handwritingSession.currentIndex = game.roundIndex;
+    player.handwritingSession = handwritingSession;
   }
   player.mission = {
     stageIndex: game.stageIndex,
@@ -1756,9 +1994,9 @@ function createLearningProjectCard(stage, stageIndex) {
   return card;
 }
 
-function createFacilityCard(kind, title, icon, count, onClick) {
+function createFacilityCard(kind, title, icon, count, image, onClick) {
   const card = createButton(`facility-card ${kind}`, "", onClick);
-  card.innerHTML = `<span class="facility-icon">${icon}</span><span class="facility-type">${kind === "training" ? "单词训练营" : "火箭工坊"}</span><strong>${title}</strong><small class="facility-count">${count}</small>`;
+  card.innerHTML = `<img src="${image}" alt=""><span class="facility-icon">${icon}</span><span class="facility-type">${kind === "training" ? "单词训练营" : "收藏商店"}</span><strong>${title}</strong><small class="facility-count">${count}</small>`;
   return card;
 }
 
@@ -1769,8 +2007,8 @@ function renderTrainingProjects() {
   facilityGrid.replaceChildren();
   STAGES.forEach((stage, index) => stageGrid.append(createLearningProjectCard(stage, index)));
   facilityGrid.append(
-    createFacilityCard("training", "星图复习", "🛰️", `${WORDS.length} 个单词`, openGardenProject),
-    createFacilityCard("shop", "收藏工坊", "🧰", `${activatedCollectionSets()} / ${COLLECTION_SETS.length} 套`, openWorkshopProject)
+    createFacilityCard("training", "单词训练营", "🛰️", `${WORDS.length} 个单词`, "images/one.svg", openGardenProject),
+    createFacilityCard("shop", "收藏商店", "🧰", `${activatedCollectionSets()} / ${COLLECTION_SETS.length} 套`, "images/two.svg", openWorkshopProject)
   );
   updateHome();
 }
@@ -1823,6 +2061,28 @@ function renderRocket(container) {
   });
 }
 
+function renderHomeCollection() {
+  const collection = activeCollection();
+  const rocket = $("#heroRocket");
+  const preview = $("#homeCollectionPreview");
+  rocket.hidden = collection.id !== "rocket";
+  preview.hidden = collection.id === "rocket";
+  if (collection.id === "rocket") {
+    renderRocket(rocket);
+    return;
+  }
+  const progress = collectionProgress(collection);
+  preview.replaceChildren();
+  const image = document.createElement("img");
+  image.src = collection.image;
+  image.alt = collection.name;
+  const icon = document.createElement("span");
+  icon.textContent = collection.icon;
+  const completion = document.createElement("strong");
+  completion.textContent = `${progress.completed} / ${progress.total}`;
+  preview.append(image, icon, completion);
+}
+
 function selectedCollection() {
   return COLLECTION_SETS.find((collection) => collection.id === selectedCollectionId) || COLLECTION_SETS[0];
 }
@@ -1847,7 +2107,9 @@ function renderWorkshopHome() {
 
 function openCollection(collectionId) {
   selectedCollectionId = collectionId;
+  player.activeCollectionId = collectionId;
   shopPage = 0;
+  savePlayerProfile(false);
   showOnlyScreen("workshopScreen");
   playEffect("enter");
   renderWorkshop();

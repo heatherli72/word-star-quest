@@ -26,7 +26,7 @@
   <main class="app-shell">
     <header class="topbar">
       <button class="brand-home" id="homeButton" type="button" aria-label="回到训练营首页">
-        <span class="brand-mark">🚀</span><span>单词宇宙训练营</span><small>⌂ 首页</small>
+        <span class="brand-mark">🚀</span><span>单词宇宙训练营</span><small aria-hidden="true">⌂</small>
       </button>
       <div class="header-actions">
         <span class="bank-pill" data-star-balance>⚡ 20</span>
@@ -37,19 +37,14 @@
     </header>
 
     <section class="home-screen" id="landingScreen">
-      <aside class="pilot-dock">
-        <div class="pilot-identity">
-          <span class="pilot-avatar" data-profile-avatar>🧑‍🚀</span>
-          <div><span>当前驾驶员</span><h1 id="homePilotName">等待选择</h1></div>
-        </div>
-        <div class="home-stat-row">
-          <div><span>训练进度</span><strong id="homeTrainingCount">0 / 40</strong></div>
-          <div><span>能量星</span><strong data-star-balance>⚡ 20</strong></div>
-        </div>
+      <header class="home-status-bar">
+        <div class="home-pilot-chip"><span data-profile-avatar>🧑‍🚀</span><strong id="homePilotName">等待选择</strong></div>
+        <div class="home-status-stat"><span>训练进度</span><strong id="homeTrainingCount">0 / 80</strong></div>
+        <div class="home-status-stat"><span>当前收藏</span><strong id="homeCollectionStatus">专属火箭</strong></div>
         <button class="primary-button resume-button" id="resumeButton" type="button" hidden>继续任务 ▶</button>
-        <p class="save-note" id="saveNote">自动存档已开启</p>
-        <p class="save-note" id="iosInstallTip" hidden>📱 横屏添加到主屏幕后，可全屏使用。</p>
-      </aside>
+        <span class="save-note" id="saveNote">自动存档</span>
+        <span class="save-note" id="iosInstallTip" hidden>横屏添加到主屏幕后，可全屏使用。</span>
+      </header>
 
       <section class="orbit-map" aria-labelledby="homeWorkspaceTitle">
         <div class="orbit-heading">
@@ -59,7 +54,8 @@
         <div class="orbit-core">
           <div class="core-glow"></div>
           <div class="assembled-rocket home-orbit-rocket" id="heroRocket" aria-label="正在组装的专属火箭"></div>
-          <div class="orbit-progress"><span>火箭组件</span><strong id="heroRocketCount">0 / 20</strong><small>收藏 <b id="heroCollectionCount">0 / 10</b></small></div>
+          <div class="home-collection-preview" id="homeCollectionPreview" hidden></div>
+          <div class="orbit-progress"><span id="homeCollectionName">专属火箭</span><strong id="heroRocketCount">0 / 20</strong><small>已激活 <b id="heroCollectionCount">0 / 10</b></small></div>
         </div>
         <div class="orbit-stage-grid" id="stageProjectGrid"></div>
       </section>

@@ -3573,6 +3573,54 @@ button:disabled {
   transform-origin: top center;
 }
 
+.home-collection-preview {
+  position: absolute;
+  z-index: 1;
+  inset: 12px 12px 42px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid rgba(150, 238, 255, 0.58);
+  border-radius: 50%;
+  background: rgba(7, 32, 75, 0.46);
+  box-shadow: 0 0 28px rgba(104, 220, 255, 0.35);
+}
+
+.home-collection-preview::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(145deg, rgba(8, 27, 65, 0.18), rgba(40, 25, 98, 0.62));
+}
+
+.home-collection-preview img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.72;
+}
+
+.home-collection-preview span,
+.home-collection-preview strong {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 4px 7px rgba(0, 4, 27, 0.7);
+}
+
+.home-collection-preview span {
+  font-size: 74px;
+}
+
+.home-collection-preview strong {
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #fff2a5;
+  background: rgba(4, 22, 60, 0.74);
+  font-size: 14px;
+}
+
 .orbit-progress {
   position: absolute;
   z-index: 3;
@@ -4189,5 +4237,585 @@ button:disabled {
   #gameScreen .correction-canvas {
     height: 105px;
     margin-bottom: 7px;
+  }
+}
+
+.spelling-keyboard {
+  display: grid;
+  width: min(100%, 620px);
+  gap: 7px;
+}
+
+.keyboard-group,
+.spelling-block-group {
+  display: grid;
+  gap: 4px;
+}
+
+.keyboard-group > span,
+.spelling-block-group > span {
+  color: #a9ecff;
+  font-size: 11px;
+  font-weight: 900;
+  text-align: left;
+}
+
+.vowel-bank {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.consonant-bank {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.spelling-block-bank {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.spelling-block {
+  min-width: 50px;
+  min-height: 38px;
+  padding: 5px 9px;
+  border: 2px solid #e5bcff;
+  border-radius: 11px;
+  color: #fff0fd;
+  background: linear-gradient(145deg, #7754ba, #4c3b8d);
+  box-shadow: 0 3px 0 #322467;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.handwriting-check {
+  position: absolute;
+  z-index: 5;
+  inset: 15px;
+  display: grid;
+  place-items: center;
+  padding: 15px;
+  border-radius: 22px;
+  background: rgba(4, 22, 61, 0.9);
+  backdrop-filter: blur(5px);
+}
+
+.batch-review-card,
+.correction-workspace {
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  padding: 18px;
+  border: 2px solid #d5f4ff;
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(15, 64, 120, 0.95), rgba(43, 38, 108, 0.93)),
+    url("images/backgrounds/orion-nebula.jpg") center / cover;
+  flex-direction: column;
+}
+
+.batch-review-heading {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.batch-review-heading span {
+  color: #9aeaff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.batch-review-heading h3 {
+  margin: 2px 0 0;
+  color: #f6fcff;
+  font-size: 25px;
+}
+
+.batch-review-heading > strong {
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 234, 130, 0.54);
+  border-radius: 999px;
+  color: #fff1a4;
+  background: rgba(63, 44, 100, 0.74);
+  font-size: 13px;
+}
+
+.answer-sheet-grid {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.review-sheet {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: minmax(0, 0.95fr) minmax(150px, 1.05fr);
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 2px solid #9dcce5;
+  border-radius: 17px;
+  background: #fffdf4;
+  color: #1c4779;
+}
+
+.review-sheet.approved {
+  border-color: #79e6b5;
+  background: #e0ffed;
+}
+
+.review-sheet img {
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #a4cbe8;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.review-sheet > div:nth-child(2) {
+  text-align: center;
+}
+
+.review-sheet > div:nth-child(2) span {
+  display: block;
+  color: #6c94bb;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.review-sheet > div:nth-child(2) strong {
+  display: block;
+  margin-top: 3px;
+  color: #d95d50;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.review-sheet .review-actions {
+  grid-column: 2;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.review-sheet .review-actions .primary-button,
+.review-sheet .review-actions .secondary-button {
+  min-width: 0;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.review-pagination {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 9px 0;
+  color: #d6effa;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.review-pagination .mini-button {
+  display: grid;
+  width: 37px;
+  height: 31px;
+  place-items: center;
+  padding: 0;
+  font-size: 21px;
+}
+
+.batch-review-card > .primary-button {
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+.correction-workspace {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  align-items: center;
+  justify-items: center;
+  gap: 12px;
+  color: #173f71;
+}
+
+.correction-heading {
+  color: #effbff;
+  text-align: center;
+}
+
+.correction-heading span {
+  color: #93ebff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.correction-heading h3 {
+  margin: 2px 0;
+  color: #fff3a1;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(34px, 5vw, 51px);
+  letter-spacing: 0.08em;
+}
+
+.correction-heading p {
+  margin: 0;
+  color: #d4eefb;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.correction-workspace .correction-canvas {
+  width: min(100%, 770px);
+  height: 100%;
+  max-height: none;
+  margin: 0;
+}
+
+@media (orientation: landscape) and (min-width: 900px) {
+  #gameScreen .spelling-keyboard {
+    gap: 5px;
+  }
+
+  #gameScreen .keyboard-group,
+  #gameScreen .spelling-block-group {
+    gap: 3px;
+  }
+
+  #gameScreen .keyboard-group > span,
+  #gameScreen .spelling-block-group > span {
+    font-size: 10px;
+  }
+
+  #gameScreen .keyboard-bank .letter-tile {
+    height: 39px;
+    font-size: 22px;
+  }
+
+  #gameScreen .spelling-block {
+    min-width: 45px;
+    min-height: 31px;
+    padding: 3px 7px;
+    font-size: 17px;
+  }
+
+  #gameScreen .handwriting-check {
+    inset: 10px;
+    padding: 10px;
+  }
+
+  #gameScreen .batch-review-card,
+  #gameScreen .correction-workspace {
+    padding: 12px;
+  }
+
+  #gameScreen .batch-review-heading {
+    margin-bottom: 7px;
+  }
+
+  #gameScreen .batch-review-heading h3 {
+    font-size: 20px;
+  }
+
+  #gameScreen .batch-review-heading > strong {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  #gameScreen .answer-sheet-grid {
+    gap: 8px;
+  }
+
+  #gameScreen .review-sheet {
+    gap: 8px;
+    padding: 7px;
+    border-radius: 12px;
+  }
+
+  #gameScreen .review-sheet > div:nth-child(2) strong {
+    font-size: 28px;
+  }
+
+  #gameScreen .review-sheet .review-actions .primary-button,
+  #gameScreen .review-sheet .review-actions .secondary-button {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  #gameScreen .review-pagination {
+    margin: 5px 0;
+  }
+
+  #gameScreen .correction-workspace {
+    gap: 7px;
+  }
+
+  #gameScreen .correction-heading h3 {
+    font-size: 36px;
+  }
+
+  #gameScreen .correction-heading p {
+    font-size: 11px;
+  }
+}
+
+.home-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(126, 229, 255, 0.48);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(7, 32, 75, 0.76), rgba(46, 39, 104, 0.62)),
+    url("images/backgrounds/andromeda-galaxy.jpg") center / cover;
+  box-shadow: var(--shadow);
+}
+
+.home-pilot-chip,
+.home-status-stat {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #bde6f5;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.home-pilot-chip > span {
+  display: grid;
+  width: 37px;
+  height: 37px;
+  place-items: center;
+  border: 1px solid rgba(150, 240, 255, 0.65);
+  border-radius: 12px;
+  background: rgba(72, 152, 213, 0.6);
+  font-size: 23px;
+}
+
+.home-pilot-chip strong {
+  color: #f5fcff;
+  font-size: 18px;
+}
+
+.home-status-stat {
+  display: grid;
+  gap: 1px;
+  padding-left: 11px;
+  border-left: 1px solid rgba(149, 234, 255, 0.35);
+}
+
+.home-status-stat span {
+  color: #9dcae5;
+  font-size: 10px;
+}
+
+.home-status-stat strong {
+  color: #ffe179;
+  font-size: 16px;
+}
+
+.home-status-bar .resume-button {
+  min-width: 0;
+  margin-left: auto;
+  padding: 9px 14px 10px;
+  font-size: 13px;
+}
+
+.home-status-bar .save-note {
+  min-height: 0;
+  color: #a7cde4;
+  font-size: 10px;
+  text-align: right;
+}
+
+.facility-dock .facility-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.facility-dock .facility-card > img {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.74;
+}
+
+.facility-dock .facility-card::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  background: linear-gradient(180deg, rgba(16, 37, 91, 0.17), rgba(5, 23, 62, 0.91));
+}
+
+.facility-dock .facility-card.shop::after {
+  background: linear-gradient(180deg, rgba(129, 62, 48, 0.2), rgba(46, 24, 61, 0.93));
+}
+
+@media (orientation: landscape) and (min-width: 900px) {
+  #landingScreen.home-screen {
+    grid-template-columns: minmax(0, 1fr) 214px;
+    grid-template-rows: 58px minmax(0, 1fr);
+    gap: 10px 12px;
+  }
+
+  .home-status-bar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    min-height: 0;
+    padding: 7px 11px;
+  }
+
+  .home-pilot-chip > span {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    font-size: 21px;
+  }
+
+  .home-pilot-chip strong {
+    font-size: 17px;
+  }
+
+  .home-status-stat strong {
+    font-size: 14px;
+  }
+
+  .orbit-map {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .facility-dock {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .orbit-stage-grid .stage-project-card {
+    width: min(27%, 172px);
+    min-height: 95px;
+    padding: 10px;
+  }
+
+  .orbit-stage-grid .stage-project-art {
+    width: 50px;
+    height: 45px;
+  }
+
+  .orbit-stage-grid .stage-project-card strong {
+    font-size: 15px;
+  }
+
+  .orbit-core {
+    width: 210px;
+    height: 235px;
+  }
+
+  .home-orbit-rocket {
+    transform: translateX(-50%) scale(0.7);
+  }
+
+  .facility-dock {
+    padding: 11px;
+  }
+
+  .facility-dock .facility-card {
+    padding: 13px 7px 10px;
+  }
+
+  .facility-dock .facility-icon {
+    width: 55px;
+    height: 55px;
+    font-size: 32px;
+  }
+
+  .facility-dock .facility-card strong {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 899px), (orientation: portrait) {
+  .home-status-bar {
+    flex-wrap: wrap;
+  }
+
+  .home-status-bar .resume-button {
+    margin-left: 0;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 900px) {
+  #gameScreen .dictation-workspace .spelling-keyboard {
+    grid-template-columns: minmax(110px, 0.62fr) minmax(0, 1.38fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+    gap: 5px 8px;
+  }
+
+  #gameScreen .dictation-workspace .keyboard-group:first-child {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  #gameScreen .dictation-workspace .keyboard-group:nth-child(2) {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+  }
+
+  #gameScreen .dictation-workspace .spelling-block-group {
+    grid-row: 2;
+    grid-column: 1;
+  }
+
+  #gameScreen .dictation-workspace .vowel-bank {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  #gameScreen .dictation-workspace .consonant-bank {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  #gameScreen .dictation-workspace .keyboard-bank .letter-tile {
+    height: 35px;
+    font-size: 20px;
+  }
+
+  #gameScreen .dictation-workspace .spelling-block-bank {
+    justify-content: flex-start;
+  }
+
+  #gameScreen .dictation-workspace .spelling-block {
+    min-width: 40px;
+    min-height: 29px;
+    padding: 3px 5px;
+    font-size: 16px;
+  }
+
+  #gameScreen .dictation-workspace .spelling-slots {
+    gap: 7px;
+    padding: 5px;
+  }
+
+  #gameScreen .dictation-workspace .spelling-slot {
+    width: 59px;
+    height: 65px;
+    font-size: 36px;
   }
 }
