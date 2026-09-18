@@ -1,4 +1,4 @@
-const CACHE_NAME = "word-star-quest-v32";
+const CACHE_NAME = "word-star-quest-v33";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -13,6 +13,8 @@ const APP_SHELL = [
   "./images/backgrounds/orion-nebula.jpg",
   "./images/backgrounds/andromeda-galaxy.jpg",
   "./images/backgrounds/mars-rover.jpg",
+  "./images/paper-cream.svg",
+  "./images/PAPER-TEXTURE-LICENSE.txt",
   "./images/one.svg",
   "./images/two.svg",
   "./images/three.svg",

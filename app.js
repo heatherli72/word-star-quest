@@ -75,8 +75,8 @@ const I18N = {
       completeSlots: "先放好所有字母",
       orderAgain: "顺序再试一次",
       writeFirst: "先写下单词",
-      correctionFirst: "先在格子里写一遍",
-      correctionSaved: "已保存，等爸爸妈妈确认",
+      correctionFirst: "先在书写纸上改好",
+      correctionSaved: "修改已保存",
       approveAll: "先确认每一张答卷",
       noMission: "没有可继续的任务",
       saved: "已自动保存",
@@ -121,7 +121,6 @@ const I18N = {
       part: "{number}. {name}"
     },
     review: {
-      parent: "爸爸妈妈批改",
       confirmed: "{done} / {total} 已确认",
       reward: "完成 +{count} ⚡",
       expected: "正确拼写",
@@ -130,7 +129,20 @@ const I18N = {
       finish: "完成批改",
       correction: "一起改写",
       correctionCopy: "照着答案写一遍",
-      correctionCanvas: "手写修改格"
+      correctionCanvas: "手写修改纸",
+      overview: "查看整张答卷",
+      previousAnswer: "上一张答卷",
+      nextAnswer: "下一张答卷",
+      finishEdit: "完成修改",
+      pending: "待确认",
+      approved: "已确认"
+    },
+    handwriting: {
+      previous: "上一题",
+      next: "下一题",
+      clearInk: "清空全部笔迹",
+      switchToPen: "切换到画笔",
+      switchToEraser: "切换到橡皮擦"
     },
     finish: {
       title: "任务完成！",
@@ -226,8 +238,8 @@ const I18N = {
       completeSlots: "Place every letter first",
       orderAgain: "Try that order again",
       writeFirst: "Write the word first",
-      correctionFirst: "Write it in the boxes first",
-      correctionSaved: "Saved — waiting for a parent check",
+      correctionFirst: "Write it on the paper first",
+      correctionSaved: "Edit saved",
       approveAll: "Confirm every answer first",
       noMission: "No mission to continue",
       saved: "Saved",
@@ -272,7 +284,6 @@ const I18N = {
       part: "{number}. {name}"
     },
     review: {
-      parent: "Parent check",
       confirmed: "{done} / {total} confirmed",
       reward: "Finish +{count} ⚡",
       expected: "Correct spelling",
@@ -281,7 +292,20 @@ const I18N = {
       finish: "Finish check",
       correction: "Rewrite together",
       correctionCopy: "Copy the answer once",
-      correctionCanvas: "Handwriting correction boxes"
+      correctionCanvas: "Handwriting edit paper",
+      overview: "View full paper",
+      previousAnswer: "Previous answer",
+      nextAnswer: "Next answer",
+      finishEdit: "Finish edit",
+      pending: "Needs check",
+      approved: "Checked"
+    },
+    handwriting: {
+      previous: "Previous question",
+      next: "Next question",
+      clearInk: "Clear all ink",
+      switchToPen: "Use pen",
+      switchToEraser: "Use eraser"
     },
     finish: {
       title: "Mission complete!",
@@ -896,9 +920,7 @@ let activeVoiceCompletion = null;
 let lastWrongEffectAt = -Infinity;
 let roundAdvanceTimer = 0;
 let handwritingBoard = null;
-let correctionBoard = null;
 let handwritingSession = null;
-let handwritingReviewPage = 0;
 
 const audioMaps = {
   word: new Map(),
@@ -948,18 +970,33 @@ function normalizeHandwritingSession(candidate) {
     .map((entry) => ({
       id: entry.id,
       image: entry.image,
-      status: entry.status === "approved" ? "approved" : "pending"
+      status: entry.status === "approved" ? "approved" : "pending",
+      hasInk: entry.hasInk !== false
     }))
     .filter((entry) => {
       if (seen.has(entry.id)) return false;
       seen.add(entry.id);
       return true;
     });
+  const reviewIndex = Number.isInteger(candidate.reviewIndex)
+    ? Math.min(Math.max(candidate.reviewIndex, 0), roundIds.length - 1)
+    : Number.isInteger(candidate.reviewPage)
+      ? Math.min(Math.max(candidate.reviewPage, 0), roundIds.length - 1)
+      : 0;
+  const validReviewEntryId = typeof candidate.reviewEntryId === "string" && roundIds.includes(candidate.reviewEntryId)
+    ? candidate.reviewEntryId
+    : roundIds[reviewIndex] || null;
+  const validEditingEntryId = typeof candidate.editingEntryId === "string" && roundIds.includes(candidate.editingEntryId)
+    ? candidate.editingEntryId
+    : null;
   return {
     roundIds,
     entries,
     currentIndex: Number.isInteger(candidate.currentIndex) ? Math.min(Math.max(candidate.currentIndex, 0), roundIds.length) : entries.length,
-    reviewPage: Number.isInteger(candidate.reviewPage) ? Math.max(candidate.reviewPage, 0) : 0,
+    reviewIndex,
+    reviewMode: candidate.reviewMode === "detail" ? "detail" : "overview",
+    reviewEntryId: validReviewEntryId,
+    editingEntryId: validEditingEntryId,
     reviewing: Boolean(candidate.reviewing)
   };
 }
@@ -1659,13 +1696,17 @@ async function autoplayPrompt(entry, sentence, mode) {
 async function playPromptSequence(entry, sentence, mode, button = null, sequenceId = ++promptSequenceId) {
   if (button) button.classList.add("is-playing");
   const canContinue = () => sequenceId === promptSequenceId && game.active;
-  if (mode === "word-then-sentence") {
+  if (mode === "word" || mode === "word-then-sentence") {
     await playVoiceAndWait(audioMaps.word.get(entry.id));
     if (!canContinue()) {
       if (button && sequenceId === promptSequenceId) button.classList.remove("is-playing");
       return;
     }
-    await wait(170);
+    if (mode === "word-then-sentence") await wait(170);
+  }
+  if (mode === "word") {
+    if (button && sequenceId === promptSequenceId) button.classList.remove("is-playing");
+    return;
   }
   if (!canContinue()) {
     if (button && sequenceId === promptSequenceId) button.classList.remove("is-playing");
@@ -2122,7 +2163,6 @@ function checkDictation() {
 
 function renderHandwritingQuestion(entry, sentence) {
   handwritingBoard = null;
-  correctionBoard = null;
   const area = $("#questionArea");
   area.replaceChildren();
   const card = document.createElement("section");
@@ -2133,52 +2173,142 @@ function renderHandwritingQuestion(entry, sentence) {
   const illustration = createSceneCard(entry);
   illustration.classList.add("handwriting-scene");
   prompt.innerHTML = `<p class="handwriting-sentence">${sentence.blank}</p>`;
-  prompt.append(illustration, createPromptControls(entry, sentence, "word-then-sentence"));
+  prompt.append(illustration, createPromptControls(entry, sentence, "word"));
 
   const paperArea = document.createElement("section");
   paperArea.className = "paper-area";
-  const isLastWord = game.roundIndex === game.rounds.length - 1;
-  paperArea.innerHTML = `
-    <div class="paper-toolbar">
-      <button class="mini-button icon-button" id="clearWritingButton" type="button"></button>
-    </div>
-    <canvas class="handwriting-canvas" id="handwritingCanvas" aria-label="${t("question.writing")}"></canvas>
-    <button class="primary-button" id="submitWritingButton" type="button"></button>
-  `;
+  const writingCanvas = document.createElement("canvas");
+  writingCanvas.className = "handwriting-canvas";
+  writingCanvas.id = "handwritingCanvas";
+  writingCanvas.setAttribute("aria-label", t("question.writing"));
+  const toolbar = createHandwritingToolbar({
+    getBoard: () => handwritingBoard,
+    onPrevious: () => moveHandwritingQuestion(entry, -1),
+    previousDisabled: () => game.roundIndex === 0,
+    primaryIcon: "➜",
+    primaryLabel: () => t("handwriting.next"),
+    onPrimary: () => advanceHandwritingQuestion(entry)
+  });
+  paperArea.append(writingCanvas, toolbar.element);
 
   card.append(prompt, paperArea);
   area.append(card);
-  iconButton($("#clearWritingButton"), "⌫", t("common.eraser"), "icon-button eraser-button");
-  iconButton($("#submitWritingButton"), isLastWord ? "📨" : "➜", isLastWord ? t("common.submit") : t("common.next"));
-  const writingCanvas = $("#handwritingCanvas");
+  const savedAnswer = handwritingAnswer(entry.id);
   window.requestAnimationFrame(() => {
-    if (writingCanvas.isConnected) handwritingBoard = setupHandwritingBoard(writingCanvas, entry.word.length, false);
+    if (!writingCanvas.isConnected) return;
+    handwritingBoard = setupHandwritingBoard(writingCanvas, {
+      initialImage: savedAnswer && savedAnswer.hasInk ? savedAnswer.image : "",
+      hasInk: Boolean(savedAnswer && savedAnswer.hasInk),
+      onChange: (board) => {
+        saveHandwritingAnswer(entry, board, "pending");
+        persistHandwritingSession();
+      },
+      onClear: (board) => clearSavedHandwritingAnswer(entry, board)
+    });
+    toolbar.refresh();
   });
-
-  $("#clearWritingButton").addEventListener("click", () => clearHandwritingBoard(handwritingBoard));
-  $("#submitWritingButton").addEventListener("click", () => submitHandwritingEntry(entry));
 }
 
 function refreshHandwritingQuestionLabels() {
   const repeatButton = $("#questionArea .repeat-button");
-  const clearButton = $("#clearWritingButton");
-  const submitButton = $("#submitWritingButton");
   if (repeatButton) {
     const label = t("common.repeat");
     repeatButton.querySelector(".button-label").textContent = label;
     repeatButton.title = label;
     repeatButton.setAttribute("aria-label", label);
   }
-  if (clearButton) iconButton(clearButton, "⌫", t("common.eraser"));
-  if (submitButton) {
-    const isLastWord = game.roundIndex === game.rounds.length - 1;
-    iconButton(submitButton, isLastWord ? "📨" : "➜", isLastWord ? t("common.submit") : t("common.next"));
-  }
+  const previousButton = $("#questionArea .writing-previous-button");
+  const clearButton = $("#questionArea .writing-clear-button");
+  const nextButton = $("#questionArea .writing-primary-button");
+  const toolButton = $("#questionArea .writing-tool-toggle");
+  if (previousButton) iconButton(previousButton, "‹", t("handwriting.previous"));
+  if (clearButton) iconButton(clearButton, "🗑", t("handwriting.clearInk"));
+  if (nextButton) iconButton(nextButton, "➜", t("handwriting.next"));
+  if (toolButton) updateHandwritingToolButton(toolButton, handwritingBoard);
   const canvas = $("#handwritingCanvas");
   if (canvas) canvas.setAttribute("aria-label", t("question.writing"));
 }
 
-function setupHandwritingBoard(canvas, letterCount, correctionMode) {
+function createHandwritingToolbar(options) {
+  const toolbar = document.createElement("div");
+  toolbar.className = "writing-toolbar";
+  let previousButton = null;
+  if (options.onPrevious) {
+    previousButton = iconButton(createButton("mini-button writing-previous-button", "", options.onPrevious), "‹", t("handwriting.previous"));
+    toolbar.append(previousButton);
+  }
+
+  const primaryActions = document.createElement("div");
+  primaryActions.className = "writing-toolbar-primary-actions";
+  const toolButton = createHandwritingToolButton(options.getBoard);
+  const clearButton = iconButton(
+    createButton("primary-button writing-toolbar-action writing-clear-button", "", () => {
+      const board = options.getBoard();
+      if (board && board.ready) clearHandwritingBoard(board);
+    }),
+    "🗑",
+    t("handwriting.clearInk")
+  );
+  const primaryButton = iconButton(
+    createButton("primary-button writing-toolbar-action writing-primary-button", "", options.onPrimary),
+    options.primaryIcon,
+    options.primaryLabel()
+  );
+  primaryActions.append(toolButton, clearButton, primaryButton);
+  toolbar.append(primaryActions);
+
+  const refresh = () => {
+    if (previousButton) {
+      iconButton(previousButton, "‹", t("handwriting.previous"));
+      previousButton.disabled = options.previousDisabled ? options.previousDisabled() : false;
+    }
+    updateHandwritingToolButton(toolButton, options.getBoard());
+    iconButton(clearButton, "🗑", t("handwriting.clearInk"));
+    iconButton(primaryButton, options.primaryIcon, options.primaryLabel());
+  };
+  refresh();
+  return { element: toolbar, refresh };
+}
+
+function createHandwritingToolButton(getBoard) {
+  const button = createButton("primary-button writing-toolbar-action writing-tool-toggle", "", () => {
+    const board = getBoard();
+    if (!board || !board.ready) return;
+    setHandwritingTool(board, board.tool === "eraser" ? "pen" : "eraser");
+    updateHandwritingToolButton(button, board);
+  });
+  const pen = document.createElement("span");
+  pen.className = "writing-tool-symbol writing-tool-pen";
+  pen.setAttribute("aria-hidden", "true");
+  pen.textContent = "✎";
+  const divider = document.createElement("span");
+  divider.className = "writing-tool-divider";
+  divider.setAttribute("aria-hidden", "true");
+  divider.textContent = "·";
+  const eraser = document.createElement("span");
+  eraser.className = "writing-tool-symbol writing-tool-eraser";
+  eraser.setAttribute("aria-hidden", "true");
+  eraser.textContent = "⌫";
+  const label = document.createElement("span");
+  label.className = "button-label";
+  button.append(pen, divider, eraser, label);
+  updateHandwritingToolButton(button, getBoard());
+  return button;
+}
+
+function updateHandwritingToolButton(button, board) {
+  if (!button) return;
+  const isEraser = Boolean(board && board.tool === "eraser");
+  const label = t(isEraser ? "handwriting.switchToPen" : "handwriting.switchToEraser");
+  button.classList.toggle("is-eraser", isEraser);
+  button.classList.toggle("is-pen", !isEraser);
+  button.title = label;
+  button.setAttribute("aria-label", label);
+  const caption = button.querySelector(".button-label");
+  if (caption) caption.textContent = label;
+}
+
+function setupHandwritingBoard(canvas, options = {}) {
   const bounds = canvas.getBoundingClientRect();
   const ratio = Math.min(window.devicePixelRatio || 1, 2);
   const width = Math.max(1, Math.floor(bounds.width));
@@ -2193,14 +2323,17 @@ function setupHandwritingBoard(canvas, letterCount, correctionMode) {
     width,
     height,
     ratio,
-    letterCount,
-    correctionMode,
+    tool: "pen",
+    ready: !options.initialImage,
     hasInk: false,
     drawing: false,
     lastX: 0,
-    lastY: 0
+    lastY: 0,
+    onChange: options.onChange || null,
+    onClear: options.onClear || null
   };
   drawWritingPaper(board);
+  if (options.initialImage) restoreHandwritingImage(board, options.initialImage, options.hasInk);
   canvas.addEventListener("pointerdown", (event) => beginWriting(board, event));
   canvas.addEventListener("pointermove", (event) => continueWriting(board, event));
   canvas.addEventListener("pointerup", () => endWriting(board));
@@ -2209,54 +2342,54 @@ function setupHandwritingBoard(canvas, letterCount, correctionMode) {
 }
 
 function drawWritingPaper(board) {
-  const { context, width, height, correctionMode, letterCount } = board;
+  const { context, width, height } = board;
+  context.save();
+  context.globalCompositeOperation = "source-over";
   context.clearRect(0, 0, width, height);
-  context.fillStyle = "#fffdf5";
-  context.fillRect(0, 0, width, height);
-  context.lineWidth = 1;
-  context.strokeStyle = "#9fc9ec";
-  const top = height * 0.14;
-  const upperGuide = height * 0.38;
-  const lowerGuide = height * 0.62;
-  const bottom = height * 0.86;
-  if (correctionMode) {
-    const boxWidth = width / letterCount;
-    for (let index = 1; index < letterCount; index += 1) {
-      context.beginPath();
-      context.moveTo(index * boxWidth, top);
-      context.lineTo(index * boxWidth, bottom);
-      context.stroke();
+  context.restore();
+}
+
+function restoreHandwritingImage(board, imageSource, hasInk) {
+  const image = new Image();
+  board.canvas.classList.add("is-loading");
+  image.onload = () => {
+    if (board.canvas.isConnected) {
+      board.context.save();
+      board.context.globalCompositeOperation = "source-over";
+      board.context.drawImage(image, 0, 0, board.width, board.height);
+      board.context.restore();
     }
-  }
-  context.setLineDash([]);
-  context.beginPath();
-  context.moveTo(0, top);
-  context.lineTo(width, top);
-  context.moveTo(0, bottom);
-  context.lineTo(width, bottom);
-  context.stroke();
-  context.setLineDash([8, 6]);
-  context.beginPath();
-  context.moveTo(0, upperGuide);
-  context.lineTo(width, upperGuide);
-  context.moveTo(0, lowerGuide);
-  context.lineTo(width, lowerGuide);
-  context.stroke();
-  context.setLineDash([]);
+    board.hasInk = Boolean(hasInk);
+    board.ready = true;
+    board.canvas.classList.remove("is-loading");
+  };
+  image.onerror = () => {
+    console.warn("Unable to restore saved handwriting.");
+    board.ready = true;
+    board.canvas.classList.remove("is-loading");
+  };
+  image.src = imageSource;
+}
+
+function setHandwritingTool(board, tool) {
+  if (!board) return;
+  board.tool = tool === "eraser" ? "eraser" : "pen";
+  board.canvas.classList.toggle("is-erasing", board.tool === "eraser");
 }
 
 function beginWriting(board, event) {
-  if (!board || game.locked || (event.pointerType === "mouse" && event.button !== 0)) return;
+  if (!board || !board.ready || game.locked || (event.pointerType === "mouse" && event.button !== 0)) return;
   event.preventDefault();
   primeAudio();
   board.drawing = true;
-  board.hasInk = true;
+  if (board.tool === "pen") board.hasInk = true;
   const point = writingPoint(board, event);
   board.lastX = point.x;
   board.lastY = point.y;
   board.context.beginPath();
-  board.context.arc(point.x, point.y, 1.5, 0, Math.PI * 2);
-  board.context.fillStyle = "#193c70";
+  board.context.arc(point.x, point.y, board.tool === "eraser" ? 8 : 1.8, 0, Math.PI * 2);
+  board.context.globalCompositeOperation = board.tool === "eraser" ? "destination-out" : "source-over";
+  board.context.fillStyle = "#243d62";
   board.context.fill();
   board.canvas.setPointerCapture(event.pointerId);
 }
@@ -2269,8 +2402,9 @@ function continueWriting(board, event) {
   context.beginPath();
   context.moveTo(board.lastX, board.lastY);
   context.lineTo(point.x, point.y);
-  context.strokeStyle = "#193c70";
-  context.lineWidth = 5;
+  context.globalCompositeOperation = board.tool === "eraser" ? "destination-out" : "source-over";
+  context.strokeStyle = "#243d62";
+  context.lineWidth = board.tool === "eraser" ? 18 : 5;
   context.lineCap = "round";
   context.lineJoin = "round";
   context.stroke();
@@ -2279,8 +2413,9 @@ function continueWriting(board, event) {
 }
 
 function endWriting(board) {
-  if (!board) return;
+  if (!board || !board.drawing) return;
   board.drawing = false;
+  if (board.onChange) board.onChange(board);
 }
 
 function writingPoint(board, event) {
@@ -2292,159 +2427,359 @@ function clearHandwritingBoard(board) {
   if (!board || game.locked) return;
   drawWritingPaper(board);
   board.hasInk = false;
+  if (board.onClear) board.onClear(board);
   playEffect("delete");
 }
 
-function submitHandwritingEntry(entry) {
-  if (!handwritingBoard || !handwritingBoard.hasInk) {
+function handwritingAnswer(entryId) {
+  if (!handwritingSession) return null;
+  return handwritingSession.entries.find((answer) => answer.id === entryId) || null;
+}
+
+function saveHandwritingAnswer(entry, board, status = null) {
+  if (!handwritingSession || !board) return null;
+  const existingAnswer = handwritingAnswer(entry.id);
+  if (!board.hasInk && !existingAnswer) return null;
+  const answer = {
+    id: entry.id,
+    image: board.canvas.toDataURL("image/png"),
+    status: status || (existingAnswer ? existingAnswer.status : "pending"),
+    hasInk: board.hasInk
+  };
+  if (existingAnswer) Object.assign(existingAnswer, answer);
+  else handwritingSession.entries.push(answer);
+  return answer;
+}
+
+function clearSavedHandwritingAnswer(entry, board) {
+  const answer = handwritingAnswer(entry.id);
+  if (!answer) return;
+  answer.image = board.canvas.toDataURL("image/png");
+  answer.hasInk = false;
+  answer.status = "pending";
+  persistHandwritingSession();
+}
+
+function persistHandwritingSession() {
+  if (!handwritingSession) return;
+  player.handwritingSession = handwritingSession;
+  saveMission(false);
+}
+
+function moveHandwritingQuestion(entry, direction) {
+  if (!handwritingBoard || !handwritingBoard.ready) return;
+  const nextIndex = game.roundIndex + direction;
+  if (nextIndex < 0 || nextIndex >= game.rounds.length) return;
+  if (handwritingBoard.hasInk) saveHandwritingAnswer(entry, handwritingBoard, "pending");
+  game.roundIndex = nextIndex;
+  handwritingSession.currentIndex = nextIndex;
+  persistHandwritingSession();
+  renderRound();
+}
+
+function advanceHandwritingQuestion(entry) {
+  if (!handwritingBoard || !handwritingBoard.ready || !handwritingBoard.hasInk) {
     setFeedback(t("feedback.writeFirst"), "try-again");
     return;
   }
-  const existingEntry = handwritingSession.entries.find((item) => item.id === entry.id);
-  const answer = {
-    id: entry.id,
-    image: handwritingBoard.canvas.toDataURL("image/png"),
-    status: existingEntry ? existingEntry.status : "pending"
-  };
-  if (existingEntry) Object.assign(existingEntry, answer);
-  else handwritingSession.entries.push(answer);
-  handwritingSession.currentIndex = game.roundIndex;
-  player.handwritingSession = handwritingSession;
-  saveMission(false);
+  saveHandwritingAnswer(entry, handwritingBoard, "pending");
   if (game.roundIndex + 1 < game.rounds.length) {
     game.roundIndex += 1;
     handwritingSession.currentIndex = game.roundIndex;
-    player.handwritingSession = handwritingSession;
-    saveMission(false);
+    persistHandwritingSession();
     renderRound();
     return;
   }
+  const missingIndex = game.rounds.findIndex((round) => {
+    const answer = handwritingAnswer(round.id);
+    return !answer || !answer.hasInk;
+  });
+  if (missingIndex >= 0) {
+    game.roundIndex = missingIndex;
+    handwritingSession.currentIndex = missingIndex;
+    persistHandwritingSession();
+    renderRound();
+    setFeedback(t("feedback.writeFirst"), "try-again");
+    return;
+  }
   handwritingSession.reviewing = true;
-  handwritingSession.currentIndex = game.rounds.length;
-  player.handwritingSession = handwritingSession;
-  saveMission(false);
+  handwritingSession.reviewMode = "overview";
+  handwritingSession.editingEntryId = null;
+  handwritingSession.reviewEntryId = game.rounds[0].id;
+  handwritingSession.reviewIndex = 0;
+  handwritingSession.currentIndex = game.roundIndex;
+  persistHandwritingSession();
   renderHandwritingReview();
 }
 
 function renderHandwritingReview() {
-  const pageSize = 1;
-  handwritingReviewPage = Math.min(handwritingReviewPage, Math.max(0, Math.ceil(handwritingSession.entries.length / pageSize) - 1));
+  handwritingBoard = null;
   const area = $("#questionArea");
   area.replaceChildren();
-  const approvedCount = handwritingSession.entries.filter((entry) => entry.status === "approved").length;
-  const stage = STAGES[game.stageIndex];
-  const reward = handwritingSession.entries.length * stage.reward + stage.bonus;
   const review = document.createElement("section");
-  review.className = "batch-review-card";
-  review.innerHTML = `
-    <div class="batch-review-heading">
-      <div><span>👪 ${t("review.parent")}</span><h3>${t("review.confirmed", { done: approvedCount, total: handwritingSession.entries.length })}</h3></div>
-      <strong>${t("review.reward", { count: reward })}</strong>
-    </div>
-    <div class="answer-sheet-grid" id="answerSheetGrid"></div>
-    <div class="review-pagination">
-      <button class="mini-button pager-button" id="reviewPreviousButton" type="button" aria-label="${t("common.pagePrevious")}" title="${t("common.pagePrevious")}">‹</button>
-      <span id="reviewPageLabel"></span>
-      <button class="mini-button pager-button" id="reviewNextButton" type="button" aria-label="${t("common.pageNext")}" title="${t("common.pageNext")}">›</button>
-    </div>
-    <button class="primary-button" id="finishHandwritingButton" type="button"></button>
-  `;
+  review.className = "batch-review-card handwriting-review-card";
+  if (handwritingSession.reviewMode === "detail") {
+    const selected = selectedHandwritingReviewItem();
+    if (selected) renderHandwritingReviewDetail(review, selected);
+    else renderHandwritingOverview(review);
+  } else {
+    renderHandwritingOverview(review);
+  }
   area.append(review);
-  iconButton($("#finishHandwritingButton"), "🏁", t("review.finish"));
-  renderHandwritingReviewPage();
-  $("#reviewPreviousButton").addEventListener("click", () => {
-    handwritingReviewPage -= 1;
-    renderHandwritingReviewPage();
-  });
-  $("#reviewNextButton").addEventListener("click", () => {
-    handwritingReviewPage += 1;
-    renderHandwritingReviewPage();
-  });
-  $("#finishHandwritingButton").addEventListener("click", finishHandwritingReview);
 }
 
-function renderHandwritingReviewPage() {
-  const entries = handwritingSession.entries;
-  const pageSize = 1;
-  const pageCount = Math.max(1, Math.ceil(entries.length / pageSize));
-  handwritingReviewPage = Math.min(Math.max(handwritingReviewPage, 0), pageCount - 1);
-  handwritingSession.reviewPage = handwritingReviewPage;
-  const grid = $("#answerSheetGrid");
-  if (!grid) return;
-  grid.replaceChildren();
-  entries.slice(handwritingReviewPage * pageSize, handwritingReviewPage * pageSize + pageSize).forEach((answer) => {
-    const entry = WORD_BY_ID.get(answer.id);
-    const sheet = document.createElement("article");
-    sheet.className = `review-sheet${answer.status === "approved" ? " approved" : ""}`;
-    sheet.innerHTML = `
-      <div class="review-writing"><img src="${answer.image}" alt="${t("question.writing")}: ${entry.word}"></div>
-      <div class="review-answer"><span>${t("review.expected")}</span><strong>${entry.word}</strong></div>
-      <div class="review-actions">
-        <button class="primary-button" type="button"></button>
-        <button class="secondary-button" type="button"></button>
-      </div>
-    `;
-    const [approveButton, reviseButton] = sheet.querySelectorAll("button");
-    iconButton(approveButton, "✓", t("review.approve"));
-    iconButton(reviseButton, "✎", t("review.revise"));
-    approveButton.disabled = answer.status === "approved";
-    approveButton.addEventListener("click", () => approveHandwritingEntry(answer.id));
-    reviseButton.addEventListener("click", () => openHandwritingCorrection(answer.id));
-    grid.append(sheet);
+function orderedHandwritingReviewItems() {
+  return game.rounds.map((entry, index) => ({
+    entry,
+    index,
+    answer: handwritingAnswer(entry.id)
+  }));
+}
+
+function selectedHandwritingReviewItem() {
+  const items = orderedHandwritingReviewItems();
+  const selected = items.find((item) => item.entry.id === handwritingSession.reviewEntryId && item.answer);
+  if (selected) return selected;
+  const fallback = items.find((item) => item.answer && item.answer.status !== "approved")
+    || items.find((item) => item.answer);
+  if (!fallback) return null;
+  handwritingSession.reviewEntryId = fallback.entry.id;
+  handwritingSession.reviewIndex = fallback.index;
+  return fallback;
+}
+
+function renderHandwritingOverview(review) {
+  handwritingSession.reviewMode = "overview";
+  handwritingSession.editingEntryId = null;
+  const grid = document.createElement("div");
+  grid.className = "handwriting-overview-grid";
+  orderedHandwritingReviewItems().forEach(({ entry, answer, index }) => {
+    const checked = Boolean(answer && answer.status === "approved");
+    const state = checked ? t("review.approved") : t("review.pending");
+    const card = createButton(
+      `handwriting-overview-card${handwritingSession.reviewEntryId === entry.id ? " is-current" : ""}${checked ? " is-approved" : ""}`,
+      "",
+      () => openHandwritingReviewEntry(entry.id)
+    );
+    card.title = `${entry.word} · ${state}`;
+    card.setAttribute("aria-label", `${entry.word} · ${state}`);
+    const number = document.createElement("span");
+    number.className = "overview-number";
+    number.setAttribute("aria-hidden", "true");
+    number.textContent = String(index + 1);
+    const paper = document.createElement("span");
+    paper.className = "overview-paper";
+    if (answer && answer.hasInk) {
+      const image = document.createElement("img");
+      image.src = answer.image;
+      image.alt = "";
+      paper.append(image);
+    }
+    const word = document.createElement("strong");
+    word.className = "overview-word";
+    word.textContent = entry.word;
+    const status = document.createElement("span");
+    status.className = "overview-status";
+    status.title = state;
+    status.setAttribute("aria-label", state);
+    status.textContent = checked ? "✓" : "•";
+    card.append(number, paper, word, status);
+    grid.append(card);
   });
-  $("#reviewPageLabel").textContent = `${handwritingReviewPage + 1} / ${pageCount}`;
-  $("#reviewPreviousButton").disabled = handwritingReviewPage === 0;
-  $("#reviewNextButton").disabled = handwritingReviewPage === pageCount - 1;
-  const approvedCount = entries.filter((entry) => entry.status === "approved").length;
-  $("#finishHandwritingButton").disabled = approvedCount !== entries.length;
+  review.append(grid);
+}
+
+function openHandwritingReviewEntry(entryId) {
+  const item = orderedHandwritingReviewItems().find((reviewItem) => reviewItem.entry.id === entryId && reviewItem.answer);
+  if (!item) return;
+  handwritingSession.reviewMode = "detail";
+  handwritingSession.reviewEntryId = entryId;
+  handwritingSession.reviewIndex = item.index;
+  handwritingSession.editingEntryId = null;
+  persistHandwritingSession();
+  renderHandwritingReview();
+}
+
+function createHandwritingReviewTarget(entry) {
+  const target = document.createElement("div");
+  target.className = "review-detail-target";
+  const label = document.createElement("span");
+  label.textContent = t("review.expected");
+  const word = document.createElement("strong");
+  word.textContent = entry.word;
+  target.append(label, word);
+  return target;
+}
+
+function createHandwritingReviewProgress() {
+  const progress = document.createElement("span");
+  progress.className = "review-detail-progress";
+  const done = handwritingSession.entries.filter((answer) => answer.status === "approved").length;
+  progress.textContent = t("review.confirmed", { done, total: game.rounds.length });
+  return progress;
+}
+
+function renderHandwritingReviewDetail(review, item) {
+  const { entry, answer } = item;
+  const isEditing = handwritingSession.editingEntryId === entry.id;
+  const paper = document.createElement("section");
+  paper.className = `review-detail-paper${isEditing ? " is-editing" : ""}`;
+
+  if (isEditing) {
+    const canvas = document.createElement("canvas");
+    canvas.className = "handwriting-canvas review-edit-canvas";
+    canvas.setAttribute("aria-label", t("review.correctionCanvas"));
+    paper.append(canvas);
+    review.append(paper);
+    const toolbar = document.createElement("div");
+    toolbar.className = "review-detail-toolbar review-edit-toolbar";
+    toolbar.append(createHandwritingReviewTarget(entry));
+    const editToolbar = createHandwritingToolbar({
+      getBoard: () => handwritingBoard,
+      primaryIcon: "✓",
+      primaryLabel: () => t("review.finishEdit"),
+      onPrimary: () => finishHandwritingEdit(entry)
+    });
+    toolbar.append(editToolbar.element);
+    review.append(toolbar);
+    window.requestAnimationFrame(() => {
+      if (!canvas.isConnected) return;
+      handwritingBoard = setupHandwritingBoard(canvas, {
+        initialImage: answer.hasInk ? answer.image : "",
+        hasInk: Boolean(answer.hasInk),
+        onChange: (board) => {
+          saveHandwritingAnswer(entry, board, "pending");
+          persistHandwritingSession();
+        },
+        onClear: (board) => clearSavedHandwritingAnswer(entry, board)
+      });
+      editToolbar.refresh();
+    });
+    return;
+  }
+
+  const writing = document.createElement("div");
+  writing.className = "review-writing";
+  const image = document.createElement("img");
+  image.src = answer.image;
+  image.alt = `${t("question.writing")}: ${entry.word}`;
+  writing.append(image);
+  paper.append(writing);
+  review.append(paper);
+
+  const toolbar = document.createElement("div");
+  toolbar.className = "review-detail-toolbar";
+  const overviewButton = iconButton(
+    createButton("mini-button review-overview-button", "", () => {
+      handwritingSession.reviewMode = "overview";
+      handwritingSession.editingEntryId = null;
+      persistHandwritingSession();
+      renderHandwritingReview();
+    }),
+    "▦",
+    t("review.overview")
+  );
+  const previousButton = iconButton(
+    createButton("mini-button review-navigation-button", "", () => moveHandwritingReviewEntry(entry.id, -1)),
+    "‹",
+    t("review.previousAnswer")
+  );
+  const nextButton = iconButton(
+    createButton("mini-button review-navigation-button", "", () => moveHandwritingReviewEntry(entry.id, 1)),
+    "›",
+    t("review.nextAnswer")
+  );
+  const actions = document.createElement("div");
+  actions.className = "review-detail-actions";
+  const approveButton = iconButton(
+    createButton("primary-button review-action-button", "", () => approveHandwritingEntry(entry.id)),
+    "✓",
+    t("review.approve")
+  );
+  const reviseButton = iconButton(
+    createButton("secondary-button review-action-button", "", () => openHandwritingCorrection(entry.id)),
+    "✎",
+    t("review.revise")
+  );
+  approveButton.disabled = answer.status === "approved";
+  actions.append(approveButton, reviseButton);
+  const itemCount = orderedHandwritingReviewItems().filter((reviewItem) => reviewItem.answer).length;
+  previousButton.disabled = itemCount < 2;
+  nextButton.disabled = itemCount < 2;
+  toolbar.append(
+    overviewButton,
+    previousButton,
+    createHandwritingReviewTarget(entry),
+    createHandwritingReviewProgress(),
+    actions,
+    nextButton
+  );
+  review.append(toolbar);
+}
+
+function moveHandwritingReviewEntry(entryId, direction) {
+  const items = orderedHandwritingReviewItems().filter((item) => item.answer);
+  if (items.length < 2) return;
+  const currentIndex = items.findIndex((item) => item.entry.id === entryId);
+  const nextIndex = (currentIndex + direction + items.length) % items.length;
+  const nextItem = items[nextIndex];
+  handwritingSession.reviewEntryId = nextItem.entry.id;
+  handwritingSession.reviewIndex = nextItem.index;
+  handwritingSession.editingEntryId = null;
+  persistHandwritingSession();
+  renderHandwritingReview();
 }
 
 function approveHandwritingEntry(entryId) {
-  const answer = handwritingSession.entries.find((entry) => entry.id === entryId);
-  if (!answer) return;
+  const answer = handwritingAnswer(entryId);
+  if (!answer || answer.status === "approved") return;
   answer.status = "approved";
-  player.handwritingSession = handwritingSession;
-  saveMission(false);
+  const items = orderedHandwritingReviewItems();
+  const currentIndex = items.findIndex((item) => item.entry.id === entryId);
+  let nextItem = null;
+  for (let offset = 1; offset < items.length; offset += 1) {
+    const candidate = items[(currentIndex + offset) % items.length];
+    if (candidate.answer && candidate.answer.status !== "approved") {
+      nextItem = candidate;
+      break;
+    }
+  }
+  persistHandwritingSession();
   playEffect("correct");
+  if (!nextItem) {
+    finishHandwritingReview();
+    return;
+  }
+  handwritingSession.reviewMode = "detail";
+  handwritingSession.reviewEntryId = nextItem.entry.id;
+  handwritingSession.reviewIndex = nextItem.index;
+  handwritingSession.editingEntryId = null;
+  persistHandwritingSession();
   renderHandwritingReview();
 }
 
 function openHandwritingCorrection(entryId) {
-  const answer = handwritingSession.entries.find((entry) => entry.id === entryId);
-  const entry = answer && WORD_BY_ID.get(answer.id);
-  if (!answer || !entry) return;
-  const area = $("#questionArea");
-  area.replaceChildren();
-  const correction = document.createElement("section");
-  correction.className = "correction-workspace";
-  correction.innerHTML = `
-    <div class="correction-heading"><span>✎ ${t("review.correction")}</span><h3>${entry.word}</h3><p>${t("review.correctionCopy")}</p></div>
-    <canvas class="handwriting-canvas correction-canvas" id="correctionCanvas" aria-label="${t("review.correctionCanvas")}"></canvas>
-    <div class="review-actions">
-      <button class="mini-button" id="clearCorrectionButton" type="button"></button>
-      <button class="primary-button" id="saveCorrectionButton" type="button"></button>
-    </div>
-  `;
-  area.append(correction);
-  iconButton($("#clearCorrectionButton"), "⌫", t("common.clear"));
-  iconButton($("#saveCorrectionButton"), "💾", t("common.save"));
-  const correctionCanvas = $("#correctionCanvas");
-  window.requestAnimationFrame(() => {
-    if (correctionCanvas.isConnected) correctionBoard = setupHandwritingBoard(correctionCanvas, entry.word.length, true);
-  });
-  $("#clearCorrectionButton").addEventListener("click", () => clearHandwritingBoard(correctionBoard));
-  $("#saveCorrectionButton").addEventListener("click", () => {
-    if (!correctionBoard || !correctionBoard.hasInk) {
-      setFeedback(t("feedback.correctionFirst"), "try-again");
-      return;
-    }
-    answer.image = correctionBoard.canvas.toDataURL("image/png");
-    answer.status = "pending";
-    player.handwritingSession = handwritingSession;
-    saveMission(false);
-    renderHandwritingReview();
-    setFeedback(t("feedback.correctionSaved"), "");
-  });
+  const answer = handwritingAnswer(entryId);
+  if (!answer) return;
+  answer.status = "pending";
+  handwritingSession.reviewMode = "detail";
+  handwritingSession.reviewEntryId = entryId;
+  handwritingSession.editingEntryId = entryId;
+  persistHandwritingSession();
+  renderHandwritingReview();
+}
+
+function finishHandwritingEdit(entry) {
+  if (!handwritingBoard || !handwritingBoard.ready || !handwritingBoard.hasInk) {
+    setFeedback(t("feedback.correctionFirst"), "try-again");
+    return;
+  }
+  saveHandwritingAnswer(entry, handwritingBoard, "pending");
+  handwritingSession.editingEntryId = null;
+  handwritingSession.reviewMode = "detail";
+  persistHandwritingSession();
+  renderHandwritingReview();
+  setFeedback(t("feedback.correctionSaved"), "success");
 }
 
 function finishHandwritingReview() {
@@ -2493,7 +2828,14 @@ function renderRound(silent = false) {
   if (stage.mode === "handwriting") renderHandwritingQuestion(entry, game.sentence);
   setFeedback(stage.mode === "spell" || stage.mode === "dictation" ? t("question.dropLetters") : t("question.ready"));
   saveMission(false);
-  if (!silent) autoplayPrompt(entry, game.sentence, stage.mode === "listening" ? "sentence" : "word-then-sentence");
+  if (!silent) {
+    const promptMode = stage.mode === "listening"
+      ? "sentence"
+      : stage.mode === "handwriting"
+        ? "word"
+        : "word-then-sentence";
+    autoplayPrompt(entry, game.sentence, promptMode);
+  }
 }
 
 function markRoundProgress(round) {
@@ -2561,20 +2903,25 @@ function startStage(stageIndex, savedRoundIds = null, savedRoundIndex = 0) {
   if (stage.mode === "handwriting") {
     const storedSession = player.handwritingSession;
     const matchingSession = storedSession
-      && savedRoundIds
-      && storedSession.roundIds.join("|") === game.rounds.map((round) => round.id).join("|");
+      && (
+        !savedRoundIds
+        || storedSession.roundIds.join("|") === game.rounds.map((round) => round.id).join("|")
+      );
+    if (matchingSession) game.rounds = restoreRounds(stageIndex, storedSession.roundIds);
     handwritingSession = matchingSession
       ? storedSession
       : {
         roundIds: game.rounds.map((round) => round.id),
         entries: [],
         currentIndex: game.roundIndex,
-        reviewPage: 0,
+        reviewIndex: 0,
+        reviewMode: "overview",
+        reviewEntryId: null,
+        editingEntryId: null,
         reviewing: false
       };
     player.handwritingSession = handwritingSession;
-    handwritingReviewPage = handwritingSession.reviewPage || 0;
-    game.roundIndex = handwritingSession.currentIndex;
+    game.roundIndex = Math.min(handwritingSession.currentIndex, game.rounds.length - 1);
   } else {
     handwritingSession = null;
   }

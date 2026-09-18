@@ -1,0 +1,4 @@
+Cream exercise paper texture
+
+images/paper-cream.svg is original vector artwork created for Word Star Quest.
+It contains no third-party image, font, or remote asset.

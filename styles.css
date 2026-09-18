@@ -1054,8 +1054,7 @@ button:disabled {
 .question-panel,
 .drag-card,
 .handwriting-card,
-.batch-review-card,
-.correction-workspace {
+.batch-review-card {
   width: 100%;
   height: 100%;
 }
@@ -1616,32 +1615,32 @@ button:disabled {
 .handwriting-card {
   display: grid;
   min-height: 0;
-  gap: 12px;
-  padding: 12px;
+  gap: 10px;
+  padding: 10px;
   border: 2px solid #6dadec;
   border-radius: 23px;
   background: linear-gradient(145deg, rgba(18, 71, 131, 0.94), rgba(30, 38, 105, 0.88));
-  grid-template-columns: minmax(230px, 0.62fr) minmax(0, 1.38fr);
+  grid-template-columns: minmax(210px, 0.48fr) minmax(0, 1.52fr);
 }
 
 .handwriting-prompt {
   display: grid;
   align-items: center;
   justify-items: center;
-  gap: 10px;
-  padding: 13px;
+  gap: 8px;
+  padding: 11px;
   background:
     linear-gradient(145deg, rgba(8, 30, 74, 0.51), rgba(56, 29, 111, 0.43)),
     url("images/backgrounds/orion-nebula.jpg") center / cover;
   text-align: center;
-  grid-template-rows: auto minmax(150px, 1fr) auto;
+  grid-template-rows: auto minmax(160px, 1fr) auto;
 }
 
 .handwriting-sentence {
   margin: 0;
   color: #ffe99b;
   font-family: var(--word-font);
-  font-size: clamp(18px, 2vw, 26px);
+  font-size: clamp(17px, 1.8vw, 24px);
   font-weight: 700;
   line-height: 1.3;
 }
@@ -1649,7 +1648,7 @@ button:disabled {
 .handwriting-scene {
   width: 100%;
   height: 100%;
-  min-height: 150px;
+  min-height: 160px;
 }
 
 .handwriting-scene img {
@@ -1659,128 +1658,257 @@ button:disabled {
 .paper-area {
   display: flex;
   min-height: 0;
-  padding: 12px;
-  border: 3px solid #d9efff;
+  gap: 10px;
+  padding: 10px;
+  border: 3px solid #e4e9c3;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(145deg, rgba(15, 65, 121, 0.72), rgba(47, 39, 108, 0.76));
   box-shadow: 0 6px 0 rgba(2, 21, 58, 0.33);
   flex-direction: column;
 }
 
-.paper-toolbar {
-  display: flex;
-  min-height: 44px;
-  align-items: center;
-  justify-content: flex-end;
-  margin-bottom: 7px;
-  color: #effaff;
-  font-size: 17px;
+.handwriting-canvas,
+.review-writing,
+.overview-paper {
+  background: #fff8d8 url("images/paper-cream.svg") center / 100% 100% no-repeat;
 }
 
 .handwriting-canvas {
-  min-height: 0;
   width: 100%;
+  min-height: 0;
   flex: 1 1 auto;
-  border: 2px solid #d2eafc;
+  border: 2px solid #b2c7b7;
   border-radius: 12px;
-  background: #fffdf5;
-  box-shadow: inset 0 0 13px rgba(100, 164, 220, 0.12);
+  box-shadow: inset 0 0 16px rgba(124, 100, 52, 0.14);
+  cursor: crosshair;
   touch-action: none;
 }
 
-.paper-area > .primary-button {
-  align-self: center;
-  min-width: 150px;
-  margin-top: 9px;
+.handwriting-canvas.is-erasing {
+  cursor: cell;
 }
 
-.eraser-button {
-  width: 52px;
-  min-width: 52px;
-  min-height: 46px;
+.handwriting-canvas.is-loading {
+  opacity: 0.68;
+}
+
+.writing-toolbar {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  flex: 0 0 auto;
+}
+
+.writing-toolbar-primary-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.writing-toolbar-action {
+  width: 66px;
+  min-width: 66px;
+  min-height: 58px;
   padding: 0;
-  border-radius: 50%;
+  border-radius: 17px;
 }
 
-.eraser-button .button-icon {
-  font-size: 24px;
+.writing-previous-button,
+.review-overview-button,
+.review-navigation-button {
+  width: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0;
+  color: #eafaff;
+  font-size: 30px;
+  font-weight: 900;
 }
 
-.batch-review-card,
-.correction-workspace {
+.writing-toolbar .button-label,
+.review-detail-toolbar .button-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.writing-tool-toggle {
+  gap: 3px;
+  color: #5b4520;
+}
+
+.writing-tool-symbol {
+  display: inline-grid;
+  width: 22px;
+  place-items: center;
+  opacity: 0.36;
+  font-size: 25px;
+  line-height: 1;
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.writing-tool-divider {
+  opacity: 0.42;
+  font-size: 18px;
+}
+
+.writing-tool-toggle.is-pen .writing-tool-pen,
+.writing-tool-toggle.is-eraser .writing-tool-eraser {
+  color: #123d6b;
+  opacity: 1;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: scale(1.14);
+}
+
+.batch-review-card.handwriting-review-card {
   display: flex;
   min-height: 0;
-  padding: 17px;
-  border: 2px solid #d5f4ff;
+  padding: 10px;
+  border: 2px solid #dce9c0;
   border-radius: 22px;
   background:
-    linear-gradient(145deg, rgba(15, 64, 120, 0.95), rgba(43, 38, 108, 0.93)),
+    linear-gradient(145deg, rgba(15, 64, 120, 0.96), rgba(43, 38, 108, 0.95)),
     url("images/backgrounds/orion-nebula.jpg") center / cover;
   flex-direction: column;
 }
 
-.batch-review-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-  flex: 0 0 auto;
+.handwriting-overview-grid {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 9px;
 }
 
-.batch-review-heading span {
-  color: #9aeaff;
+.handwriting-overview-card {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  gap: 5px;
+  padding: 7px;
+  overflow: hidden;
+  border: 2px solid #a6c8db;
+  border-radius: 15px;
+  color: #24446a;
+  background: linear-gradient(145deg, #fffee9, #eee7be);
+  box-shadow: 0 4px 0 rgba(2, 25, 68, 0.54);
+  grid-template-rows: minmax(0, 1fr) auto;
+  transition: transform 140ms ease, filter 140ms ease;
+}
+
+.handwriting-overview-card:hover {
+  filter: brightness(1.04);
+  transform: translateY(-2px);
+}
+
+.handwriting-overview-card:active {
+  box-shadow: none;
+  transform: translateY(3px);
+}
+
+.handwriting-overview-card.is-current {
+  border-color: #f5bc55;
+  box-shadow: 0 4px 0 rgba(151, 92, 25, 0.72), 0 0 0 3px rgba(255, 230, 116, 0.35);
+}
+
+.handwriting-overview-card.is-approved {
+  border-color: #75d7aa;
+}
+
+.overview-paper {
+  display: block;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(107, 144, 162, 0.76);
+  border-radius: 9px;
+  box-shadow: inset 0 0 9px rgba(118, 89, 43, 0.13);
+}
+
+.overview-paper img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.overview-number,
+.overview-status {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border-radius: 50%;
   font-size: 13px;
   font-weight: 900;
 }
 
-.batch-review-heading h3 {
-  margin: 2px 0 0;
-  color: #f6fcff;
-  font-size: clamp(23px, 2.8vw, 31px);
-  line-height: 1.02;
+.overview-number {
+  top: 4px;
+  left: 4px;
+  color: #effaff;
+  background: rgba(18, 62, 112, 0.88);
+  box-shadow: 0 2px 0 rgba(2, 25, 68, 0.58);
 }
 
-.batch-review-heading > strong {
-  padding: 8px 12px;
-  border: 1px solid rgba(255, 234, 130, 0.6);
-  border-radius: 999px;
-  color: #fff1a4;
-  background: rgba(63, 44, 100, 0.76);
-  font-size: 14px;
+.overview-status {
+  right: 4px;
+  bottom: 4px;
+  color: #866016;
+  background: #ffe479;
+  box-shadow: 0 2px 0 #b37b31;
 }
 
-.answer-sheet-grid {
-  display: grid;
+.handwriting-overview-card.is-approved .overview-status {
+  color: #0d654a;
+  background: #8cf0c4;
+  box-shadow: 0 2px 0 #3e9c75;
+}
+
+.overview-word {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  color: #31547a;
+  font-family: var(--word-font);
+  font-size: clamp(17px, 2vw, 24px);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review-detail-paper {
+  display: flex;
   min-height: 0;
+  padding: 8px;
+  border: 3px solid #e4e9c3;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(18, 75, 132, 0.82), rgba(48, 42, 110, 0.85));
+  box-shadow: 0 5px 0 rgba(2, 21, 58, 0.38);
   flex: 1 1 auto;
-  grid-template-columns: 1fr;
-}
-
-.review-sheet {
-  display: grid;
-  min-height: 0;
-  align-items: stretch;
-  gap: 14px;
-  padding: 14px;
-  border: 3px solid #9dcce5;
-  border-radius: 19px;
-  background: #fffdf4;
-  color: #1c4779;
-  grid-template-columns: minmax(0, 1.46fr) minmax(180px, 0.7fr) 148px;
-}
-
-.review-sheet.approved {
-  border-color: #79e6b5;
-  background: #e0ffed;
 }
 
 .review-writing {
+  width: 100%;
   min-height: 0;
   overflow: hidden;
-  border: 2px solid #a4cbe8;
+  border: 2px solid #b2c7b7;
   border-radius: 11px;
-  background: #ffffff;
+  box-shadow: inset 0 0 16px rgba(124, 100, 52, 0.14);
 }
 
 .review-writing img {
@@ -1790,56 +1918,86 @@ button:disabled {
   object-fit: contain;
 }
 
-.review-answer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  flex-direction: column;
+.review-edit-canvas {
+  height: 100%;
 }
 
-.review-answer span {
-  color: #648bb2;
-  font-size: 14px;
+.review-detail-toolbar {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding-top: 7px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.review-detail-target {
+  display: grid;
+  min-width: 104px;
+  align-items: center;
+  justify-items: center;
+  gap: 1px;
+  padding: 3px 8px;
+  text-align: center;
+}
+
+.review-detail-target span {
+  color: #b9e9f3;
+  font-size: 11px;
   font-weight: 900;
 }
 
-.review-answer strong {
-  display: block;
-  max-width: 100%;
-  margin-top: 7px;
+.review-detail-target strong {
+  max-width: 140px;
   overflow: hidden;
-  color: #d75e50;
+  color: #fff0a3;
   font-family: var(--word-font);
-  font-size: clamp(43px, 6vw, 73px);
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  line-height: 0.9;
+  font-size: clamp(25px, 3.1vw, 36px);
+  line-height: 0.95;
   text-overflow: ellipsis;
 }
 
-.review-actions {
+.review-detail-progress {
+  min-width: 76px;
+  color: #effbff;
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.review-detail-actions {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.review-sheet .review-actions {
-  flex-direction: column;
+.review-action-button {
+  width: 64px;
+  min-width: 64px;
+  min-height: 54px;
+  padding: 0;
+  border-radius: 16px;
 }
 
-.review-sheet .review-actions button {
-  width: 100%;
-  min-height: 78px;
-  padding: 8px;
+.review-action-button .button-icon {
+  font-size: 29px;
 }
 
-.review-sheet .button-icon {
-  font-size: 27px;
+.review-edit-toolbar {
+  gap: 16px;
 }
 
-.review-pagination,
+.review-edit-toolbar .writing-toolbar {
+  min-height: 58px;
+  gap: 0;
+}
+
+.review-edit-toolbar .writing-toolbar-primary-actions {
+  gap: 9px;
+}
+
 .shop-pager {
   display: flex;
   min-height: 50px;
@@ -1849,61 +2007,12 @@ button:disabled {
   flex: 0 0 auto;
 }
 
-.review-pagination > span,
 .shop-pager > span {
   min-width: 65px;
   color: #e5faff;
   font-size: 16px;
   font-weight: 900;
   text-align: center;
-}
-
-#finishHandwritingButton {
-  align-self: center;
-  min-width: 166px;
-}
-
-.correction-workspace {
-  display: grid;
-  align-items: center;
-  grid-template-columns: minmax(185px, 0.58fr) minmax(0, 1.42fr);
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: 14px;
-}
-
-.correction-heading {
-  text-align: center;
-}
-
-.correction-heading span {
-  color: #9aeaff;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.correction-heading h3 {
-  margin: 9px 0;
-  color: #fff0a3;
-  font-family: var(--word-font);
-  font-size: clamp(45px, 6vw, 70px);
-  line-height: 0.9;
-}
-
-.correction-heading p {
-  margin: 0;
-  color: #c9ebf7;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.correction-canvas {
-  width: 100%;
-  height: 100%;
-  min-height: 200px;
-}
-
-.correction-workspace .review-actions {
-  grid-column: 1 / -1;
 }
 
 .project-page {
@@ -3043,50 +3152,89 @@ button:disabled {
   }
 
   .handwriting-card {
-    gap: 11px;
-    padding: 11px;
+    gap: 9px;
+    padding: 9px;
   }
 
   .handwriting-prompt {
-    padding: 13px;
+    padding: 9px;
   }
 
   .handwriting-sentence {
     margin: 0;
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .paper-area {
-    padding: 9px;
+    gap: 8px;
+    padding: 8px;
   }
 
-  .paper-toolbar {
-    min-height: 37px;
-    margin-bottom: 4px;
-    font-size: 14px;
+  .writing-toolbar {
+    min-height: 57px;
+    gap: 11px;
   }
 
-  .paper-area > .primary-button {
-    min-height: 45px;
-    margin-top: 6px;
+  .writing-toolbar-action {
+    width: 60px;
+    min-width: 60px;
+    min-height: 52px;
   }
 
-  .batch-review-card,
-  .correction-workspace {
-    padding: 12px;
+  .writing-previous-button,
+  .review-overview-button,
+  .review-navigation-button {
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 27px;
   }
 
-  .batch-review-heading {
-    margin-bottom: 7px;
+  .batch-review-card.handwriting-review-card {
+    padding: 8px;
   }
 
-  .review-sheet {
-    gap: 10px;
-    padding: 10px;
+  .handwriting-overview-grid {
+    gap: 7px;
   }
 
-  .review-sheet .review-actions button {
-    min-height: 65px;
+  .handwriting-overview-card {
+    gap: 4px;
+    padding: 5px;
+  }
+
+  .review-detail-paper {
+    padding: 6px;
+  }
+
+  .review-detail-toolbar {
+    min-height: 58px;
+    gap: 7px;
+    padding-top: 5px;
+  }
+
+  .review-detail-target {
+    min-width: 94px;
+    padding-inline: 5px;
+  }
+
+  .review-detail-target strong {
+    font-size: 29px;
+  }
+
+  .review-detail-progress {
+    min-width: 68px;
+    font-size: 12px;
+  }
+
+  .review-action-button {
+    width: 58px;
+    min-width: 58px;
+    min-height: 50px;
+  }
+
+  .review-edit-toolbar {
+    gap: 11px;
   }
 
   .workshop-home-grid {
@@ -3189,8 +3337,7 @@ button:disabled {
   .question-layout,
   .drag-card,
   .dictation-drag-card,
-  .handwriting-card,
-  .correction-workspace {
+  .handwriting-card {
     grid-template-columns: 1fr;
   }
 
@@ -3228,16 +3375,18 @@ button:disabled {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .review-sheet {
-    grid-template-columns: 1fr;
+  .handwriting-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(5, minmax(145px, 1fr));
   }
 
-  .review-sheet .review-actions {
-    flex-direction: row;
+  .review-detail-toolbar {
+    white-space: normal;
+    flex-wrap: wrap;
   }
 
-  .review-sheet .review-actions button {
-    min-height: 58px;
+  .review-detail-target {
+    min-width: 120px;
   }
 }
 
