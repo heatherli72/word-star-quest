@@ -31,11 +31,12 @@
         <span class="brand-mark" aria-hidden="true">⌂</span>
       </button>
       <div class="header-actions">
-        <span class="stage-nav-status" id="stageNavStatus" hidden aria-live="polite">
+        <div class="stage-nav-status" id="stageNavStatus" hidden aria-live="polite">
           <span class="stage-nav-icon" id="stageNavIcon" aria-hidden="true">📡</span>
           <span class="stage-nav-copy"><strong id="stageNavTitle">雷达听音站</strong><small id="stageNavRound">1 / 10</small></span>
           <span class="stage-nav-meter" aria-hidden="true"><i id="roundFill"></i></span>
-        </span>
+          <button class="stage-reset-button" id="stageResetButton" type="button" aria-label="重新开始本关" data-i18n-aria-label="stage.reset" title="重新开始本关" data-i18n-title="stage.reset"><span aria-hidden="true">↻</span></button>
+        </div>
         <span class="top-status"><small data-i18n="home.training">任务</small><strong id="homeTrainingCount">0 / 80</strong></span>
         <span class="top-status collection-status"><small id="homeCollectionStatus">星际火箭</small><strong id="heroRocketCount">0 / 20</strong></span>
         <span class="bank-pill" data-star-balance>⚡ 20</span>
@@ -110,11 +111,6 @@
           <section class="shop-catalog">
             <div class="shop-header"><div class="store-balance" id="shopBalance">⚡ 20</div><p class="shop-notice" id="shopNotice">星际火箭 · 0 / 20</p></div>
             <div class="shop-grid" id="shopGrid"></div>
-            <div class="shop-pager">
-              <button class="mini-button pager-button" id="shopPreviousButton" type="button" aria-label="上一页" data-i18n-aria-label="common.pagePrevious" title="上一页" data-i18n-title="common.pagePrevious">‹</button>
-              <span id="shopPageLabel">1 / 4</span>
-              <button class="mini-button pager-button" id="shopNextButton" type="button" aria-label="下一页" data-i18n-aria-label="common.pageNext" title="下一页" data-i18n-title="common.pageNext">›</button>
-            </div>
           </section>
         </div>
       </article>

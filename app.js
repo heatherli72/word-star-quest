@@ -23,6 +23,9 @@ const I18N = {
       sets: "{done} / {total} 套",
       stage: "关卡 {number}"
     },
+    stage: {
+      reset: "重新开始本关"
+    },
     garden: { copy: "看图 · 听词 · 读句" },
     common: {
       word: "单词",
@@ -58,13 +61,12 @@ const I18N = {
       vowels: "元音",
       consonants: "辅音",
       combinations: "组合",
-      moveLetters: "↔ 点字母放入，点格子返回",
       audioOnly: "只听",
       writing: "手写答题纸",
       myPaper: "我的答卷",
       writeWord: "听后写下单词",
       ready: "准备听题",
-      dropLetters: "把字母放进格子",
+      dropLetters: "点或拖入格子",
       blank: "填空"
     },
     feedback: {
@@ -135,11 +137,15 @@ const I18N = {
       nextAnswer: "下一张答卷",
       finishEdit: "完成修改",
       pending: "待确认",
-      approved: "已确认"
+      approved: "已确认",
+      openAnswer: "查看 {word}",
+      submitPaper: "提交答卷",
+      submitted: "✓ 答卷已提交"
     },
     handwriting: {
       previous: "上一题",
       next: "下一题",
+      submitPaper: "提交答卷",
       clearInk: "清空全部笔迹",
       switchToPen: "切换到画笔",
       switchToEraser: "切换到橡皮擦"
@@ -186,6 +192,9 @@ const I18N = {
       sets: "{done} / {total} sets",
       stage: "Stage {number}"
     },
+    stage: {
+      reset: "Restart this stage"
+    },
     garden: { copy: "Picture · word · sentences" },
     common: {
       word: "Word",
@@ -221,13 +230,12 @@ const I18N = {
       vowels: "Vowels",
       consonants: "Consonants",
       combinations: "Pairs",
-      moveLetters: "↔ Tap a tile to place it; tap a slot to return it",
       audioOnly: "Listen only",
       writing: "Writing paper",
       myPaper: "My answer",
       writeWord: "Hear it, write it",
       ready: "Ready to listen",
-      dropLetters: "Place every letter",
+      dropLetters: "Tap or drag into slots",
       blank: "Fill the blank"
     },
     feedback: {
@@ -298,11 +306,15 @@ const I18N = {
       nextAnswer: "Next answer",
       finishEdit: "Finish edit",
       pending: "Needs check",
-      approved: "Checked"
+      approved: "Checked",
+      openAnswer: "View {word}",
+      submitPaper: "Submit paper",
+      submitted: "✓ Paper submitted"
     },
     handwriting: {
       previous: "Previous question",
       next: "Next question",
+      submitPaper: "Submit paper",
       clearInk: "Clear all ink",
       switchToPen: "Use pen",
       switchToEraser: "Use eraser"
@@ -874,6 +886,9 @@ const BACKGROUND_TRACKS = {
 
 const BGM_VOLUME = 0.3;
 const BGM_DUCKED_VOLUME = 0.09;
+const HANDWRITING_PEN_WIDTH = 5;
+const HANDWRITING_ERASER_WIDTH = 42;
+const WRONG_EFFECT_COOLDOWN = 650;
 
 const WORD_BY_ID = new Map(WORDS.map((entry) => [entry.id, entry]));
 const AVATAR_BY_ID = new Map(AVATARS.map((avatar) => [avatar.id, avatar]));
@@ -881,7 +896,6 @@ const ROCKET_PART_IDS = new Set(ROCKET_PARTS.map((item) => item.id));
 const COLLECTION_PART_IDS = new Set(COLLECTION_PARTS.map((item) => item.id));
 const PROFILE_STORE_KEY = "word-space-quest-profiles-v7";
 const LEGACY_PROFILE_KEYS = ["word-space-quest-profiles-v6", "word-space-quest-profiles-v5", "word-space-quest-profile-v4"];
-const SHOP_PAGE_SIZE = 6;
 const $ = (selector) => document.querySelector(selector);
 
 const game = {
@@ -911,7 +925,6 @@ let activeBackgroundMusic = null;
 let activeDrag = null;
 let gardenWordId = "one";
 let selectedCollectionId = COLLECTION_SETS[0].id;
-let shopPage = 0;
 let toastTimer = 0;
 let audioPrimed = false;
 let activeBonusChallenge = null;
@@ -944,13 +957,14 @@ function createDefaultProfile(name = defaultProfileName(), avatarId = "astronaut
     id,
     name: cleanPlayerName(name) || defaultProfileName(),
     avatarId: AVATAR_BY_ID.has(avatarId) ? avatarId : "astronaut",
-    version: 8,
+    version: 9,
     language: readStoredLanguage(),
     stars: 20,
     ownedRocketParts: [],
     ownedCollectionParts: [],
     activeCollectionId: "rocket",
     progress: { listening: [], soundFill: [], spell: [], dictation: [], handwriting: [] },
+    stageSessions: {},
     mission: null,
     handwritingSession: null,
     updatedAt: null
@@ -1001,6 +1015,32 @@ function normalizeHandwritingSession(candidate) {
   };
 }
 
+function normalizeStageSession(stageIndex, candidate) {
+  if (!candidate || typeof candidate !== "object" || !Array.isArray(candidate.roundIds)) return null;
+  const source = getStageSource(stageIndex);
+  const validIds = new Set(source.map((entry) => entry.id));
+  const roundIds = candidate.roundIds.filter((id) => validIds.has(id));
+  if (roundIds.length !== source.length || new Set(roundIds).size !== source.length) return null;
+  return {
+    roundIds,
+    roundIndex: Number.isInteger(candidate.roundIndex)
+      ? Math.min(Math.max(candidate.roundIndex, 0), roundIds.length - 1)
+      : 0,
+    replay: candidate.replay === true,
+    savedAt: typeof candidate.savedAt === "string" ? candidate.savedAt : null
+  };
+}
+
+function normalizeStageSessions(candidate) {
+  const sessions = {};
+  if (!candidate || typeof candidate !== "object") return sessions;
+  STAGES.forEach((stage, stageIndex) => {
+    const session = normalizeStageSession(stageIndex, candidate[stage.id]);
+    if (session) sessions[stage.id] = session;
+  });
+  return sessions;
+}
+
 function getStageSource(stageIndex) {
   return STAGES[stageIndex].mode === "soundFill" ? FILL_QUESTIONS : WORDS;
 }
@@ -1030,6 +1070,7 @@ function normalizeProfile(candidate, fallbackName = defaultProfileName()) {
     : "rocket";
   profile.updatedAt = typeof candidate.updatedAt === "string" ? candidate.updatedAt : null;
   profile.handwritingSession = normalizeHandwritingSession(candidate.handwritingSession);
+  profile.stageSessions = normalizeStageSessions(candidate.stageSessions);
 
   if (candidate.progress && typeof candidate.progress === "object") {
     STAGES.forEach((stage, index) => {
@@ -1058,13 +1099,26 @@ function normalizeProfile(candidate, fallbackName = defaultProfileName()) {
         roundIds: candidate.mission.roundIds.filter((itemId) => typeof itemId === "string"),
         savedAt: typeof candidate.mission.savedAt === "string" ? candidate.mission.savedAt : null
       };
+      const stage = STAGES[stageIndex];
+      const legacySession = normalizeStageSession(stageIndex, profile.mission);
+      if (legacySession && !profile.stageSessions[stage.id]) {
+        profile.stageSessions[stage.id] = legacySession;
+      }
     }
+  }
+  if (profile.handwritingSession && !profile.stageSessions.handwriting) {
+    const handwritingSession = normalizeStageSession(4, {
+      roundIds: profile.handwritingSession.roundIds,
+      roundIndex: profile.handwritingSession.currentIndex,
+      savedAt: profile.updatedAt
+    });
+    if (handwritingSession) profile.stageSessions.handwriting = handwritingSession;
   }
   return profile;
 }
 
 function createDefaultSaveBook() {
-  return { version: 8, activeProfileId: null, profiles: [] };
+  return { version: 9, activeProfileId: null, profiles: [] };
 }
 
 function normalizeSaveBook(candidate) {
@@ -1154,9 +1208,8 @@ function shuffle(items) {
   return result;
 }
 
-function randomSentence(entry) {
-  const index = Math.floor(Math.random() * entry.sentences.length);
-  return { ...entry.sentences[index], index };
+function primarySentence(entry) {
+  return { ...entry.sentences[0], index: 0 };
 }
 
 function stageProgress(stage, stageIndex) {
@@ -1721,7 +1774,7 @@ function playEffect(name) {
   if (!sound) return;
   if (name === "wrong") {
     const now = performance.now();
-    if (now - lastWrongEffectAt < 240) return;
+    if (now - lastWrongEffectAt < WRONG_EFFECT_COOLDOWN) return;
     lastWrongEffectAt = now;
   }
   sound.pause();
@@ -1796,6 +1849,22 @@ function createPromptControls(entry, sentence, mode = "sentence") {
   return controls;
 }
 
+function createStageWordVisual(entry, sentence, mode, className = "", showSentence = true) {
+  const visual = document.createElement("section");
+  visual.className = `stage-word-visual ${className}`.trim();
+  if (showSentence) {
+    visual.classList.add("has-sentence");
+    const example = document.createElement("strong");
+    example.className = "stage-word-sentence";
+    example.textContent = sentence.blank;
+    visual.append(example);
+  }
+  const scene = createSceneCard(entry);
+  scene.classList.add("stage-word-scene");
+  visual.append(scene, createPromptControls(entry, sentence, mode));
+  return visual;
+}
+
 function setFeedback(message, kind = "") {
   const feedback = $("#feedback");
   feedback.className = `feedback ${kind}`.trim();
@@ -1809,6 +1878,7 @@ function updateStageHeader() {
   $("#stageNavRound").textContent = `${game.roundIndex + 1} / ${game.rounds.length}`;
   $("#stageNavStatus").setAttribute("aria-label", `${t("home.stage", { number: game.stageIndex + 1 })}: ${localized(stage.title)}, ${game.roundIndex + 1} / ${game.rounds.length}`);
   $("#roundFill").style.width = `${(game.roundIndex / game.rounds.length) * 100}%`;
+  $("#stageResetButton").disabled = !game.active;
 }
 
 function addChoiceGrid(parent, choices, onChoice, extraClass = "") {
@@ -1828,18 +1898,17 @@ function renderListeningQuestion(entry, sentence) {
   panel.className = "question-panel listening-question";
   const layout = document.createElement("div");
   layout.className = "question-layout";
-  layout.append(createSceneCard(entry));
+  layout.append(createStageWordVisual(entry, sentence, "sentence", "listening-visual", false));
   const mission = document.createElement("section");
   mission.className = "mission-card";
   mission.innerHTML = `<strong class="sentence-line" id="sentenceLine">${sentence.blank}</strong>`;
-  mission.append(createPromptControls(entry, sentence));
-  layout.append(mission);
-  panel.append(layout);
   const choices = shuffle([
     { label: entry.word, entry },
     ...shuffle(WORDS.filter((word) => word.id !== entry.id)).slice(0, 3).map((word) => ({ label: word.word, entry: word }))
   ]);
-  addChoiceGrid(panel, choices, (choice, button) => checkListeningAnswer(entry, sentence, choice.entry, button));
+  addChoiceGrid(mission, choices, (choice, button) => checkListeningAnswer(entry, sentence, choice.entry, button), "listening-choices");
+  layout.append(mission);
+  panel.append(layout);
   area.append(panel);
 }
 
@@ -1867,11 +1936,10 @@ function renderSoundFillQuestion(question, sentence) {
   panel.className = "question-panel fill-question";
   const layout = document.createElement("div");
   layout.className = "question-layout";
-  layout.append(createSceneCard(entry));
+  layout.append(createStageWordVisual(entry, sentence, "word-then-sentence", "fill-visual"));
   const card = document.createElement("section");
   card.className = "fill-card";
-  card.innerHTML = `<span>${sentence.blank}</span><div class="fill-word"><b>${question.prefix}</b><b class="fill-slot" id="fillSlot">${"_".repeat(question.answer.length)}</b><b>${question.suffix}</b></div>`;
-  card.append(createPromptControls(entry, sentence, "word-then-sentence"));
+  card.innerHTML = `<div class="fill-word"><b>${question.prefix}</b><b class="fill-slot" id="fillSlot" aria-label="${t("question.blank")}"></b><b>${question.suffix}</b></div>`;
   addChoiceGrid(card, shuffle(question.choices), (choice, button) => checkFillAnswer(question, choice, button), "fill-choices");
   layout.append(card);
   panel.append(layout);
@@ -1912,28 +1980,22 @@ function renderSpellQuestion(entry, sentence) {
   area.replaceChildren();
   const card = document.createElement("section");
   card.className = "drag-card";
-  const visual = document.createElement("div");
-  visual.className = "drag-visual";
-  const image = document.createElement("img");
-  image.src = entry.image;
-  image.alt = localized(entry.visual);
-  const example = document.createElement("strong");
-  example.textContent = sentence.blank;
-  visual.append(image, example);
+  const visual = createStageWordVisual(entry, sentence, "word-then-sentence", "spell-visual");
 
   const workspace = document.createElement("div");
   workspace.className = "drag-workspace";
-  const dragHint = document.createElement("p");
-  dragHint.className = "drag-hint";
-  dragHint.textContent = t("question.moveLetters");
-  workspace.append(createPromptControls(entry, sentence, "word-then-sentence"));
   const slots = document.createElement("div");
   slots.className = "spelling-slots";
   slots.id = "spellingSlots";
   const bank = document.createElement("div");
   bank.className = "letter-bank";
   bank.id = "letterBank";
-  workspace.append(slots, bank, iconButton(createButton("primary-button check-button", "", checkSpelling), "✓", t("common.check")), dragHint);
+  workspace.append(
+    slots,
+    bank,
+    iconButton(createButton("primary-button check-button stage-submit-button", "", checkSpelling), "✓", t("common.check"))
+  );
+  workspace.querySelector(".stage-submit-button").id = "stageSubmitButton";
   card.append(visual, workspace);
   area.append(card);
   updateSpellingBoard();
@@ -1984,6 +2046,8 @@ function updateSpellingBoard() {
       spellingBlockBank.append(button);
     });
   }
+  const submitButton = $("#stageSubmitButton");
+  if (submitButton) submitButton.disabled = game.locked || game.placedLetters.some((item) => !item);
 }
 
 function getSpellingBlocks(entry) {
@@ -2123,10 +2187,7 @@ function renderDictationQuestion(entry, sentence) {
   panel.className = "question-panel dictation-question";
   const card = document.createElement("section");
   card.className = "dictation-drag-card";
-  const visual = document.createElement("div");
-  visual.className = "dictation-visual";
-  visual.innerHTML = `<strong>${sentence.blank}</strong>`;
-  visual.append(createSceneCard(entry));
+  const visual = createStageWordVisual(entry, sentence, "word-then-sentence", "dictation-visual");
   const workspace = document.createElement("div");
   workspace.className = "dictation-workspace";
   const slots = document.createElement("div");
@@ -2139,7 +2200,12 @@ function renderDictationQuestion(entry, sentence) {
     <section class="keyboard-group consonant-keyboard-group" aria-label="${t("question.consonants")}"><span>${t("question.consonants")}</span><div class="letter-bank keyboard-bank consonant-bank" id="letterBank"></div></section>
     <section class="spelling-block-group combo-keyboard-group" id="spellingBlockGroup" hidden aria-label="${t("question.combinations")}"><span>${t("question.combinations")}</span><div class="spelling-block-bank" id="spellingBlockBank"></div></section>
   `;
-  workspace.append(createPromptControls(entry, sentence, "word-then-sentence"), slots, keyboard, iconButton(createButton("primary-button check-button", "", checkDictation), "✓", t("common.check")));
+  workspace.append(
+    slots,
+    keyboard,
+    iconButton(createButton("primary-button check-button stage-submit-button", "", checkDictation), "✓", t("common.check"))
+  );
+  workspace.querySelector(".stage-submit-button").id = "stageSubmitButton";
   card.append(visual, workspace);
   panel.append(card);
   area.append(panel);
@@ -2181,12 +2247,13 @@ function renderHandwritingQuestion(entry, sentence) {
   writingCanvas.className = "handwriting-canvas";
   writingCanvas.id = "handwritingCanvas";
   writingCanvas.setAttribute("aria-label", t("question.writing"));
+  const isLastQuestion = game.roundIndex === game.rounds.length - 1;
   const toolbar = createHandwritingToolbar({
     getBoard: () => handwritingBoard,
     onPrevious: () => moveHandwritingQuestion(entry, -1),
     previousDisabled: () => game.roundIndex === 0,
-    primaryIcon: "➜",
-    primaryLabel: () => t("handwriting.next"),
+    primaryIcon: isLastQuestion ? "📤" : "➜",
+    primaryLabel: () => t(isLastQuestion ? "handwriting.submitPaper" : "handwriting.next"),
     onPrimary: () => advanceHandwritingQuestion(entry)
   });
   paperArea.append(writingCanvas, toolbar.element);
@@ -2223,7 +2290,10 @@ function refreshHandwritingQuestionLabels() {
   const toolButton = $("#questionArea .writing-tool-toggle");
   if (previousButton) iconButton(previousButton, "‹", t("handwriting.previous"));
   if (clearButton) iconButton(clearButton, "🗑", t("handwriting.clearInk"));
-  if (nextButton) iconButton(nextButton, "➜", t("handwriting.next"));
+  if (nextButton) {
+    const isLastQuestion = game.roundIndex === game.rounds.length - 1;
+    iconButton(nextButton, isLastQuestion ? "📤" : "➜", t(isLastQuestion ? "handwriting.submitPaper" : "handwriting.next"));
+  }
   if (toolButton) updateHandwritingToolButton(toolButton, handwritingBoard);
   const canvas = $("#handwritingCanvas");
   if (canvas) canvas.setAttribute("aria-label", t("question.writing"));
@@ -2278,20 +2348,16 @@ function createHandwritingToolButton(getBoard) {
     updateHandwritingToolButton(button, board);
   });
   const pen = document.createElement("span");
-  pen.className = "writing-tool-symbol writing-tool-pen";
+  pen.className = "writing-tool-segment writing-tool-pen";
   pen.setAttribute("aria-hidden", "true");
   pen.textContent = "✎";
-  const divider = document.createElement("span");
-  divider.className = "writing-tool-divider";
-  divider.setAttribute("aria-hidden", "true");
-  divider.textContent = "·";
   const eraser = document.createElement("span");
-  eraser.className = "writing-tool-symbol writing-tool-eraser";
+  eraser.className = "writing-tool-segment writing-tool-eraser";
   eraser.setAttribute("aria-hidden", "true");
   eraser.textContent = "⌫";
   const label = document.createElement("span");
   label.className = "button-label";
-  button.append(pen, divider, eraser, label);
+  button.append(pen, eraser, label);
   updateHandwritingToolButton(button, getBoard());
   return button;
 }
@@ -2387,7 +2453,7 @@ function beginWriting(board, event) {
   board.lastX = point.x;
   board.lastY = point.y;
   board.context.beginPath();
-  board.context.arc(point.x, point.y, board.tool === "eraser" ? 8 : 1.8, 0, Math.PI * 2);
+  board.context.arc(point.x, point.y, board.tool === "eraser" ? HANDWRITING_ERASER_WIDTH / 2 : 1.8, 0, Math.PI * 2);
   board.context.globalCompositeOperation = board.tool === "eraser" ? "destination-out" : "source-over";
   board.context.fillStyle = "#243d62";
   board.context.fill();
@@ -2404,7 +2470,7 @@ function continueWriting(board, event) {
   context.lineTo(point.x, point.y);
   context.globalCompositeOperation = board.tool === "eraser" ? "destination-out" : "source-over";
   context.strokeStyle = "#243d62";
-  context.lineWidth = board.tool === "eraser" ? 18 : 5;
+  context.lineWidth = board.tool === "eraser" ? HANDWRITING_ERASER_WIDTH : HANDWRITING_PEN_WIDTH;
   context.lineCap = "round";
   context.lineJoin = "round";
   context.stroke();
@@ -2526,6 +2592,11 @@ function renderHandwritingReview() {
     renderHandwritingOverview(review);
   }
   area.append(review);
+  if (handwritingSession.reviewMode === "overview") {
+    renderHandwritingReviewSubmitAction();
+  } else {
+    setFeedback(t("review.submitted"), "success");
+  }
 }
 
 function orderedHandwritingReviewItems() {
@@ -2556,13 +2627,11 @@ function renderHandwritingOverview(review) {
   orderedHandwritingReviewItems().forEach(({ entry, answer, index }) => {
     const checked = Boolean(answer && answer.status === "approved");
     const state = checked ? t("review.approved") : t("review.pending");
-    const card = createButton(
-      `handwriting-overview-card${handwritingSession.reviewEntryId === entry.id ? " is-current" : ""}${checked ? " is-approved" : ""}`,
-      "",
-      () => openHandwritingReviewEntry(entry.id)
-    );
-    card.title = `${entry.word} · ${state}`;
-    card.setAttribute("aria-label", `${entry.word} · ${state}`);
+    const card = document.createElement("article");
+    card.className = `handwriting-overview-card${handwritingSession.reviewEntryId === entry.id ? " is-current" : ""}${checked ? " is-approved" : ""}`;
+    const focusButton = createButton("handwriting-overview-focus", "", () => openHandwritingReviewEntry(entry.id));
+    focusButton.title = t("review.openAnswer", { word: entry.word });
+    focusButton.setAttribute("aria-label", `${t("review.openAnswer", { word: entry.word })} · ${state}`);
     const number = document.createElement("span");
     number.className = "overview-number";
     number.setAttribute("aria-hidden", "true");
@@ -2580,16 +2649,40 @@ function renderHandwritingOverview(review) {
     word.textContent = entry.word;
     const status = document.createElement("span");
     status.className = "overview-status";
-    status.title = state;
-    status.setAttribute("aria-label", state);
+    status.setAttribute("aria-hidden", "true");
     status.textContent = checked ? "✓" : "•";
-    card.append(number, paper, word, status);
+    focusButton.append(number, paper, word, status);
+    const approveButton = iconButton(
+      createButton("primary-button overview-approve-button", "", () => approveHandwritingEntry(entry.id)),
+      "✓",
+      t("review.approve")
+    );
+    approveButton.disabled = checked;
+    card.append(focusButton, approveButton);
     grid.append(card);
   });
   review.append(grid);
 }
 
-function openHandwritingReviewEntry(entryId) {
+function renderHandwritingReviewSubmitAction() {
+  const feedback = $("#feedback");
+  feedback.className = "feedback review-submit-feedback";
+  feedback.replaceChildren();
+  const submitButton = iconButton(
+    createButton("primary-button review-submit-button", "", focusNextPendingHandwritingReview),
+    "📤",
+    t("review.submitPaper")
+  );
+  feedback.append(submitButton);
+}
+
+function focusNextPendingHandwritingReview() {
+  const item = orderedHandwritingReviewItems().find((reviewItem) => reviewItem.answer && reviewItem.answer.status !== "approved")
+    || selectedHandwritingReviewItem();
+  if (item) openHandwritingReviewEntry(item.entry.id);
+}
+
+function openHandwritingReviewEntry(entryId, autoplay = true) {
   const item = orderedHandwritingReviewItems().find((reviewItem) => reviewItem.entry.id === entryId && reviewItem.answer);
   if (!item) return;
   handwritingSession.reviewMode = "detail";
@@ -2598,25 +2691,21 @@ function openHandwritingReviewEntry(entryId) {
   handwritingSession.editingEntryId = null;
   persistHandwritingSession();
   renderHandwritingReview();
+  if (autoplay) {
+    stopActiveVoice();
+    void autoplayPrompt(item.entry, primarySentence(item.entry), "word");
+  }
 }
 
 function createHandwritingReviewTarget(entry) {
   const target = document.createElement("div");
   target.className = "review-detail-target";
-  const label = document.createElement("span");
-  label.textContent = t("review.expected");
+  target.title = t("review.expected");
+  target.setAttribute("aria-label", `${t("review.expected")}: ${entry.word}`);
   const word = document.createElement("strong");
   word.textContent = entry.word;
-  target.append(label, word);
+  target.append(word);
   return target;
-}
-
-function createHandwritingReviewProgress() {
-  const progress = document.createElement("span");
-  progress.className = "review-detail-progress";
-  const done = handwritingSession.entries.filter((answer) => answer.status === "approved").length;
-  progress.textContent = t("review.confirmed", { done, total: game.rounds.length });
-  return progress;
 }
 
 function renderHandwritingReviewDetail(review, item) {
@@ -2633,7 +2722,9 @@ function renderHandwritingReviewDetail(review, item) {
     review.append(paper);
     const toolbar = document.createElement("div");
     toolbar.className = "review-detail-toolbar review-edit-toolbar";
-    toolbar.append(createHandwritingReviewTarget(entry));
+    const repeatButton = createRepeatButton(entry, primarySentence(entry), "word");
+    repeatButton.classList.add("review-repeat-button");
+    toolbar.append(createHandwritingReviewTarget(entry), repeatButton);
     const editToolbar = createHandwritingToolbar({
       getBoard: () => handwritingBoard,
       primaryIcon: "✓",
@@ -2703,6 +2794,8 @@ function renderHandwritingReviewDetail(review, item) {
   );
   approveButton.disabled = answer.status === "approved";
   actions.append(approveButton, reviseButton);
+  const repeatButton = createRepeatButton(entry, primarySentence(entry), "word");
+  repeatButton.classList.add("review-repeat-button");
   const itemCount = orderedHandwritingReviewItems().filter((reviewItem) => reviewItem.answer).length;
   previousButton.disabled = itemCount < 2;
   nextButton.disabled = itemCount < 2;
@@ -2710,7 +2803,7 @@ function renderHandwritingReviewDetail(review, item) {
     overviewButton,
     previousButton,
     createHandwritingReviewTarget(entry),
-    createHandwritingReviewProgress(),
+    repeatButton,
     actions,
     nextButton
   );
@@ -2723,11 +2816,7 @@ function moveHandwritingReviewEntry(entryId, direction) {
   const currentIndex = items.findIndex((item) => item.entry.id === entryId);
   const nextIndex = (currentIndex + direction + items.length) % items.length;
   const nextItem = items[nextIndex];
-  handwritingSession.reviewEntryId = nextItem.entry.id;
-  handwritingSession.reviewIndex = nextItem.index;
-  handwritingSession.editingEntryId = null;
-  persistHandwritingSession();
-  renderHandwritingReview();
+  openHandwritingReviewEntry(nextItem.entry.id);
 }
 
 function approveHandwritingEntry(entryId) {
@@ -2750,12 +2839,7 @@ function approveHandwritingEntry(entryId) {
     finishHandwritingReview();
     return;
   }
-  handwritingSession.reviewMode = "detail";
-  handwritingSession.reviewEntryId = nextItem.entry.id;
-  handwritingSession.reviewIndex = nextItem.index;
-  handwritingSession.editingEntryId = null;
-  persistHandwritingSession();
-  renderHandwritingReview();
+  openHandwritingReviewEntry(nextItem.entry.id);
 }
 
 function openHandwritingCorrection(entryId) {
@@ -2796,7 +2880,7 @@ function finishHandwritingReview() {
   player.handwritingSession = null;
   handwritingSession = null;
   game.active = false;
-  player.mission = null;
+  clearStageSession(game.stageIndex);
   playEffect("correct");
   createConfetti();
   savePlayerProfile(false);
@@ -2820,7 +2904,7 @@ function renderRound(silent = false) {
   }
   const round = currentRound();
   const entry = stage.mode === "soundFill" ? WORD_BY_ID.get(round.wordId) : round;
-  game.sentence = randomSentence(entry);
+  game.sentence = primarySentence(entry);
   if (stage.mode === "listening") renderListeningQuestion(entry, game.sentence);
   if (stage.mode === "soundFill") renderSoundFillQuestion(round, game.sentence);
   if (stage.mode === "spell") renderSpellQuestion(entry, game.sentence);
@@ -2867,7 +2951,8 @@ function nextRound() {
 function completeStage() {
   const stage = STAGES[game.stageIndex];
   game.active = false;
-  player.mission = null;
+  clearStageSession(game.stageIndex);
+  $("#stageResetButton").disabled = true;
   player.stars += stage.bonus;
   savePlayerProfile(false);
   renderTrainingProjects();
@@ -2889,7 +2974,54 @@ function restoreRounds(stageIndex, roundIds) {
   return restored.length === source.length ? restored : shuffle(source);
 }
 
-function startStage(stageIndex, savedRoundIds = null, savedRoundIndex = 0) {
+function storedStageSession(stageIndex) {
+  const stage = STAGES[stageIndex];
+  return player.stageSessions && player.stageSessions[stage.id] || null;
+}
+
+function saveCurrentStageSession() {
+  if (!game.active) return;
+  const stage = STAGES[game.stageIndex];
+  if (!player.stageSessions) player.stageSessions = {};
+  const completedCurrentRound = game.locked && stage.mode !== "handwriting" && game.roundIndex < game.rounds.length - 1;
+  const session = {
+    roundIds: game.rounds.map((round) => round.id),
+    roundIndex: completedCurrentRound ? game.roundIndex + 1 : Math.min(Math.max(game.roundIndex, 0), game.rounds.length - 1),
+    replay: stageProgress(stage, game.stageIndex).completed >= getStageSource(game.stageIndex).length,
+    savedAt: new Date().toISOString()
+  };
+  player.stageSessions[stage.id] = session;
+  player.mission = {
+    stageIndex: game.stageIndex,
+    roundIndex: session.roundIndex,
+    roundIds: session.roundIds,
+    savedAt: session.savedAt
+  };
+}
+
+function clearStageSession(stageIndex) {
+  const stage = STAGES[stageIndex];
+  if (player.stageSessions) delete player.stageSessions[stage.id];
+  if (player.mission && player.mission.stageIndex === stageIndex) player.mission = null;
+}
+
+function resetCurrentStage() {
+  if (!game.active) return;
+  const stageIndex = game.stageIndex;
+  cancelPendingRoundAdvance();
+  promptSequenceId += 1;
+  stopActiveVoice();
+  clearActiveDrag();
+  clearStageSession(stageIndex);
+  if (STAGES[stageIndex].mode === "handwriting") {
+    player.handwritingSession = null;
+    handwritingSession = null;
+  }
+  savePlayerProfile(false);
+  startStage(stageIndex, null, 0, true);
+}
+
+function startStage(stageIndex, savedRoundIds = null, savedRoundIndex = 0, forceFresh = false) {
   if (!hasActiveProfile()) {
     openProfileChooser();
     return;
@@ -2897,16 +3029,30 @@ function startStage(stageIndex, savedRoundIds = null, savedRoundIndex = 0) {
   cancelPendingRoundAdvance();
   clearActiveDrag();
   game.stageIndex = stageIndex;
-  game.rounds = savedRoundIds ? restoreRounds(stageIndex, savedRoundIds) : shuffle(getStageSource(stageIndex));
-  game.roundIndex = Math.min(Math.max(0, savedRoundIndex), game.rounds.length - 1);
   const stage = STAGES[stageIndex];
+  const suppliedSession = savedRoundIds
+    ? normalizeStageSession(stageIndex, { roundIds: savedRoundIds, roundIndex: savedRoundIndex })
+    : null;
+  const existingSession = !forceFresh ? storedStageSession(stageIndex) : null;
+  const handwritingSessionCandidate = !forceFresh && stage.mode === "handwriting" && player.handwritingSession
+    ? normalizeStageSession(stageIndex, {
+      roundIds: player.handwritingSession.roundIds,
+      roundIndex: player.handwritingSession.currentIndex,
+      savedAt: player.updatedAt
+    })
+    : null;
+  const stageAlreadyComplete = stageProgress(stage, stageIndex).completed >= getStageSource(stageIndex).length;
+  const resumableSession = [suppliedSession, existingSession, handwritingSessionCandidate]
+    .find((candidate) => candidate && (!stageAlreadyComplete || candidate.replay));
+  const session = !forceFresh ? resumableSession || null : null;
+  const canResume = Boolean(session);
+  game.rounds = session ? restoreRounds(stageIndex, session.roundIds) : shuffle(getStageSource(stageIndex));
+  game.roundIndex = session ? session.roundIndex : 0;
   if (stage.mode === "handwriting") {
     const storedSession = player.handwritingSession;
     const matchingSession = storedSession
-      && (
-        !savedRoundIds
-        || storedSession.roundIds.join("|") === game.rounds.map((round) => round.id).join("|")
-      );
+      && canResume
+      && storedSession.roundIds.join("|") === game.rounds.map((round) => round.id).join("|");
     if (matchingSession) game.rounds = restoreRounds(stageIndex, storedSession.roundIds);
     handwritingSession = matchingSession
       ? storedSession
@@ -2934,7 +3080,7 @@ function startStage(stageIndex, savedRoundIds = null, savedRoundIndex = 0) {
 }
 
 function startNewMission() {
-  startStage(0);
+  startStage(0, null, 0, true);
 }
 
 function resumeMission() {
@@ -2942,7 +3088,7 @@ function resumeMission() {
     showToast(t("feedback.noMission"));
     return;
   }
-  startStage(player.mission.stageIndex, player.mission.roundIds, player.mission.roundIndex);
+  startStage(player.mission.stageIndex);
 }
 
 function saveMission(showMessage = false) {
@@ -2958,12 +3104,7 @@ function saveMission(showMessage = false) {
     handwritingSession.currentIndex = game.roundIndex;
     player.handwritingSession = handwritingSession;
   }
-  player.mission = {
-    stageIndex: game.stageIndex,
-    roundIndex: game.roundIndex,
-    roundIds: game.rounds.map((round) => round.id),
-    savedAt: new Date().toISOString()
-  };
+  saveCurrentStageSession();
   savePlayerProfile(showMessage);
 }
 
@@ -3017,7 +3158,6 @@ function openGardenProject() {
 function openWorkshopProject() {
   if (!openProject("workshopScreen")) return;
   selectedCollectionId = activeCollection().id;
-  shopPage = 0;
   renderWorkshop();
 }
 
@@ -3225,7 +3365,6 @@ function renderWorkshopHome() {
 function openCollection(collectionId) {
   selectedCollectionId = collectionId;
   player.activeCollectionId = collectionId;
-  shopPage = 0;
   savePlayerProfile(false);
   showOnlyScreen("workshopScreen");
   playEffect("enter");
@@ -3248,20 +3387,15 @@ function renderWorkshop() {
   $("#workshopBuildingCopy").textContent = t("workshop.building", { name: localized(collection.name) });
   renderCollectionHero(collection, progress);
   const items = currentWorkshopItems();
-  const pageCount = Math.ceil(items.length / SHOP_PAGE_SIZE);
-  shopPage = Math.min(Math.max(0, shopPage), pageCount - 1);
-  $("#shopPageLabel").textContent = `${shopPage + 1} / ${pageCount}`;
-  $("#shopPreviousButton").disabled = shopPage === 0;
-  $("#shopNextButton").disabled = shopPage === pageCount - 1;
   $("#shopBalance").textContent = `⚡ ${player.stars}`;
   $("#shopNotice").textContent = t("workshop.detail", { name: localized(collection.name), done: progress.completed, total: progress.total });
   const shopGrid = $("#shopGrid");
   shopGrid.replaceChildren();
-  items.slice(shopPage * SHOP_PAGE_SIZE, (shopPage + 1) * SHOP_PAGE_SIZE).forEach((item) => {
+  items.forEach((item) => {
     const owned = ownedWorkshopItems().includes(item.id);
     const card = createButton(`shop-item${owned ? " owned" : ""}`, "", () => buyWorkshopItem(item));
     card.disabled = owned;
-    card.innerHTML = `<span class="shop-icon" aria-hidden="true">${item.icon}</span><span><strong>${localized(item.name)}</strong><em>${owned ? t("common.owned") : `⚡ ${item.price}`}</em></span>`;
+    card.innerHTML = `<span class="shop-icon" aria-hidden="true">${item.icon}</span><strong>${localized(item.name)}</strong><em>${owned ? t("common.owned") : `⚡ ${item.price}`}</em>`;
     card.title = owned ? localized(item.name) : t("workshop.buy", { name: localized(item.name) });
     card.setAttribute("aria-label", card.title);
     shopGrid.append(card);
@@ -3311,6 +3445,7 @@ function registerServiceWorker() {
 
 function wireInterface() {
   $("#homeButton").addEventListener("click", returnHome);
+  $("#stageResetButton").addEventListener("click", resetCurrentStage);
   $("#languageToggle").addEventListener("click", () => setLanguage(currentLanguage() === "zh" ? "en" : "zh"));
   $("#openProfileButton").addEventListener("click", openProfileChooser);
   $("#bonusChallengeButton").addEventListener("click", openBonusChallenge);
@@ -3336,14 +3471,6 @@ function wireInterface() {
     showOnlyScreen("workshopHomeScreen");
     playEffect("tap");
     renderWorkshopHome();
-  });
-  $("#shopPreviousButton").addEventListener("click", () => {
-    shopPage -= 1;
-    renderWorkshop();
-  });
-  $("#shopNextButton").addEventListener("click", () => {
-    shopPage += 1;
-    renderWorkshop();
   });
   $("#cancelDeleteProfileButton").addEventListener("click", cancelProfileDeletion);
   $("#confirmDeleteProfileButton").addEventListener("click", deleteProfile);
